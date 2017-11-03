@@ -1,0 +1,7 @@
+[package]
+name = "binance-app"
+version = "0.1.0"
+authors = ["Flavio Oliveira <flavio@wisespace.io>"]
+
+[dependencies]
+binance = { path = "../" }
