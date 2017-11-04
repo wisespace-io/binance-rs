@@ -136,6 +136,9 @@ impl Client {
             StatusCode::ServiceUnavailable => {
                 bail!("Service Unavailable");
             }
+            StatusCode::Unauthorized => {
+                bail!("Unauthorized");
+            }            
             StatusCode::BadRequest => {
                 bail!(format!("Bad Request: {:?}", response));
             }                        

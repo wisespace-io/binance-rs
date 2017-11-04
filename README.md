@@ -1,5 +1,5 @@
 # binance-rs
-Rust Library for the Binance API
+Rust Library for the [Binance API](https://www.binance.com/restapipub.html)
 
 # Usage
 
@@ -43,17 +43,33 @@ use binance::market::*;
 
 fn main() {
     let market: Market = Binance::new(None, None);
-    match market.get_depth("KNCETH".into()) {
+
+    // Order book
+    match market.get_depth("BNBETH".into()) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }         
 
+    // Latest price for ALL symbols
+    match market.get_all_prices() {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    } 
+
+    // Latest price for ONE symbol
     match market.get_price("KNCETH".into()) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     } 
 
-    match market.get_book_ticker("KNCETH".into()) {
+    // Best price/qty on the order book for ALL symbols
+    match market.get_all_book_tickers("BNBETH".into()) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    // Best price/qty on the order book for ONE symbol
+    match market.get_book_ticker("BNBETH".into()) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
@@ -131,12 +147,13 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.order_status("WTCETH".into(), 1957528) {
+    let order_id = 1957528;
+    match account.order_status("WTCETH".into(), order_id) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.cancel_order("WTCETH".into(), 1957528) {
+    match account.cancel_order("WTCETH".into(), order_id) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }   
@@ -145,5 +162,10 @@ fn main() {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
+
+    match account.trade_history("WTCETH".into()) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }    
 }
 ```

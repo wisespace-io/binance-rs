@@ -132,6 +132,19 @@ impl Account {
         Ok(order_canceled)
     } 
 
+    // Trade history
+    pub fn trade_history(&self, symbol: String) -> Result<(Vec<TradeHistory>)> {
+        
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol);
+
+        let request = build_signed_request(parameters, self.recv_window);
+        let data = self.client.get_signed("/api/v3/myTrades", request)?;
+        let trade_history: Vec<TradeHistory> = from_str(data.as_str()).unwrap();
+
+        Ok(trade_history)
+    }     
+
     fn build_order(&self, symbol: String, qty: u32, price: f64, 
                    order_side: &str, order_type: &str, time_in_force: &str) ->  BTreeMap<String, String> {
         

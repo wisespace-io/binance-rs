@@ -1,0 +1,3 @@
+# Usage
+
+cargo run --release

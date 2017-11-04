@@ -140,3 +140,18 @@ pub struct Tickers {
     pub ask_price: String, 
     pub ask_qty: String     
 }
+
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TradeHistory { 
+    pub id: u32,
+    pub price: String,
+    pub qty: String,
+    pub commission: String,
+    pub commission_asset: String, 
+    pub time: u64,
+    pub is_buyer: bool,
+    pub is_maker: bool,
+    pub is_best_match: bool   
+}
