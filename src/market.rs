@@ -88,4 +88,18 @@ impl Market {
             Err(e) => return Err(e),
         } 
     } 
+
+    // 24hr ticker price change statistics
+    pub fn get_24h_price_stats(&self, symbol: String) -> Result<(PriceStats)> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol);
+        let request = build_request(parameters);
+
+        let data = self.client.get("/api/v1/ticker/24hr", request)?;
+
+        let stats: PriceStats = from_str(data.as_str()).unwrap();
+
+        Ok(stats)
+    }     
 }

@@ -155,3 +155,25 @@ pub struct TradeHistory {
     pub is_maker: bool,
     pub is_best_match: bool   
 }
+
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PriceStats { 
+    pub price_change: String,
+    pub price_change_percent: String,
+    pub weighted_avg_price: String,
+    pub prev_close_price: String,
+    pub last_price: String, 
+    pub bid_price: String,
+    pub ask_price: String,
+    pub open_price: String,
+    pub high_price: String,
+    pub low_price: String,
+    pub volume: String, 
+    pub open_time: u64,
+    pub close_time: u64,
+    pub first_id: u32,
+    pub last_id: u32,
+    pub count: u32
+}

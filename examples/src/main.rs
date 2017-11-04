@@ -26,7 +26,7 @@ fn general() {
 
     let result = general.get_server_time();
     match result {
-        Ok(answer) => println!("{}", answer.server_time),
+        Ok(answer) => println!("Server Time: {}", answer.server_time),
         Err(e) => println!("Error: {}", e),
     }
 }
@@ -95,9 +95,15 @@ fn market_data() {
     } 
 
     match market.get_book_ticker("BNBETH".into()) {
-        Ok(answer) => println!("{:?}", answer),
+        Ok(answer) => println!("Bid Price: {}, Ask Price: {}", answer.bid_price, answer.ask_price),
         Err(e) => println!("Error: {}", e),
     }     
+
+    match market.get_24h_price_stats("BNBETH".into()) {
+        Ok(answer) => println!("Open Price: {}, Higher Price: {}, Lower Price: {:?}",
+                                answer.open_price, answer.high_price, answer.low_price),
+        Err(e) => println!("Error: {}", e),
+    } 
 
     //match market.get_depth("BNBETH".into()) {
     //    Ok(answer) => println!("{:?}", answer),

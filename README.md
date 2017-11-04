@@ -70,37 +70,16 @@ fn main() {
 
     // Best price/qty on the order book for ONE symbol
     match market.get_book_ticker("BNBETH".into()) {
-        Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
-    }
-}
-```
-
-### USER STREAM
-```
-extern crate binance;
-
-use binance::api::*;
-use binance::userstream::*;
-
-fn main() {
-    let api_key = Some("YOUR_API_KEY".into());
-    let user_stream: UserStream = Binance::new(api_key, None);
-    
-    match user_stream.start() {
-        Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
-    } 
-
-    match user_stream.keep_alive("listen_key") {
-        Ok(answer) => println!("{:?}", answer),
+        Ok(answer) => println!("Bid Price: {}, Ask Price: {}", answer.bid_price, answer.ask_price),
         Err(e) => println!("Error: {}", e),
     }     
 
-    match user_stream.close("listen_key") {
-        Ok(answer) => println!("{:?}", answer),
+    // 24hr ticker price change statistics
+    match market.get_24h_price_stats("BNBETH".into()) {
+        Ok(answer) => println!("Open Price: {}, Higher Price: {}, Lower Price: {:?}",
+                                answer.open_price, answer.high_price, answer.low_price),
         Err(e) => println!("Error: {}", e),
-    }      
+    } 
 }
 ```
 
@@ -115,7 +94,7 @@ fn main() {
     let api_key = Some("YOUR_API_KEY".into());
     let secret_key = Some("YOUR_SECRET_KEY".into());
 
-    let account: Account = Binance::new(api_key.clone(), secret_key);
+    let account: Account = Binance::new(api_key, secret_key);
    
     match account.get_account() {
         Ok(answer) => println!("{:?}", answer.balances),
@@ -167,5 +146,33 @@ fn main() {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }    
+}
+```
+
+### USER STREAM
+```
+extern crate binance;
+
+use binance::api::*;
+use binance::userstream::*;
+
+fn main() {
+    let api_key = Some("YOUR_API_KEY".into());
+    let user_stream: UserStream = Binance::new(api_key, None);
+    
+    match user_stream.start() {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    } 
+
+    match user_stream.keep_alive("listen_key") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }     
+
+    match user_stream.close("listen_key") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }      
 }
 ```
