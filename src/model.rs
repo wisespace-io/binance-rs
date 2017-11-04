@@ -103,7 +103,7 @@ pub struct Asks
 #[serde(rename_all = "camelCase")]
 pub struct UserDataStream
 {
-    listen_key: String
+    pub listen_key: String
 }
 
 #[derive(Debug, Serialize, Deserialize)]

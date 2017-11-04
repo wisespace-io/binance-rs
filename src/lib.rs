@@ -1,6 +1,7 @@
 #[macro_use] 
 extern crate error_chain;
 
+extern crate ws;
 extern crate log;
 extern crate hex;
 extern crate ring;
@@ -15,6 +16,7 @@ mod util;
 mod client;
 mod errors;
 mod model;
+mod websockets;
 
 pub mod api;
 pub mod general;
