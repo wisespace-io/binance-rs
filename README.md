@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wisespace-io/binance-rs.png?branch=master)](https://travis-ci.org/wisespace-io/binance-rs)
+
 # binance-rs
 Rust Library for the [Binance API](https://www.binance.com/restapipub.html)
 
@@ -176,5 +178,46 @@ fn main() {
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
     };     
+}
+```
+
+### WEB SOCKETS
+```
+extern crate binance;
+
+use binance::api::*;
+use binance::userstream::*;
+use binance::websockets::*;
+use binance::model::{AccountUpdateEvent, OrderTradeEvent};
+
+struct WebScoketHandler;
+
+impl EventHandler for WebScoketHandler {
+    fn account_update_handler(&self, event: &AccountUpdateEvent) {
+        for balance in &event.balance {
+            println!("Asset: {}, free: {}, locked: {}", balance.asset, balance.free, balance.locked);
+        }
+    }
+
+    fn order_trade_handler(&self, event: &OrderTradeEvent) {
+        println!("Symbol: {}, Side: {}, Price: {}, Execution Type: {}", 
+                 event.symbol, event.side, event.price, event.execution_type);
+    }        
+}
+
+fn main() {
+    let api_key_user = Some("YOUR_KEY".into());
+    let user_stream: UserStream = Binance::new(api_key_user, None);
+    
+    if let Ok(answer) = user_stream.start() {
+        let listen_key = answer.listen_key;
+       
+        let mut web_socket: WebSockets = WebSockets::new();
+        web_socket.handler(WebScoketHandler);
+        web_socket.connect_stream(listen_key).unwrap(); // check error
+
+    } else {
+        println!("Not able to start an User Stream (Check your API_KEY)");
+    };    
 }
 ```

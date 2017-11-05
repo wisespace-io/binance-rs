@@ -5,14 +5,15 @@ use binance::general::*;
 use binance::account::*;
 use binance::market::*;
 use binance::userstream::*;
+use binance::websockets::*;
+use binance::model::{AccountUpdateEvent, OrderTradeEvent};
 
 fn main() {
-
     general();
     account();
     market_data();
     user_stream();
-
+    user_data_websocket();
 }
 
 fn general() {
@@ -31,9 +32,7 @@ fn general() {
     }
 }
 
-
 fn account() {
-    // ACCOUNT
     let api_key = Some("YOUR_API_KEY".into());
     let secret_key = Some("YOUR_SECRET_KEY".into());
 
@@ -113,7 +112,7 @@ fn market_data() {
 
 fn user_stream() {
     let api_key_user = Some("YOUR_API_KEY".into());
-    let user_stream: UserStream = Binance::new(api_key_user.clone(), None);
+    let user_stream: UserStream = Binance::new(api_key_user, None);
     
     if let Ok(answer) = user_stream.start() {
         println!("Data Stream Started ...");
@@ -128,6 +127,38 @@ fn user_stream() {
             Ok(msg) => println!("Close user data stream: {:?}", msg),
             Err(e) => println!("Error: {}", e),
         }       
+    } else {
+        println!("Not able to start an User Stream (Check your API_KEY)");
+    };       
+}
+
+
+fn user_data_websocket() {
+    struct WebScoketHandler;
+
+    impl EventHandler for WebScoketHandler {
+        fn account_update_handler(&self, event: &AccountUpdateEvent) {
+            for balance in &event.balance {
+                println!("Asset: {}, free: {}, locked: {}", balance.asset, balance.free, balance.locked);
+            }
+        }
+
+        fn order_trade_handler(&self, event: &OrderTradeEvent) {
+            println!("Symbol: {}, Side: {}, Price: {}, Execution Type: {}", 
+                     event.symbol, event.side, event.price, event.execution_type);
+        }        
+    }
+
+    let api_key_user = Some("YOUR_KEY".into());
+    let user_stream: UserStream = Binance::new(api_key_user, None);
+    
+    if let Ok(answer) = user_stream.start() {
+        let listen_key = answer.listen_key;
+       
+        let mut web_socket: WebSockets = WebSockets::new();
+        web_socket.handler(WebScoketHandler);
+        web_socket.connect_stream(listen_key).unwrap(); // check error
+
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
     };       

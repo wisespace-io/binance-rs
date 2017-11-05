@@ -177,3 +177,128 @@ pub struct PriceStats {
     pub last_id: u32,
     pub count: u32
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountUpdateEvent { 
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    m: u32,
+    t: u32,
+    b: u32,
+    s: u32,
+
+    #[serde(rename = "T")]
+    t_ignore: bool,
+    #[serde(rename = "W")]
+    w_ignore: bool,
+    #[serde(rename = "D")]    
+    d_ignore: bool,
+
+    #[serde(rename = "B")]
+    pub balance: Vec<EventBalance>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EventBalance    
+{
+    #[serde(rename = "a")] 
+	pub asset: String,
+    #[serde(rename = "f")] 
+	pub free: String,
+    #[serde(rename = "l")] 
+	pub locked: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderTradeEvent { 
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "c")]
+    pub new_client_order_id: String,
+
+    #[serde(rename = "S")]
+    pub side: String,
+
+    #[serde(rename = "o")]
+    pub order_type: String,    
+
+    #[serde(rename = "f")]
+    pub time_in_force: String,
+
+    #[serde(rename = "q")]
+    pub qty: String,
+
+    #[serde(rename = "p")]
+    pub price: String,
+
+    #[serde(skip_serializing, rename = "P")]
+    pub p_ignore: String,
+
+    #[serde(skip_serializing, rename = "F")]
+    pub f_ignore: String,
+
+    #[serde(skip_serializing)]
+    pub g: i32,
+
+    #[serde(skip_serializing, rename = "C")]
+    pub c_ignore: Option<String>,    
+
+    #[serde(rename = "x")]
+    pub execution_type: String,
+
+    #[serde(rename = "X")]
+    pub order_status: String,
+
+    #[serde(rename = "r")]
+    pub order_reject_reason: String,
+
+    #[serde(rename = "i")]
+    pub order_id: u32,
+
+    #[serde(rename = "l")]
+    pub qty_last_filled_trade: String,  
+
+    #[serde(rename = "z")]
+    pub accumulated_qty_filled_trades: String,  
+
+    #[serde(rename = "L")]
+    pub price_last_filled_trade: String,  
+
+    #[serde(rename = "n")]
+    pub commission: String,  
+
+    #[serde(skip_serializing, rename = "N")]
+    pub asset_commisioned: Option<String>,  
+
+    #[serde(rename = "T")]
+    pub trade_order_time: u64,  
+
+    #[serde(rename = "t")]
+    pub trade_id: i32,  
+
+    #[serde(skip_serializing, rename = "I")]
+    pub i_ignore: u32,  
+
+    #[serde(skip_serializing)]
+    pub w: bool,  
+
+    #[serde(rename = "m")]
+    pub is_buyer_maker: bool,  
+
+    #[serde(skip_serializing, rename = "M")]
+    pub m_ignore: bool,  
+}

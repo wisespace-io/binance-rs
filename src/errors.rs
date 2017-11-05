@@ -6,9 +6,12 @@ error_chain! {
         Error, ErrorKind, ResultExt, Result;
     }
 
+    errors { FooError }
+
     foreign_links {
         ReqError(reqwest::Error);
         IoError(std::io::Error);
         ParseFloatError(std::num::ParseFloatError);
     }
+
 }
