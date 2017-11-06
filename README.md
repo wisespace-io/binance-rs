@@ -9,7 +9,7 @@ Add this to your Cargo.toml
 
 ```toml
 [dependencies]
-binance = "git = "https://github.com/wisespace-io/binance-rs.git""
+binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 ```
 
 ### GENERAL
