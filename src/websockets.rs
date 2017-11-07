@@ -40,7 +40,7 @@ impl WebSockets {
 
             let (_sink, stream) = ws_stream.split();
 
-            let write_stdout = stream.for_each(|message| {
+            let result = stream.for_each(|message| {
                 let msg: String = message.into_text().unwrap();
 
                 if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
@@ -60,7 +60,7 @@ impl WebSockets {
                 Ok(())
             });
 
-            write_stdout.map(|_| ()).then(|_| Ok(()))
+            result.map(|_| ()).then(|_| Ok(()))
         }).map_err(|e| Error::with_chain(e, "Error during the websocket handshake"));        
 
         event.run(client).unwrap();
@@ -77,5 +77,4 @@ impl WebSockets {
     pub fn event_loop() {
         //self.event_loop.run(client).unwrap();
     }
-
 }

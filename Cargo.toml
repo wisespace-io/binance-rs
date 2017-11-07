@@ -1,8 +1,8 @@
 [package]
 name = "binance"
 version = "0.1.0"
-license = "MIT"
-authors = ["Flavio Oliveira <rusty@wisespace.io>"]
+license = "MIT OR Apache-2.0"
+authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
 description = "Rust Library for the Binance API"
 keywords = ["cryptocurrency", "trading"]

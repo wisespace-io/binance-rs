@@ -1,4 +1,7 @@
+[![Crates.io](https://img.shields.io/crates/v/binance.svg)](https://crates.io/crates/binance)
 [![Build Status](https://travis-ci.org/wisespace-io/binance-rs.png?branch=master)](https://travis-ci.org/wisespace-io/binance-rs)
+[![MIT licensed](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE-MIT)
+[![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
 # binance-rs
 Rust Library for the [Binance API](https://www.binance.com/restapipub.html)
@@ -181,7 +184,7 @@ fn main() {
 }
 ```
 
-### WEB SOCKETS
+### WEBSOCKETS
 ```
 extern crate binance;
 
@@ -190,9 +193,9 @@ use binance::userstream::*;
 use binance::websockets::*;
 use binance::model::{AccountUpdateEvent, OrderTradeEvent};
 
-struct WebScoketHandler;
+struct WebSocketHandler;
 
-impl EventHandler for WebScoketHandler {
+impl EventHandler for WebSocketHandler {
     fn account_update_handler(&self, event: &AccountUpdateEvent) {
         for balance in &event.balance {
             println!("Asset: {}, free: {}, locked: {}", balance.asset, balance.free, balance.locked);
