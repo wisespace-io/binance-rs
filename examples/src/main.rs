@@ -13,7 +13,7 @@ fn main() {
     account();
     market_data();
     user_stream();
-    user_data_websocket();
+    user_stream_websocket();
 }
 
 fn general() {
@@ -132,11 +132,10 @@ fn user_stream() {
     };       
 }
 
+fn user_stream_websocket() {
+    struct WebSocketHandler;
 
-fn user_data_websocket() {
-    struct WebScoketHandler;
-
-    impl EventHandler for WebScoketHandler {
+    impl UserStreamEventHandler for WebSocketHandler {
         fn account_update_handler(&self, event: &AccountUpdateEvent) {
             for balance in &event.balance {
                 println!("Asset: {}, free: {}, locked: {}", balance.asset, balance.free, balance.locked);
@@ -146,7 +145,7 @@ fn user_data_websocket() {
         fn order_trade_handler(&self, event: &OrderTradeEvent) {
             println!("Symbol: {}, Side: {}, Price: {}, Execution Type: {}", 
                      event.symbol, event.side, event.price, event.execution_type);
-        }        
+        }      
     }
 
     let api_key_user = Some("YOUR_KEY".into());
@@ -156,8 +155,8 @@ fn user_data_websocket() {
         let listen_key = answer.listen_key;
        
         let mut web_socket: WebSockets = WebSockets::new();
-        web_socket.handler(WebScoketHandler);
-        web_socket.connect_stream(listen_key).unwrap(); // check error
+        web_socket.add_user_stream_handler(WebSocketHandler);
+        web_socket.connect_user_stream(listen_key).unwrap(); // check error
 
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");

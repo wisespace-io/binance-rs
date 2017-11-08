@@ -195,7 +195,7 @@ use binance::model::{AccountUpdateEvent, OrderTradeEvent};
 
 struct WebSocketHandler;
 
-impl EventHandler for WebSocketHandler {
+impl UserStreamEventHandler for WebSocketHandler {
     fn account_update_handler(&self, event: &AccountUpdateEvent) {
         for balance in &event.balance {
             println!("Asset: {}, free: {}, locked: {}", balance.asset, balance.free, balance.locked);
@@ -205,7 +205,7 @@ impl EventHandler for WebSocketHandler {
     fn order_trade_handler(&self, event: &OrderTradeEvent) {
         println!("Symbol: {}, Side: {}, Price: {}, Execution Type: {}", 
                  event.symbol, event.side, event.price, event.execution_type);
-    }        
+    }      
 }
 
 fn main() {
@@ -216,11 +216,11 @@ fn main() {
         let listen_key = answer.listen_key;
        
         let mut web_socket: WebSockets = WebSockets::new();
-        web_socket.handler(WebScoketHandler);
-        web_socket.connect_stream(listen_key).unwrap(); // check error
+        web_socket.add_user_stream_handler(WebSocketHandler);
+        web_socket.connect_user_stream(listen_key).unwrap(); // check error
 
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
-    };    
+    };   
 }
 ```

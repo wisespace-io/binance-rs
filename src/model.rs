@@ -302,3 +302,42 @@ pub struct OrderTradeEvent {
     #[serde(skip_serializing, rename = "M")]
     pub m_ignore: bool,  
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TradesEvent { 
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "a")]
+    pub aggregated_trade_id: u32,
+
+    #[serde(rename = "p")]
+    pub price: String,
+
+    #[serde(rename = "q")]
+    pub qty: String,
+
+    #[serde(rename = "f")]
+    pub first_break_trade_id: String,
+
+    #[serde(rename = "l")]
+    pub last_break_trade_id: String,
+
+    #[serde(rename = "T")]
+    pub trade_order_time: u64,  
+
+    #[serde(rename = "m")]
+    pub is_buyer_maker: bool,  
+
+    #[serde(skip_serializing, rename = "M")]
+    pub m_ignore: bool
+}
+	
+						
