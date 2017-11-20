@@ -325,10 +325,10 @@ pub struct TradesEvent {
     pub qty: String,
 
     #[serde(rename = "f")]
-    pub first_break_trade_id: String,
+    pub first_break_trade_id: u32,
 
     #[serde(rename = "l")]
-    pub last_break_trade_id: String,
+    pub last_break_trade_id: u32,
 
     #[serde(rename = "T")]
     pub trade_order_time: u64,  

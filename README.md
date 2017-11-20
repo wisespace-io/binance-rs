@@ -15,30 +15,6 @@ Add this to your Cargo.toml
 binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 ```
 
-### GENERAL
-```
-extern crate binance;
-
-use binance::api::*;
-use binance::general::*;
-
-fn main() {
-    let general: General = Binance::new(None, None);
-
-    let ping = general.ping();
-    match ping {
-        Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
-    }   
-
-    let server = general.get_server_time();
-    match server {
-        Ok(answer) => println!("{}", answer.server_time),
-        Err(e) => println!("Error: {}", e),
-    }
-}
-```
-
 ### MARKET DATA
 ```
 extern crate binance;
@@ -184,7 +160,7 @@ fn main() {
 }
 ```
 
-### WEBSOCKETS
+### WEBSOCKETS - USER STREAM
 ```
 extern crate binance;
 
@@ -217,10 +193,40 @@ fn main() {
        
         let mut web_socket: WebSockets = WebSockets::new();
         web_socket.add_user_stream_handler(WebSocketHandler);
-        web_socket.connect_user_stream(listen_key).unwrap(); // check error
+        web_socket.connect(listen_key).unwrap(); // check error
+        web_socket.event_loop();
 
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
     };   
 }
 ```
+
+### WEBSOCKETS - TRADES
+```
+extern crate binance;
+
+use binance::api::*;
+use binance::userstream::*;
+use binance::websockets::*;
+use binance::model::{TradesEvent};
+
+    struct WebSocketHandler;
+
+    impl MarketEventHandler for WebSocketHandler {
+        fn aggregated_trades_handler(&self, event: &TradesEvent) {
+            println!("Symbol: {}, price: {}, qty: {}", event.symbol, event.price, event.qty);
+        }     
+    }
+
+fn main() {
+    let agg_trade: String =  format!("{}@aggTrade", "ethbtc");
+    let mut web_socket: WebSockets = WebSockets::new();
+
+    web_socket.add_market_handler(WebSocketHandler);
+    web_socket.connect(agg_trade).unwrap(); // check error  
+    web_socket.event_loop();  
+}
+```
+
+ 

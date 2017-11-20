@@ -6,7 +6,7 @@ use binance::account::*;
 use binance::market::*;
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, OrderTradeEvent};
+use binance::model::{AccountUpdateEvent, OrderTradeEvent, TradesEvent};
 
 fn main() {
     general();
@@ -14,6 +14,7 @@ fn main() {
     market_data();
     user_stream();
     user_stream_websocket();
+    market_websocket();
 }
 
 fn general() {
@@ -156,9 +157,27 @@ fn user_stream_websocket() {
        
         let mut web_socket: WebSockets = WebSockets::new();
         web_socket.add_user_stream_handler(WebSocketHandler);
-        web_socket.connect_user_stream(listen_key).unwrap(); // check error
+        web_socket.connect(listen_key).unwrap(); // check error
+        web_socket.event_loop();
 
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
     };       
+}
+
+fn market_websocket() {
+    struct WebSocketHandler;
+
+    impl MarketEventHandler for WebSocketHandler {
+        fn aggregated_trades_handler(&self, event: &TradesEvent) {
+            println!("Symbol: {}, price: {}, qty: {}", event.symbol, event.price, event.qty);
+        }     
+    }
+
+    let agg_trade: String =  format!("{}@aggTrade", "ethbtc");
+    let mut web_socket: WebSockets = WebSockets::new();
+
+    web_socket.add_market_handler(WebSocketHandler);
+    web_socket.connect(agg_trade).unwrap(); // check error  
+    web_socket.event_loop();     
 }

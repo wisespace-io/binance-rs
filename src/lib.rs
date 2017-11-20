@@ -8,9 +8,6 @@ extern crate reqwest;
 extern crate serde;
 extern crate serde_json;
 
-extern crate futures;
-extern crate tokio_core;
-extern crate tokio_tungstenite;
 extern crate tungstenite;
 extern crate url;
 
