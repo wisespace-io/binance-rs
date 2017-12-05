@@ -6,7 +6,7 @@ use binance::account::*;
 use binance::market::*;
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, OrderTradeEvent, TradesEvent};
+use binance::model::{AccountUpdateEvent, OrderTradeEvent, TradesEvent, KlineEvent};
 
 fn main() {
     general();
@@ -15,6 +15,7 @@ fn main() {
     user_stream();
     user_stream_websocket();
     market_websocket();
+    kline_websocket();
 }
 
 fn general() {
@@ -179,5 +180,22 @@ fn market_websocket() {
 
     web_socket.add_market_handler(WebSocketHandler);
     web_socket.connect(agg_trade).unwrap(); // check error  
+    web_socket.event_loop();     
+}
+
+fn kline_websocket() {
+    struct WebSocketHandler;
+
+    impl KlineEventHandler for WebSocketHandler {
+        fn kline_handler(&self, event: &KlineEvent) {
+            println!("Symbol: {}, high: {}, low: {}", event.kline.symbol, event.kline.low, event.kline.high);
+        }     
+    }
+
+    let kline: String =  format!("{}", "ethbtc@kline_1m");
+    let mut web_socket: WebSockets = WebSockets::new();
+
+    web_socket.add_kline_handler(WebSocketHandler);
+    web_socket.connect(kline).unwrap(); // check error  
     web_socket.event_loop();     
 }
