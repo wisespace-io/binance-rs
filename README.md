@@ -4,7 +4,10 @@
 [![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
 # binance-rs
-Rust Library for the [Binance API](https://www.binance.com/restapipub.html)
+Unofficial Rust Library for the [Binance API](https://github.com/binance-exchange/binance-official-api-docs)
+
+# Binance API Telegram
+  https://t.me/binance_api_english
 
 # Usage
 
@@ -229,4 +232,6 @@ fn main() {
 }
 ```
 
- 
+# Other Exchanges
+
+If you use [Bitfinex] (https://www.bitfinex.com/) check out my [Rust library for bitfinex API] (https://github.com/wisespace-io/bitfinex-rs) library
