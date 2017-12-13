@@ -9,6 +9,10 @@ Unofficial Rust Library for the [Binance API](https://github.com/binance-exchang
 # Binance API Telegram
   https://t.me/binance_api_english
 
+# Risk Warning
+It is a personal project, use at your own risk. I will not be responsible for your investment losses.
+Cryptocurrency investment is subject to high market risk.
+
 # Usage
 
 Add this to your Cargo.toml
@@ -214,13 +218,13 @@ use binance::userstream::*;
 use binance::websockets::*;
 use binance::model::{TradesEvent};
 
-    struct WebSocketHandler;
+struct WebSocketHandler;
 
-    impl MarketEventHandler for WebSocketHandler {
-        fn aggregated_trades_handler(&self, event: &TradesEvent) {
-            println!("Symbol: {}, price: {}, qty: {}", event.symbol, event.price, event.qty);
-        }     
-    }
+impl MarketEventHandler for WebSocketHandler {
+    fn aggregated_trades_handler(&self, event: &TradesEvent) {
+        println!("Symbol: {}, price: {}, qty: {}", event.symbol, event.price, event.qty);
+    }     
+}
 
 fn main() {
     let agg_trade: String =  format!("{}@aggTrade", "ethbtc");
@@ -234,4 +238,4 @@ fn main() {
 
 # Other Exchanges
 
-If you use [Bitfinex] (https://www.bitfinex.com/) check out my [Rust library for bitfinex API] (https://github.com/wisespace-io/bitfinex-rs) library
+If you use [Bitfinex](https://www.bitfinex.com/) check out my [Rust library for bitfinex API](https://github.com/wisespace-io/bitfinex-rs)

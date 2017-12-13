@@ -11,21 +11,21 @@ pub struct AccountInformation
 {
     pub maker_commission: f32,
     pub taker_commission: f32,
-	pub buyer_commission: f32,
-	pub seller_commission: f32,
-	pub can_trade: bool,
-	pub can_withdraw: bool,
-	pub can_deposit: bool,
-	pub balances: Vec<Balance>,
+    pub buyer_commission: f32,
+    pub seller_commission: f32,
+    pub can_trade: bool,
+    pub can_withdraw: bool,
+    pub can_deposit: bool,
+    pub balances: Vec<Balance>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Balance    
 {
-	pub asset: String,
-	pub free: String,
-	pub locked: String,
+    pub asset: String,
+    pub free: String,
+    pub locked: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -40,7 +40,7 @@ pub struct Order
     pub executed_qty: String,
     pub status: String,
     pub time_in_force: String,
-	#[serde(rename = "type")] 
+    #[serde(rename = "type")] 
     pub type_name: String,
     pub side: String,
     pub stop_price: String,
