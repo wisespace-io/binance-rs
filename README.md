@@ -23,7 +23,7 @@ binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 ```
 
 ### MARKET DATA
-```
+```rust
 extern crate binance;
 
 use binance::api::*;
@@ -72,7 +72,7 @@ fn main() {
 ```
 
 ### ACCOUNT DATA
-```
+```rust
 extern crate binance;
 
 use binance::api::*;
@@ -138,7 +138,7 @@ fn main() {
 ```
 
 ### USER STREAM
-```
+```rust
 extern crate binance;
 
 use binance::api::*;
@@ -168,7 +168,7 @@ fn main() {
 ```
 
 ### WEBSOCKETS - USER STREAM
-```
+```rust
 extern crate binance;
 
 use binance::api::*;
@@ -210,7 +210,7 @@ fn main() {
 ```
 
 ### WEBSOCKETS - TRADES
-```
+```rust
 extern crate binance;
 
 use binance::api::*;
