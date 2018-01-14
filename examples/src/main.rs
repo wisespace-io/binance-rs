@@ -125,12 +125,12 @@ fn user_stream() {
         println!("Data Stream Started ...");
         let listen_key = answer.listen_key;
 
-        match user_stream.keep_alive(listen_key.clone()) {
+        match user_stream.keep_alive(&listen_key) {
             Ok(msg) => println!("Keepalive user data stream: {:?}", msg),
             Err(e) => println!("Error: {}", e),
         }
 
-        match user_stream.close(listen_key.clone()) {
+        match user_stream.close(&listen_key) {
             Ok(msg) => println!("Close user data stream: {:?}", msg),
             Err(e) => println!("Error: {}", e),
         }
@@ -168,7 +168,7 @@ fn user_stream_websocket() {
 
         let mut web_socket: WebSockets = WebSockets::new();
         web_socket.add_user_stream_handler(WebSocketHandler);
-        web_socket.connect(listen_key).unwrap(); // check error
+        web_socket.connect(&listen_key).unwrap(); // check error
         web_socket.event_loop();
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
@@ -191,7 +191,7 @@ fn market_websocket() {
     let mut web_socket: WebSockets = WebSockets::new();
 
     web_socket.add_market_handler(WebSocketHandler);
-    web_socket.connect(agg_trade).unwrap(); // check error
+    web_socket.connect(&agg_trade).unwrap(); // check error
     web_socket.event_loop();
 }
 
@@ -211,6 +211,6 @@ fn kline_websocket() {
     let mut web_socket: WebSockets = WebSockets::new();
 
     web_socket.add_kline_handler(WebSocketHandler);
-    web_socket.connect(kline).unwrap(); // check error
+    web_socket.connect(&kline).unwrap(); // check error
     web_socket.event_loop();
 }
