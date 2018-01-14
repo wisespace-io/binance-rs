@@ -1,14 +1,14 @@
 use model::*;
 use client::*;
 use errors::*;
-use serde_json::{from_str};
+use serde_json::from_str;
 
-static USER_DATA_STREAM : &'static str = "/api/v1/userDataStream";
+static USER_DATA_STREAM: &'static str = "/api/v1/userDataStream";
 
 #[derive(Clone)]
 pub struct UserStream {
     pub client: Client,
-    pub recv_window: u64
+    pub recv_window: u64,
 }
 
 impl UserStream {
