@@ -12,14 +12,14 @@ pub struct General {
 impl General {
     // Test connectivity
     pub fn ping(&self) -> Result<(String)> {
-        self.client.get("/api/v1/ping", String::new())?;
+        self.client.get("/api/v1/ping", "")?;
 
         Ok("pong".into())
     }
 
     // Check server time
     pub fn get_server_time(&self) -> Result<(ServerTime)> {
-        let data: String = self.client.get("/api/v1/time", String::new())?;
+        let data: String = self.client.get("/api/v1/time", "")?;
 
         let server_time: ServerTime = from_str(data.as_str()).unwrap();
 

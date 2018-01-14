@@ -18,9 +18,9 @@ impl Market {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol);
-        let request = build_request(parameters);
+        let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v1/depth", request)?;
+        let data = self.client.get("/api/v1/depth", &request)?;
 
         let order_book: OrderBook = from_str(data.as_str()).unwrap();
 
@@ -29,7 +29,7 @@ impl Market {
 
     // Latest price for ALL symbols.
     pub fn get_all_prices(&self) -> Result<(Prices)> {
-        let data = self.client.get("/api/v1/ticker/allPrices", String::new())?;
+        let data = self.client.get("/api/v1/ticker/allPrices", "")?;
 
         let prices: Prices = from_str(data.as_str()).unwrap();
 
@@ -37,7 +37,7 @@ impl Market {
     }
 
     // Latest price for ONE symbol.
-    pub fn get_price(&self, symbol: String) -> Result<(f64)> {
+    pub fn get_price(&self, symbol: &str) -> Result<(f64)> {
         match self.get_all_prices() {
             Ok(answer) => match answer {
                 Prices::AllPrices(prices) => {
@@ -47,18 +47,17 @@ impl Market {
                             return Ok(price);
                         }
                     }
-                    bail!(format!("Symbol not found"));
+                    bail!("Symbol not found");
                 }
             },
-            Err(e) => return Err(e),
+            Err(e) => Err(e),
         }
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<(BookTickers)> {
-        let data = self.client
-            .get("/api/v1/ticker/allBookTickers", String::new())?;
+        let data = self.client.get("/api/v1/ticker/allBookTickers", "")?;
 
         let book_tickers: BookTickers = from_str(data.as_str()).unwrap();
 
@@ -66,7 +65,7 @@ impl Market {
     }
 
     // -> Best price/qty on the order book for ONE symbol
-    pub fn get_book_ticker(&self, symbol: String) -> Result<(Tickers)> {
+    pub fn get_book_ticker(&self, symbol: &str) -> Result<(Tickers)> {
         match self.get_all_book_tickers() {
             Ok(answer) => match answer {
                 BookTickers::AllBookTickers(book_tickers) => {
@@ -76,10 +75,10 @@ impl Market {
                             return Ok(ticker);
                         }
                     }
-                    bail!(format!("Symbol not found"));
+                    bail!("Symbol not found");
                 }
             },
-            Err(e) => return Err(e),
+            Err(e) => Err(e),
         }
     }
 
@@ -88,9 +87,9 @@ impl Market {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol);
-        let request = build_request(parameters);
+        let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v1/ticker/24hr", request)?;
+        let data = self.client.get("/api/v1/ticker/24hr", &request)?;
 
         let stats: PriceStats = from_str(data.as_str()).unwrap();
 

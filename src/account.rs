@@ -25,14 +25,14 @@ impl Account {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
 
         let request = build_signed_request(parameters, self.recv_window);
-        let data = self.client.get_signed("/api/v3/account", request)?;
+        let data = self.client.get_signed("/api/v3/account", &request)?;
         let account_info: AccountInformation = from_str(data.as_str()).unwrap();
 
         Ok(account_info)
     }
 
     // Balance for ONE Asset
-    pub fn get_balance(&self, asset: String) -> Result<(Balance)> {
+    pub fn get_balance(&self, asset: &str) -> Result<(Balance)> {
         match self.get_account() {
             Ok(account) => {
                 for balance in account.balances {
@@ -40,9 +40,9 @@ impl Account {
                         return Ok(balance);
                     }
                 }
-                bail!(format!("Asset not found"));
+                bail!("Asset not found");
             }
-            Err(e) => return Err(e),
+            Err(e) => Err(e),
         }
     }
 
@@ -52,7 +52,7 @@ impl Account {
         parameters.insert("symbol".into(), symbol);
 
         let request = build_signed_request(parameters, self.recv_window);
-        let data = self.client.get_signed("/api/v3/openOrders", request)?;
+        let data = self.client.get_signed("/api/v3/openOrders", &request)?;
         let order: Vec<Order> = from_str(data.as_str()).unwrap();
 
         Ok(order)
@@ -65,7 +65,7 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window);
-        let data = self.client.get_signed(API_V3_ORDER, request)?;
+        let data = self.client.get_signed(API_V3_ORDER, &request)?;
         let order: Order = from_str(data.as_str()).unwrap();
 
         Ok(order)
@@ -82,7 +82,7 @@ impl Account {
             TIME_IN_FORCE_GTC,
         );
         let request = build_signed_request(order, self.recv_window);
-        let data = self.client.post_signed(API_V3_ORDER, request)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
         let transaction: Transaction = from_str(data.as_str()).unwrap();
 
         Ok(transaction)
@@ -99,7 +99,7 @@ impl Account {
             TIME_IN_FORCE_GTC,
         );
         let request = build_signed_request(order, self.recv_window);
-        let data = self.client.post_signed(API_V3_ORDER, request)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
         let transaction: Transaction = from_str(data.as_str()).unwrap();
 
         Ok(transaction)
@@ -116,7 +116,7 @@ impl Account {
             TIME_IN_FORCE_GTC,
         );
         let request = build_signed_request(order, self.recv_window);
-        let data = self.client.post_signed(API_V3_ORDER, request)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
         let transaction: Transaction = from_str(data.as_str()).unwrap();
 
         Ok(transaction)
@@ -133,7 +133,7 @@ impl Account {
             TIME_IN_FORCE_GTC,
         );
         let request = build_signed_request(order, self.recv_window);
-        let data = self.client.post_signed(API_V3_ORDER, request)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
         let transaction: Transaction = from_str(data.as_str()).unwrap();
 
         Ok(transaction)
@@ -146,7 +146,7 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window);
-        let data = self.client.delete_signed(API_V3_ORDER, request)?;
+        let data = self.client.delete_signed(API_V3_ORDER, &request)?;
         let order_canceled: OrderCanceled = from_str(data.as_str()).unwrap();
 
         Ok(order_canceled)
@@ -158,7 +158,7 @@ impl Account {
         parameters.insert("symbol".into(), symbol);
 
         let request = build_signed_request(parameters, self.recv_window);
-        let data = self.client.get_signed("/api/v3/myTrades", request)?;
+        let data = self.client.get_signed("/api/v3/myTrades", &request)?;
         let trade_history: Vec<TradeHistory> = from_str(data.as_str()).unwrap();
 
         Ok(trade_history)

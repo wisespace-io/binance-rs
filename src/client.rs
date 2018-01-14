@@ -17,12 +17,12 @@ pub struct Client {
 impl Client {
     pub fn new(api_key: Option<String>, secret_key: Option<String>) -> Self {
         Client {
-            api_key: api_key.unwrap_or("".into()),
-            secret_key: secret_key.unwrap_or("".into()),
+            api_key: api_key.unwrap_or_else(|| "".into()),
+            secret_key: secret_key.unwrap_or_else(|| "".into()),
         }
     }
 
-    pub fn get_signed(&self, endpoint: &str, request: String) -> Result<(String)> {
+    pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<(String)> {
         let url = self.sign_request(endpoint, request);
         let client = reqwest::Client::new();
         let response = client
@@ -33,7 +33,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post_signed(&self, endpoint: &str, request: String) -> Result<(String)> {
+    pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<(String)> {
         let url = self.sign_request(endpoint, request);
         let client = reqwest::Client::new();
         let response = client
@@ -44,7 +44,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete_signed(&self, endpoint: &str, request: String) -> Result<(String)> {
+    pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<(String)> {
         let url = self.sign_request(endpoint, request);
         let client = reqwest::Client::new();
         let response = client
@@ -55,7 +55,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn get(&self, endpoint: &str, request: String) -> Result<(String)> {
+    pub fn get(&self, endpoint: &str, request: &str) -> Result<(String)> {
         let mut url: String = format!("{}{}", API1_HOST, endpoint);
         if !request.is_empty() {
             url.push_str(format!("?{}", request).as_str());
@@ -78,7 +78,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn put(&self, endpoint: &str, listen_key: String) -> Result<(String)> {
+    pub fn put(&self, endpoint: &str, listen_key: &str) -> Result<(String)> {
         let url: String = format!("{}{}", API1_HOST, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
@@ -92,7 +92,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete(&self, endpoint: &str, listen_key: String) -> Result<(String)> {
+    pub fn delete(&self, endpoint: &str, listen_key: &str) -> Result<(String)> {
         let url: String = format!("{}{}", API1_HOST, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
@@ -107,7 +107,7 @@ impl Client {
     }
 
     // Request must be signed
-    fn sign_request(&self, endpoint: &str, request: String) -> String {
+    fn sign_request(&self, endpoint: &str, request: &str) -> String {
         let signed_key = hmac::SigningKey::new(&digest::SHA256, self.secret_key.as_bytes());
         let signature = hex_encode(hmac::sign(&signed_key, request.as_bytes()).as_ref());
 
@@ -134,7 +134,7 @@ impl Client {
             StatusCode::Ok => {
                 let mut body = String::new();
                 response.read_to_string(&mut body).unwrap();
-                return Ok(body);
+                Ok(body)
             }
             StatusCode::InternalServerError => {
                 bail!("Internal Server Error");
@@ -151,6 +151,6 @@ impl Client {
             s => {
                 bail!(format!("Received response: {:?}", s));
             }
-        };
+        }
     }
 }

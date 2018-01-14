@@ -29,6 +29,7 @@ pub trait KlineEventHandler {
     fn kline_handler(&self, event: &KlineEvent);
 }
 
+#[derive(Default)]
 pub struct WebSockets {
     socket: Option<(WebSocket<AutoStream>, Response)>,
     user_stream_handler: Option<Box<UserStreamEventHandler>>,
@@ -46,14 +47,14 @@ impl WebSockets {
         }
     }
 
-    pub fn connect(&mut self, endpoint: String) -> Result<()> {
+    pub fn connect(&mut self, endpoint: &str) -> Result<()> {
         let wss: String = format!("{}{}", WEBSOCKET_URL, endpoint);
         let url = Url::parse(&wss)?;
 
         match connect(url) {
             Ok(answer) => {
                 self.socket = Some(answer);
-                return Ok(());
+                Ok(())
             }
             Err(e) => {
                 bail!(format!("Error during handshake {}", e));

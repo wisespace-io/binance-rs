@@ -17,6 +17,7 @@ name = "binance"
 path = "src/lib.rs"
 
 [dependencies]
+clippy = { version = "*", optional = true }
 log = "0.4.1"
 hex = "0.3.1"
 serde = "^1.0"

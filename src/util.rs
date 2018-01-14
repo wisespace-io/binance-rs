@@ -1,9 +1,9 @@
 use std::collections::BTreeMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub fn build_request(parameters: BTreeMap<String, String>) -> String {
+pub fn build_request(parameters: &BTreeMap<String, String>) -> String {
     let mut request = String::new();
-    for (key, value) in &parameters {
+    for (key, value) in parameters {
         let param = format!("{}={}&", key, value);
         request.push_str(param.as_ref());
     }
@@ -33,7 +33,5 @@ fn get_timestamp() -> u64 {
     let start = SystemTime::now();
     let since_epoch = start.duration_since(UNIX_EPOCH).unwrap();
 
-    let timestamp = since_epoch.as_secs() * 1000 + since_epoch.subsec_nanos() as u64 / 1_000_000;
-
-    timestamp
+    since_epoch.as_secs() * 1000 + u64::from(since_epoch.subsec_nanos()) / 1_000_000
 }
