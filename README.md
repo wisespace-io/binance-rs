@@ -7,6 +7,8 @@ Unofficial Rust Library for the [Binance API](https://github.com/binance-exchang
 [![MIT licensed](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE-MIT)
 [![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
+[Documentation](https://docs.rs/binance)
+
 ## Binance API Telegram
 
   <https://t.me/binance_api_english>
