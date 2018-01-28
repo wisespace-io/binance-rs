@@ -216,6 +216,28 @@ fn market_websocket() {
     web_socket.event_loop();
 }
 
+fn all_trades_websocket() {
+    struct WebSocketHandler;
+
+    impl DayTickerEventHandler for WebSocketHandler {
+        fn day_ticker_handler(&self, events: &Vec<DayTickerEvent>) {
+            for event in events {
+                println!(
+                    "Symbol: {}, price: {}, qty: {}",
+                    event.symbol, event.best_bid, event.best_bid_qty
+                );
+            }
+        }
+    }
+
+    let agg_trade: String = format!("!ticker@arr");
+    let mut web_socket: WebSockets = WebSockets::new();
+
+    web_socket.add_day_ticker_handler(WebSocketHandler);
+    web_socket.connect(&agg_trade).unwrap(); // check error
+    web_socket.event_loop();
+}
+
 fn kline_websocket() {
     struct WebSocketHandler;
 

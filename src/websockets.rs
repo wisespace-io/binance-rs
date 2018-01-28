@@ -16,6 +16,8 @@ static EXECUTION_REPORT: &'static str = "executionReport";
 static KLINE: &'static str = "kline";
 static AGGREGATED_TRADE: &'static str = "aggTrade";
 
+static DAYTICKER: &'static str = "24hrTicker";
+
 pub trait UserStreamEventHandler {
     fn account_update_handler(&self, event: &AccountUpdateEvent);
     fn order_trade_handler(&self, event: &OrderTradeEvent);
@@ -23,6 +25,10 @@ pub trait UserStreamEventHandler {
 
 pub trait MarketEventHandler {
     fn aggregated_trades_handler(&self, event: &TradesEvent);
+}
+
+pub trait DayTickerEventHandler {
+    fn day_ticker_handler(&self, event: &Vec<DayTickerEvent>);
 }
 
 pub trait KlineEventHandler {
@@ -34,6 +40,7 @@ pub struct WebSockets {
     socket: Option<(WebSocket<AutoStream>, Response)>,
     user_stream_handler: Option<Box<UserStreamEventHandler>>,
     market_handler: Option<Box<MarketEventHandler>>,
+    ticker_handler: Option<Box<DayTickerEventHandler>>,
     kline_handler: Option<Box<KlineEventHandler>>,
 }
 
@@ -43,6 +50,7 @@ impl WebSockets {
             socket: None,
             user_stream_handler: None,
             market_handler: None,
+            ticker_handler: None,
             kline_handler: None,
         }
     }
@@ -76,6 +84,13 @@ impl WebSockets {
         self.market_handler = Some(Box::new(handler));
     }
 
+    pub fn add_day_ticker_handler<H>(&mut self, handler: H)
+    where
+        H: DayTickerEventHandler + 'static,
+    {
+        self.ticker_handler = Some(Box::new(handler));
+    }
+
     pub fn add_kline_handler<H>(&mut self, handler: H)
     where
         H: KlineEventHandler + 'static,
@@ -105,6 +120,12 @@ impl WebSockets {
 
                     if let Some(ref h) = self.market_handler {
                         h.aggregated_trades_handler(&trades);
+                    }
+                } else if msg.find(DAYTICKER) != None {
+                    let trades: Vec<DayTickerEvent> = from_str(msg.as_str()).unwrap();
+
+                    if let Some(ref h) = self.ticker_handler {
+                        h.day_ticker_handler(&trades);
                     }
                 } else if msg.find(KLINE) != None {
                     let kline: KlineEvent = from_str(msg.as_str()).unwrap();
