@@ -6,7 +6,7 @@ use binance::account::*;
 use binance::market::*;
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent, TradesEvent};
+use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent, TradesEvent, DayTickerEvent};
 
 fn main() {
     general();
