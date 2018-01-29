@@ -1,119 +1,115 @@
-extern crate binance;
+extern crate binance_async as binance;
+extern crate dotenv;
+extern crate env_logger;
+extern crate failure;
+extern crate tokio;
 
-use binance::api::*;
-use binance::general::*;
-use binance::account::*;
-use binance::market::*;
+use std::env::var;
 
-fn main() {
-    general();
-    account();
-    market_data();
-}
+use failure::Fallible;
+use tokio::runtime::current_thread::Runtime;
 
-fn general() {
-    let general: General = Binance::new(None, None);
+use binance::Binance;
 
-    let ping = general.ping();
-    match ping {
+fn main() -> Fallible<()> {
+    ::dotenv::dotenv().ok();
+    ::env_logger::init();
+    let api_key = var("BINANCE_KEY")?;
+    let secret_key = var("BINANCE_SECRET")?;
+
+    let mut rt = Runtime::new()?;
+    let bn = Binance::with_credential(&api_key, &secret_key);
+
+    // General
+    match rt.block_on(bn.ping()?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    let result = general.get_server_time();
-    match result {
+    match rt.block_on(bn.get_server_time()?) {
         Ok(answer) => println!("Server Time: {}", answer.server_time),
         Err(e) => println!("Error: {}", e),
     }
-}
 
-fn account() {
-    let api_key = Some("YOUR_API_KEY".into());
-    let secret_key = Some("YOUR_SECRET_KEY".into());
-
-    let account: Account = Binance::new(api_key, secret_key);
-
-    match account.get_account() {
+    // Account
+    match rt.block_on(bn.get_account()?) {
         Ok(answer) => println!("{:?}", answer.balances),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.get_open_orders("WTCETH") {
+    match rt.block_on(bn.get_open_orders("WTCETH")?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.limit_buy("WTCETH", 10, 0.014000) {
+    match rt.block_on(bn.limit_buy("ETHBTC", 1., 0.1)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_buy("WTCETH", 5) {
+    match rt.block_on(bn.market_buy("WTCETH", 5.)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.limit_sell("WTCETH", 10, 0.035000) {
+    match rt.block_on(bn.limit_sell("WTCETH", 10., 0.035000)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_sell("WTCETH", 5) {
+    match rt.block_on(bn.market_sell("WTCETH", 5.)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    let order_id = 1_957_528;
-    match account.order_status("WTCETH", order_id) {
+    match rt.block_on(bn.order_status("WTCETH", 1_957_528)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.cancel_order("WTCETH", order_id) {
+    match rt.block_on(bn.cancel_order("WTCETH", 1_957_528)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.get_balance("KNC") {
+    match rt.block_on(bn.get_balance("KNC")?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.trade_history("WTCETH") {
+    match rt.block_on(bn.trade_history("WTCETH")?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
-}
 
-fn market_data() {
-    let market: Market = Binance::new(None, None);
+    // Market
 
     // Order book
-    match market.get_depth("BNBETH") {
+    match rt.block_on(bn.get_depth("BNBETH", None)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Latest price for ALL symbols
-    match market.get_all_prices() {
+    match rt.block_on(bn.get_all_prices()?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Latest price for ONE symbol
-    match market.get_price("KNCETH") {
+    match rt.block_on(bn.get_price("KNCETH")?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Best price/qty on the order book for ALL symbols
-    match market.get_all_book_tickers() {
+    match rt.block_on(bn.get_all_book_tickers()?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Best price/qty on the order book for ONE symbol
-    match market.get_book_ticker("BNBETH") {
+    match rt.block_on(bn.get_book_ticker("BNBETH")?) {
         Ok(answer) => println!(
             "Bid Price: {}, Ask Price: {}",
             answer.bid_price, answer.ask_price
@@ -122,7 +118,7 @@ fn market_data() {
     }
 
     // 24hr ticker price change statistics
-    match market.get_24h_price_stats("BNBETH") {
+    match rt.block_on(bn.get_24h_price_stats("BNBETH")?) {
         Ok(answer) => println!(
             "Open Price: {}, Higher Price: {}, Lower Price: {:?}",
             answer.open_price, answer.high_price, answer.low_price
@@ -131,8 +127,10 @@ fn market_data() {
     }
 
     // last 10 5min klines (candlesticks) for a symbol:
-    match market.get_klines("BNBETH", "5m", 10, None, None) {
+    match rt.block_on(bn.get_klines("BNBETH", "5m", 10, None, None)?) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
+
+    Ok(())
 }
