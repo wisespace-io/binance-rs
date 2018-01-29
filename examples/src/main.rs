@@ -6,7 +6,7 @@ use binance::account::*;
 use binance::market::*;
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent, TradesEvent};
+use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent, TradesEvent, DayTickerEvent};
 
 fn main() {
     general();
@@ -212,6 +212,28 @@ fn market_websocket() {
     let mut web_socket: WebSockets = WebSockets::new();
 
     web_socket.add_market_handler(WebSocketHandler);
+    web_socket.connect(&agg_trade).unwrap(); // check error
+    web_socket.event_loop();
+}
+
+fn all_trades_websocket() {
+    struct WebSocketHandler;
+
+    impl DayTickerEventHandler for WebSocketHandler {
+        fn day_ticker_handler(&self, events: &Vec<DayTickerEvent>) {
+            for event in events {
+                println!(
+                    "Symbol: {}, price: {}, qty: {}",
+                    event.symbol, event.best_bid, event.best_bid_qty
+                );
+            }
+        }
+    }
+
+    let agg_trade: String = format!("!ticker@arr");
+    let mut web_socket: WebSockets = WebSockets::new();
+
+    web_socket.add_day_ticker_handler(WebSocketHandler);
     web_socket.connect(&agg_trade).unwrap(); // check error
     web_socket.event_loop();
 }
