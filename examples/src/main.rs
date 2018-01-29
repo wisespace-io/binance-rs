@@ -16,6 +16,7 @@ fn main() {
     user_stream_websocket();
     market_websocket();
     kline_websocket();
+    all_trades_websocket();
 }
 
 fn general() {

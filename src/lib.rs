@@ -4,7 +4,6 @@
 extern crate error_chain;
 
 extern crate hex;
-extern crate log;
 extern crate reqwest;
 extern crate ring;
 extern crate serde;
