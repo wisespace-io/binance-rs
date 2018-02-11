@@ -17,7 +17,7 @@ extern crate serde_derive;
 
 mod util;
 mod client;
-mod errors;
+pub mod errors;
 
 pub mod model;
 
