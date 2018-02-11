@@ -48,6 +48,7 @@ impl Market {
                     let cmp_symbol = symbol.into();
                     for par in prices {
                         if par.symbol == cmp_symbol {
+                            let price: f64 = par.price.parse()?;
                             return Ok(par.price);
                         }
                     }

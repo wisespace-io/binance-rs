@@ -28,7 +28,7 @@ pub trait UserStreamEventHandler {
 pub trait MarketEventHandler {
     fn aggregated_trades_handler(&self, event: &TradesEvent);
     fn depth_orderbook_handler(&self, event: &DepthOrderBookEvent);
-    fn partial_orderbook_handler(&self, order_book: &OrderBook);
+    fn partial_orderbook_handler(&self, order_book: &OrderBook);    
 }
 
 pub trait DayTickerEventHandler {

@@ -1,12 +1,12 @@
 [package]
 name = "binance"
-version = "0.1.6"
+version = "0.2.0"
 license = "MIT OR Apache-2.0"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
 description = "Rust Library for the Binance API"
-keywords = ["cryptocurrency", "trading"]
-documentation = "https://docs.rs/crate/binance/0.1.5"
+keywords = ["cryptocurrency", "trading", "binance"]
+documentation = "https://docs.rs/crate/binance/"
 repository = "https://github.com/wisespace-io/binance-rs"
 readme = "README.md"
 
@@ -18,11 +18,11 @@ name = "binance"
 path = "src/lib.rs"
 
 [dependencies]
-clippy = { version = "0.0.183", optional = true }
+clippy = { version = "0.0.186", optional = true }
 hex = "0.3"
-serde = "^1.0"
-serde_json = "^1.0"
-serde_derive = "^1.0"
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
 error-chain = "0.11"
 ring = "0.13.0-alpha"
 reqwest = "0.8"

@@ -1,8 +1,2 @@
 target
 Cargo.lock
-
-# IDEA
-*.iml
-*.fmt
-.idea*.*
-.idea/*

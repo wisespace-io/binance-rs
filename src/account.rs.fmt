@@ -22,7 +22,7 @@ pub struct Account {
 struct OrderRequest {
     pub symbol: String,
     pub qty: f64,
-    pub price: f64,
+    pub price: String,
     pub order_side: String,
     pub order_type: String,
     pub time_in_force: String
@@ -73,7 +73,7 @@ impl Account {
     }
 
     // Check an order's status
-    pub fn order_status<S>(&self, symbol: S, order_id: u64) -> Result<(Order)>
+    pub fn order_status<S>(&self, symbol: S, order_id: u32) -> Result<(Order)>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -94,7 +94,7 @@ impl Account {
         let buy: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: price,
+            price: price.to_string(),
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string()
@@ -114,7 +114,7 @@ impl Account {
         let sell: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: price,
+            price: price.to_string(),
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string()
@@ -134,7 +134,7 @@ impl Account {
         let buy: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: 0.0,
+            price: "0.0".to_string(),
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_MARKET.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string()
@@ -153,8 +153,8 @@ impl Account {
     {
         let sell: OrderRequest = OrderRequest {
             symbol: symbol.into(),
-            qty: qty.into(),
-            price: 0.0,
+            qty: qty,
+            price: "0.0".to_string(),
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_MARKET.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string()
@@ -168,7 +168,7 @@ impl Account {
     }
 
     // Check an order's status
-    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<(OrderCanceled)>
+    pub fn cancel_order<S>(&self, symbol: S, order_id: u32) -> Result<(OrderCanceled)>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -204,8 +204,8 @@ impl Account {
         order_parameters.insert("type".into(), order.order_type);
         order_parameters.insert("quantity".into(), order.qty.to_string());
 
-        if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
+        if order.price != "0.0" {
+            order_parameters.insert("price".into(), order.price);
             order_parameters.insert("timeInForce".into(), order.time_in_force);
         }
 

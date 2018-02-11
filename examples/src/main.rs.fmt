@@ -6,8 +6,8 @@ use binance::account::*;
 use binance::market::*;
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent,
-                     TradesEvent, DayTickerEvent, OrderBook, DepthOrderBookEvent};
+use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent, 
+                     TradesEvent, DayTickerEvent, OrderBookDepthOrderBookEvent};
 
 fn main() {
     general();
@@ -211,14 +211,14 @@ fn market_websocket() {
 
         fn depth_orderbook_handler(&self, event: &DepthOrderBookEvent) {
             println!(
-                "Symbol: {}, Bids: {:?}, Ask: {:?}",
+                "Symbol: {}, Bids: {}, Ask: {}",
                 event.symbol, event.bids, event.asks
             );
-        }
+        } 
 
         fn partial_orderbook_handler(&self, order_book: &OrderBook) {
             println!(
-                "last_update_id: {}, Bids: {:?}, Ask: {:?}",
+                "last_update_id: {}, Bids: {}, Ask: {}",
                 order_book.last_update_id, order_book.bids, order_book.asks
             );
         }

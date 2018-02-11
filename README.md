@@ -39,7 +39,7 @@ fn main() {
     let market: Market = Binance::new(None, None);
 
     // Order book
-    match market.get_depth("BNBETH".into()) {
+    match market.get_depth("BNBETH") {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
@@ -72,7 +72,7 @@ fn main() {
     }
 
     // 24hr ticker price change statistics
-    match market.get_24h_price_stats("BNBETH".into()) {
+    match market.get_24h_price_stats("BNBETH") {
         Ok(answer) => println!(
             "Open Price: {}, Higher Price: {}, Lower Price: {:?}",
             answer.open_price, answer.high_price, answer.low_price
@@ -101,38 +101,38 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.get_open_orders("WTCETH".into()) {
+    match account.get_open_orders("WTCETH") {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.limit_buy("WTCETH".into(), 10, 0.014000) {
+    match account.limit_buy("WTCETH", 10, 0.014000) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_buy("WTCETH".into(), 5) {
+    match account.market_buy("WTCETH", 5) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.limit_sell("WTCETH".into(), 10, 0.035000) {
+    match account.limit_sell("WTCETH", 10, 0.035000) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_sell("WTCETH".into(), 5) {
+    match account.market_sell("WTCETH", 5) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     let order_id = 1_957_528;
-    match account.order_status("WTCETH".into(), order_id) {
+    match account.order_status("WTCETH", order_id) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.cancel_order("WTCETH".into(), order_id) {
+    match account.cancel_order("WTCETH", order_id) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
@@ -142,7 +142,7 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.trade_history("WTCETH".into()) {
+    match account.trade_history("WTCETH") {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
