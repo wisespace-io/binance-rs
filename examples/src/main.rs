@@ -138,6 +138,12 @@ fn market_data() {
         ),
         Err(e) => println!("Error: {}", e),
     }
+
+    // last 10 5min klines (candlesticks) for a symbol:
+    match market.get_klines("BNBETH", "5m", 10) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
 }
 
 fn user_stream() {

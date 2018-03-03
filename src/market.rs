@@ -3,7 +3,7 @@ use model::*;
 use client::*;
 use errors::*;
 use std::collections::BTreeMap;
-use serde_json::from_str;
+use serde_json::{Value, from_str};
 
 #[derive(Clone)]
 pub struct Market {
@@ -103,5 +103,39 @@ impl Market {
         let stats: PriceStats = from_str(data.as_str()).unwrap();
 
         Ok(stats)
+    }
+
+    // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
+    pub fn get_klines<S1,S2>(&self, symbol: S1, interval: S2, limit: i32) -> Result<(KlineSummaries)> 
+        where S1: Into<String>, S2: Into<String>
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+	parameters.insert("interval".into(), interval.into());
+	parameters.insert("limit".into(), format!("{}", limit));
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/api/v1/klines", &request)?;
+        let parsed_data: Vec<Vec<Value>> = from_str(data.as_str()).unwrap();
+
+        fn to_i64(v: &Value) -> i64 { v.as_i64().unwrap() }
+        fn to_f64(v: &Value) -> f64{ v.as_str().unwrap().parse().unwrap() }
+
+        let klines = KlineSummaries::AllKlineSummaries(
+            parsed_data.iter().map(|row|KlineSummary{
+                open_time: to_i64(&row[0]),
+                open: to_f64(&row[1]),
+                high: to_f64(&row[2]),
+                low: to_f64(&row[3]),
+                close: to_f64(&row[4]),
+                volume: to_f64(&row[5]),
+                close_time: to_i64(&row[6]),
+                quote_asset_volume: to_f64(&row[7]),
+                number_of_trades: to_i64(&row[8]),
+                taker_buy_base_asset_volume: to_f64(&row[9]),
+                taker_buy_quote_asset_volume: to_f64(&row[10]),
+            }).collect());
+        Ok(klines)
     }
 }
