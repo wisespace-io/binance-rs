@@ -118,6 +118,11 @@ pub enum BookTickers {
     AllBookTickers(Vec<Tickers>),
 }
 
+#[derive(Debug, Clone)]
+pub enum KlineSummaries {
+    AllKlineSummaries(Vec<KlineSummary>),
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Tickers {
@@ -336,6 +341,31 @@ pub struct KlineEvent {
     #[serde(rename = "s")] pub symbol: String,
 
     #[serde(rename = "k")] pub kline: Kline,
+}
+
+#[derive(Debug, Clone)]
+pub struct KlineSummary {
+    pub open_time: i64,
+
+    pub open: f64,
+
+    pub high: f64,
+
+    pub low: f64,
+
+    pub close: f64,
+
+    pub volume: f64,
+
+    pub close_time: i64,
+
+    pub quote_asset_volume: f64,
+
+    pub number_of_trades: i64,
+
+    pub taker_buy_base_asset_volume: f64,
+
+    pub taker_buy_quote_asset_volume: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
