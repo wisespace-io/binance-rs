@@ -7,7 +7,7 @@ Unofficial Rust Library for the [Binance API](https://github.com/binance-exchang
 [![MIT licensed](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE-MIT)
 [![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
-[Documentation](https://docs.rs/binance)
+[Documentation](https://docs.rs/crate/binance/)
 
 ## Binance API Telegram
 
@@ -77,6 +77,12 @@ fn main() {
             "Open Price: {}, Higher Price: {}, Lower Price: {:?}",
             answer.open_price, answer.high_price, answer.low_price
         ),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    // last 10 5min klines (candlesticks) for a symbol:
+    match market.get_klines("BNBETH", "5m", 10) {
+        Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "binance-app"
-version = "0.1.6"
+version = "0.2.1"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
 [dependencies]

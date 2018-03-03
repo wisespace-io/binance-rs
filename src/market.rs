@@ -112,15 +112,12 @@ impl Market {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol.into());
-	parameters.insert("interval".into(), interval.into());
-	parameters.insert("limit".into(), format!("{}", limit));
+        parameters.insert("interval".into(), interval.into());
+        parameters.insert("limit".into(), format!("{}", limit));
         let request = build_request(&parameters);
 
         let data = self.client.get("/api/v1/klines", &request)?;
         let parsed_data: Vec<Vec<Value>> = from_str(data.as_str()).unwrap();
-
-        fn to_i64(v: &Value) -> i64 { v.as_i64().unwrap() }
-        fn to_f64(v: &Value) -> f64{ v.as_str().unwrap().parse().unwrap() }
 
         let klines = KlineSummaries::AllKlineSummaries(
             parsed_data.iter().map(|row|KlineSummary{

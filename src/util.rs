@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 use std::time::{SystemTime, UNIX_EPOCH};
+use serde_json::{Value};
 
 pub fn build_request(parameters: &BTreeMap<String, String>) -> String {
     let mut request = String::new();
@@ -27,6 +28,14 @@ pub fn build_signed_request(mut parameters: BTreeMap<String, String>, recv_windo
     request.pop(); // remove last &
 
     request
+}
+
+pub fn to_i64(v: &Value) -> i64 { 
+    v.as_i64().unwrap() 
+}
+
+pub fn to_f64(v: &Value) -> f64 { 
+    v.as_str().unwrap().parse().unwrap() 
 }
 
 fn get_timestamp() -> u64 {
