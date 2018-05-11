@@ -6,6 +6,35 @@ pub struct ServerTime {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct ExchangeInformation {
+    pub timezone: String,
+    pub server_time: u64,
+    pub rate_limits: Vec<RateLimit>,
+    pub symbols: Vec<Symbol>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct RateLimit {
+    pub rate_limit_type: String,
+    pub interval: String,
+    pub limit: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Symbol {
+    pub symbol: String,
+    pub status: String,
+    pub base_asset: String,
+    pub base_asset_precision: u64,
+    pub quote_asset:String,
+    pub quote_precision: u64,
+    pub order_types: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct AccountInformation {
     pub maker_commission: f32,
     pub taker_commission: f32,
