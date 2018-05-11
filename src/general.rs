@@ -25,4 +25,13 @@ impl General {
 
         Ok(server_time)
     }
+
+    // Obtain exchange information (rate limits, symbol metadata etc)
+    pub fn exchange_info(&self) -> Result<(ExchangeInformation)> {
+        let data: String = self.client.get("/api/v1/exchangeInfo", "")?;
+
+        let info: ExchangeInformation = from_str(data.as_str()).unwrap();
+
+        Ok(info)
+    }
 }
