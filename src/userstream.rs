@@ -15,7 +15,7 @@ impl UserStream {
     // User Stream
     pub fn start(&self) -> Result<(UserDataStream)> {
         let data = self.client.post(USER_DATA_STREAM)?;
-        let user_data_stream: UserDataStream = from_str(data.as_str()).unwrap();
+        let user_data_stream: UserDataStream = from_str(data.as_str())?;
 
         Ok(user_data_stream)
     }
@@ -24,7 +24,7 @@ impl UserStream {
     pub fn keep_alive(&self, listen_key: &str) -> Result<(Success)> {
         let data = self.client.put(USER_DATA_STREAM, listen_key)?;
 
-        let success: Success = from_str(data.as_str()).unwrap();
+        let success: Success = from_str(data.as_str())?;
 
         Ok(success)
     }
@@ -32,7 +32,7 @@ impl UserStream {
     pub fn close(&self, listen_key: &str) -> Result<(Success)> {
         let data = self.client.put(USER_DATA_STREAM, listen_key)?;
 
-        let success: Success = from_str(data.as_str()).unwrap();
+        let success: Success = from_str(data.as_str())?;
 
         Ok(success)
     }

@@ -133,7 +133,7 @@ impl Client {
         match response.status() {
             StatusCode::Ok => {
                 let mut body = String::new();
-                response.read_to_string(&mut body).unwrap();
+                response.read_to_string(&mut body)?;
                 Ok(body)
             }
             StatusCode::InternalServerError => {

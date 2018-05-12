@@ -3,5 +3,13 @@ name = "binance-app"
 version = "0.2.2"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
+[[bin]]
+name = "binance_endpoints"
+path = "src/binance_endpoints.rs"
+
+[[bin]]
+name = "binance_websockets"
+path = "src/binance_websockets.rs"
+
 [dependencies]
 binance = { path = "../" }

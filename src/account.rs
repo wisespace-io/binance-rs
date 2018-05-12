@@ -33,9 +33,9 @@ impl Account {
     pub fn get_account(&self) -> Result<(AccountInformation)> {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
 
-        let request = build_signed_request(parameters, self.recv_window);
+        let request = build_signed_request(parameters, self.recv_window)?;
         let data = self.client.get_signed("/api/v3/account", &request)?;
-        let account_info: AccountInformation = from_str(data.as_str()).unwrap();
+        let account_info: AccountInformation = from_str(data.as_str())?;
 
         Ok(account_info)
     }
@@ -65,9 +65,9 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
 
-        let request = build_signed_request(parameters, self.recv_window);
+        let request = build_signed_request(parameters, self.recv_window)?;
         let data = self.client.get_signed("/api/v3/openOrders", &request)?;
-        let order: Vec<Order> = from_str(data.as_str()).unwrap();
+        let order: Vec<Order> = from_str(data.as_str())?;
 
         Ok(order)
     }
@@ -80,9 +80,9 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
 
-        let request = build_signed_request(parameters, self.recv_window);
+        let request = build_signed_request(parameters, self.recv_window)?;
         let data = self.client.get_signed(API_V3_ORDER, &request)?;
-        let order: Order = from_str(data.as_str()).unwrap();
+        let order: Order = from_str(data.as_str())?;
 
         Ok(order)
     }
@@ -100,9 +100,9 @@ impl Account {
             time_in_force: TIME_IN_FORCE_GTC.to_string()
         };
         let order = self.build_order(buy);
-        let request = build_signed_request(order, self.recv_window);
+        let request = build_signed_request(order, self.recv_window)?;
         let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str()).unwrap();
+        let transaction: Transaction = from_str(data.as_str())?;
 
         Ok(transaction)
     }
@@ -120,9 +120,9 @@ impl Account {
             time_in_force: TIME_IN_FORCE_GTC.to_string()
         };
         let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window);
+        let request = build_signed_request(order, self.recv_window)?;
         let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str()).unwrap();
+        let transaction: Transaction = from_str(data.as_str())?;
 
         Ok(transaction)
     }
@@ -140,9 +140,9 @@ impl Account {
             time_in_force: TIME_IN_FORCE_GTC.to_string()
         };
         let order = self.build_order(buy);
-        let request = build_signed_request(order, self.recv_window);
+        let request = build_signed_request(order, self.recv_window)?;
         let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str()).unwrap();
+        let transaction: Transaction = from_str(data.as_str())?;
 
         Ok(transaction)
     }
@@ -160,9 +160,9 @@ impl Account {
             time_in_force: TIME_IN_FORCE_GTC.to_string()
         };
         let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window);
+        let request = build_signed_request(order, self.recv_window)?;
         let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str()).unwrap();
+        let transaction: Transaction = from_str(data.as_str())?;
 
         Ok(transaction)
     }
@@ -175,9 +175,9 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
 
-        let request = build_signed_request(parameters, self.recv_window);
+        let request = build_signed_request(parameters, self.recv_window)?;
         let data = self.client.delete_signed(API_V3_ORDER, &request)?;
-        let order_canceled: OrderCanceled = from_str(data.as_str()).unwrap();
+        let order_canceled: OrderCanceled = from_str(data.as_str())?;
 
         Ok(order_canceled)
     }
@@ -189,9 +189,9 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
 
-        let request = build_signed_request(parameters, self.recv_window);
+        let request = build_signed_request(parameters, self.recv_window)?;
         let data = self.client.get_signed("/api/v3/myTrades", &request)?;
-        let trade_history: Vec<TradeHistory> = from_str(data.as_str()).unwrap();
+        let trade_history: Vec<TradeHistory> = from_str(data.as_str())?;
 
         Ok(trade_history)
     }

@@ -21,7 +21,7 @@ impl General {
     pub fn get_server_time(&self) -> Result<(ServerTime)> {
         let data: String = self.client.get("/api/v1/time", "")?;
 
-        let server_time: ServerTime = from_str(data.as_str()).unwrap();
+        let server_time: ServerTime = from_str(data.as_str())?;
 
         Ok(server_time)
     }
@@ -30,7 +30,7 @@ impl General {
     pub fn exchange_info(&self) -> Result<(ExchangeInformation)> {
         let data: String = self.client.get("/api/v1/exchangeInfo", "")?;
 
-        let info: ExchangeInformation = from_str(data.as_str()).unwrap();
+        let info: ExchangeInformation = from_str(data.as_str())?;
 
         Ok(info)
     }
