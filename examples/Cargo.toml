@@ -1,6 +1,6 @@
 [package]
 name = "binance-app"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
 [[bin]]
