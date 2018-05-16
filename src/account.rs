@@ -72,6 +72,17 @@ impl Account {
         Ok(order)
     }
 
+    // All current open orders
+    pub fn get_all_open_orders(&self) -> Result<(Vec<Order>)> {
+        let parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        let data = self.client.get_signed("/api/v3/openOrders", &request)?;
+        let order: Vec<Order> = from_str(data.as_str())?;
+
+        Ok(order)
+    }
+
     // Check an order's status
     pub fn order_status<S>(&self, symbol: S, order_id: u64) -> Result<(Order)>
         where S: Into<String>
