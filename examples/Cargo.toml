@@ -11,5 +11,10 @@ path = "src/binance_endpoints.rs"
 name = "binance_websockets"
 path = "src/binance_websockets.rs"
 
+[[bin]]
+name = "binance_save_all_trades"
+path = "src/binance_save_all_trades.rs"
+
 [dependencies]
 binance = { path = "../" }
+csv = "1.0.0"
