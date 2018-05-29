@@ -81,7 +81,7 @@ fn main() {
     }
 
     // last 10 5min klines (candlesticks) for a symbol:
-    match market.get_klines("BNBETH", "5m", 10) {
+    match market.get_klines("BNBETH", "5m", 10, None, None) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }

@@ -106,14 +106,20 @@ impl Market {
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
-    pub fn get_klines<S1,S2>(&self, symbol: S1, interval: S2, limit: i32) -> Result<(KlineSummaries)> 
-        where S1: Into<String>, S2: Into<String>
+    // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
+    pub fn get_klines<S1,S2,S3,S4,S5>(&self, symbol: S1, interval: S2, limit: S3, start_time: S4, end_time: S5) -> Result<(KlineSummaries)> 
+        where S1: Into<String>, S2: Into<String>, S3: Into<Option<u16>>, S4: Into<Option<u64>>, S5: Into<Option<u64>>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("interval".into(), interval.into());
-        parameters.insert("limit".into(), format!("{}", limit));
+
+        // Add three optional parameters
+        if let Some(lt) = limit.into() { parameters.insert("limit".into(), format!("{}", lt)); }
+        if let Some(st) = start_time.into() { parameters.insert("startTime".into(), format!("{}", st)); }
+        if let Some(et) = end_time.into() { parameters.insert("endTime".into(), format!("{}", et)); }
+        
         let request = build_request(&parameters);
 
         let data = self.client.get("/api/v1/klines", &request)?;
