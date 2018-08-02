@@ -1,7 +1,7 @@
 use errors::*;
 use std::collections::BTreeMap;
 use std::time::{SystemTime, UNIX_EPOCH};
-use serde_json::{Value};
+use serde_json::Value;
 
 pub fn build_request(parameters: &BTreeMap<String, String>) -> String {
     let mut request = String::new();
