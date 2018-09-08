@@ -1,10 +1,12 @@
 extern crate binance;
 
 use binance::api::*;
+use binance::model::{
+    AccountUpdateEvent, DayTickerEvent, DepthOrderBookEvent, KlineEvent, OrderBook,
+    OrderTradeEvent, TradesEvent,
+};
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, KlineEvent, OrderTradeEvent,
-                     TradesEvent, DayTickerEvent, OrderBook, DepthOrderBookEvent};
 
 fn main() {
     user_stream();
@@ -98,11 +100,12 @@ fn market_websocket() {
         }
     }
 
-    let agg_trade: String = format!("{}@aggTrade", "ethbtc");
     let mut web_socket: WebSockets = WebSockets::new();
-
     web_socket.add_market_handler(WebSocketHandler);
-    web_socket.connect(&agg_trade).unwrap(); // check error
+
+    let agg_trade: String = format!("{}@aggTrade", "ethbtc");
+
+    web_socket.connect(&partial_depth2).unwrap(); // check error
     web_socket.event_loop();
 }
 
