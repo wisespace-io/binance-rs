@@ -4,11 +4,30 @@ use binance::api::*;
 use binance::general::*;
 use binance::account::*;
 use binance::market::*;
+use binance::withdraw::*;
 
 fn main() {
-    general();
-    account();
-    market_data();
+    withdrawal();
+    //general();
+    //account();
+    //market_data();
+}
+
+fn withdrawal() {
+    let api_key = Some("YOUR_API_KEY".into());
+    let secret_key = Some("YOUR_SECRET_KEY".into());
+
+    let wapi: Withdraw = Binance::new(api_key, secret_key);
+
+    match wapi.get_trade_fees() {
+        Ok(answer) => println!("{:#?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }    
+
+    match wapi.get_asset_details() {
+        Ok(answer) => println!("{:#?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }  
 }
 
 fn general() {

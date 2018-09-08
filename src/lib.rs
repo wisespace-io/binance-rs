@@ -31,4 +31,5 @@ pub mod general;
 pub mod account;
 pub mod market;
 pub mod userstream;
+pub mod withdraw;
 pub mod websockets;
