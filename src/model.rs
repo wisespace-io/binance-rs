@@ -1,4 +1,11 @@
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct WithdrawResponse {
+    pub msg: String,
+    pub success: bool,
+    pub id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeFee {
     pub symbol: String,
@@ -30,7 +37,16 @@ pub struct AssetDetail {
 pub struct AssetDetails {
     pub success: bool,
     #[serde(rename = "assetDetail")]
-    pub asset_detiails: ::std::collections::HashMap<String, AssetDetail>,
+    pub asset_details: ::std::collections::HashMap<String, AssetDetail>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct DepositAddress {
+    pub address: String,
+    pub success: bool,
+    pub address_tag: Option<String>,
+    pub asset: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -97,8 +113,10 @@ pub struct Order {
     pub client_order_id: String,
     #[serde(with = "string_or_float")]
     pub price: f64,
-    pub orig_qty: String,
-    pub executed_qty: String,
+    #[serde(with = "string_or_float")]
+    pub orig_qty: f64,
+    #[serde(with = "string_or_float")]
+    pub executed_qty: f64,
     pub status: String,
     pub time_in_force: String,
     #[serde(rename = "type")]

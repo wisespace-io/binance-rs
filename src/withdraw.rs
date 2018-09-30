@@ -33,4 +33,33 @@ impl Withdraw {
 
         Ok(asset_details)
     }
+
+    // Depoist Address to given Asset 
+    pub fn get_deposit_address(&self, asset: String) -> Result<(DepositAddress)> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("asset".into(), asset);
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        let data = self.client.get_signed("/wapi/v3/depositAddress.html", &request)?;
+        let deposit_address: DepositAddress = from_str(data.as_str())?;
+
+        Ok(deposit_address)
+    }
+
+    // Withdraw currency 
+    pub fn withdraw_currency(&self, asset: String, address: String, address_tag: Option<u64>, amount: f64) -> Result<(WithdrawResponse)> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("asset".into(), asset);
+        parameters.insert("address".into(), address);
+        if address_tag.is_some() {
+            parameters.insert("addressTag".into(), address_tag.unwrap().to_string());
+        }
+        parameters.insert("amount".into(), amount.to_string());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        let data = self.client.get_signed("/wapi/v3/withdraw.html", &request)?;
+        let withdraw: WithdrawResponse = from_str(data.as_str())?;
+
+        Ok(withdraw)
+    }    
 }
