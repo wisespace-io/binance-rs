@@ -31,6 +31,33 @@ pub struct Symbol {
     pub quote_asset:String,
     pub quote_precision: u64,
     pub order_types: Vec<String>,
+    pub iceberg_allowed: bool,
+    pub is_spot_trading_allowed: bool,
+    pub is_margin_trading_allowed: bool,
+    pub filters: Vec<Filters>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(tag = "filterType")]
+pub enum Filters {
+    #[serde(rename = "PRICE_FILTER")]
+    #[serde(rename_all = "camelCase")]
+    PriceFilter { min_price: String, max_price: String, tick_size: String },
+    #[serde(rename = "PERCENT_PRICE")]
+    #[serde(rename_all = "camelCase")]
+    PercentPrice { multiplier_up: String, multiplier_down: String, avg_price_mins: f64 },
+    #[serde(rename = "LOT_SIZE")]
+    #[serde(rename_all = "camelCase")]
+    LotSize { min_qty: String, max_qty: String, step_size: String },
+    #[serde(rename = "MIN_NOTIONAL")]
+    #[serde(rename_all = "camelCase")]
+    MinNotional { min_notional: String, apply_to_market: bool, avg_price_mins: f64 },
+    #[serde(rename = "ICEBERG_PARTS")]
+    #[serde(rename_all = "camelCase")]
+    IcebergParts { limit: u16 },
+    #[serde(rename = "MAX_NUM_ALGO_ORDERS")]
+    #[serde(rename_all = "camelCase")]
+    MaxNumAlgoOrders { max_num_algo_orders: u16 },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
