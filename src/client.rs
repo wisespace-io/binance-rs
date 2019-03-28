@@ -146,7 +146,12 @@ impl Client {
                 bail!("Unauthorized");
             }
             StatusCode::BAD_REQUEST => {
-                bail!(format!("Bad Request: {:?}", response));
+                match response.text() {
+                    // if we can read the content, then we show it in order to see Binance's response code & msg
+                    Ok(text) => bail!(format!("Bad Request: {:?} Content: {}", response, text)),
+                    // if not, skip the content
+                    Err(_) => bail!(format!("Bad Request: {:?}", response)),
+                }
             }
             s => {
                 bail!(format!("Received response: {:?}", s));
