@@ -124,7 +124,7 @@ impl Client {
         if content_type {
             custon_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/x-www-form-urlencoded"));
         }
-        custon_headers.insert(HeaderName::from_static("X-MBX-APIKEY"), HeaderValue::from_str(self.api_key.as_str())?);
+        custon_headers.insert(HeaderName::from_static("x-mbx-apikey"), HeaderValue::from_str(self.api_key.as_str())?);
 
         Ok(custon_headers)
     }
