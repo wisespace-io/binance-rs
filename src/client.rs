@@ -146,16 +146,19 @@ impl Client {
                 bail!("Unauthorized");
             }
             StatusCode::BAD_REQUEST => {
-                match response.text() {
-                    // if we can read the content, then we show it in order to see Binance's response code & msg
-                    Ok(text) => bail!(format!("Bad Request: {:?} Content: {}", response, text)),
-                    // if not, skip the content
-                    Err(_) => bail!(format!("Bad Request: {:?}", response)),
-                }
+                let error_json: BinanceContentError = response.json()?;
+
+                Err(ErrorKind::BinanceError(error_json.code, error_json.msg, response).into())
             }
             s => {
                 bail!(format!("Received response: {:?}", s));
             }
         }
     }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BinanceContentError {
+    code: i16,
+    msg: String
 }
