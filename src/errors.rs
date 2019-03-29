@@ -8,7 +8,9 @@ error_chain! {
         Error, ErrorKind, ResultExt, Result;
     }
 
-    errors { FooError }
+    errors {
+        BinanceError(code: i16, msg: String, response: reqwest::Response)
+     }
 
     foreign_links {
         ReqError(reqwest::Error);
