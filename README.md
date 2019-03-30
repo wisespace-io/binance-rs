@@ -155,6 +155,32 @@ fn main() {
 }
 ```
 
+### ERROR HANDLING - More detailed error information
+
+You can check out the [Binance Error Codes](https://github.com/binance-exchange/binance-official-api-docs/blob/master/errors.md)
+
+```rust
+use binance::errors::ErrorKind as BinanceLibErrorKind;
+
+[...]
+
+Err(err) => {
+    println!("Can't put an order!");
+
+    match err.0 {
+        BinanceLibErrorKind::BinanceError(code, msg, response) => match code {
+            -1013_i16 => println!("Filter failure: LOT_SIZE!"),
+            -2010_i16 => println!("Funds insufficient! {}", msg),
+            _ => println!("Non-catched code {}: {}", code, msg),
+        },
+        BinanceLibErrorKind::Msg(msg) => {
+            println!("Binancelib error msg: {}", msg)
+        }
+        _ => println!("Other errors: {}.", err.0),
+    };
+}
+```
+
 ### USER STREAM
 
 ```rust

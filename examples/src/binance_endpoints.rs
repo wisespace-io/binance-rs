@@ -4,10 +4,11 @@ use binance::api::*;
 use binance::general::*;
 use binance::account::*;
 use binance::market::*;
+use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
     general();
-    account();
+    //account();
     market_data();
 }
 
@@ -17,7 +18,18 @@ fn general() {
     let ping = general.ping();
     match ping {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(err) => {
+            match err.0 {
+                BinanceLibErrorKind::BinanceError(code, msg, _response) => match code {
+                    -1000_i16 => println!("An unknown error occured while processing the request"),
+                    _ => println!("Non-catched code {}: {}", code, msg),
+                },
+                BinanceLibErrorKind::Msg(msg) => {
+                    println!("Binancelib error msg: {}", msg)
+                }
+                _ => println!("Other errors: {}.", err.0),
+            };
+        }
     }
 
     let result = general.get_server_time();
