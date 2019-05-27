@@ -40,7 +40,7 @@ fn user_stream_websocket() {
     struct WebSocketHandler;
 
     impl UserStreamEventHandler for WebSocketHandler {
-        fn account_update_handler(&self, event: &AccountUpdateEvent) {
+        fn account_update_handler(&mut self, event: &AccountUpdateEvent) {
             for balance in &event.balance {
                 println!(
                     "Asset: {}, free: {}, locked: {}",
@@ -49,7 +49,7 @@ fn user_stream_websocket() {
             }
         }
 
-        fn order_trade_handler(&self, event: &OrderTradeEvent) {
+        fn order_trade_handler(&mut self, event: &OrderTradeEvent) {
             println!(
                 "Symbol: {}, Side: {}, Price: {}, Execution Type: {}",
                 event.symbol, event.side, event.price, event.execution_type
@@ -63,8 +63,10 @@ fn user_stream_websocket() {
     if let Ok(answer) = user_stream.start() {
         let listen_key = answer.listen_key;
 
+        let mut handler = WebSocketHandler {};
         let mut web_socket: WebSockets = WebSockets::new();
-        web_socket.add_user_stream_handler(WebSocketHandler);
+
+        web_socket.add_user_stream_handler(&mut handler);
         web_socket.connect(&listen_key).unwrap(); // check error
         web_socket.event_loop();
     } else {
@@ -76,21 +78,21 @@ fn market_websocket() {
     struct WebSocketHandler;
 
     impl MarketEventHandler for WebSocketHandler {
-        fn aggregated_trades_handler(&self, event: &TradesEvent) {
+        fn aggregated_trades_handler(&mut self, event: &TradesEvent) {
             println!(
                 "Symbol: {}, price: {}, qty: {}",
                 event.symbol, event.price, event.qty
             );
         }
 
-        fn depth_orderbook_handler(&self, event: &DepthOrderBookEvent) {
+        fn depth_orderbook_handler(&mut self, event: &DepthOrderBookEvent) {
             println!(
                 "Symbol: {}, Bids: {:?}, Ask: {:?}",
                 event.symbol, event.bids, event.asks
             );
         }
 
-        fn partial_orderbook_handler(&self, order_book: &OrderBook) {
+        fn partial_orderbook_handler(&mut self, order_book: &OrderBook) {
             println!(
                 "last_update_id: {}, Bids: {:?}, Ask: {:?}",
                 order_book.last_update_id, order_book.bids, order_book.asks
@@ -99,9 +101,10 @@ fn market_websocket() {
     }
 
     let agg_trade: String = format!("{}@aggTrade", "ethbtc");
+    let mut handler = WebSocketHandler {};
     let mut web_socket: WebSockets = WebSockets::new();
 
-    web_socket.add_market_handler(WebSocketHandler);
+    web_socket.add_market_handler(&mut handler);
     web_socket.connect(&agg_trade).unwrap(); // check error
     web_socket.event_loop();
 }
@@ -110,7 +113,7 @@ fn all_trades_websocket() {
     struct WebSocketHandler;
 
     impl DayTickerEventHandler for WebSocketHandler {
-        fn day_ticker_handler(&self, events: &[DayTickerEvent]) {
+        fn day_ticker_handler(&mut self, events: &[DayTickerEvent]) {
             for event in events {
                 println!(
                     "Symbol: {}, price: {}, qty: {}",
@@ -121,9 +124,10 @@ fn all_trades_websocket() {
     }
 
     let agg_trade: String = format!("!ticker@arr");
+    let mut handler = WebSocketHandler {};
     let mut web_socket: WebSockets = WebSockets::new();
 
-    web_socket.add_day_ticker_handler(WebSocketHandler);
+    web_socket.add_day_ticker_handler(&mut handler);
     web_socket.connect(&agg_trade).unwrap(); // check error
     web_socket.event_loop();
 }
@@ -132,7 +136,7 @@ fn kline_websocket() {
     struct WebSocketHandler;
 
     impl KlineEventHandler for WebSocketHandler {
-        fn kline_handler(&self, event: &KlineEvent) {
+        fn kline_handler(&mut self, event: &KlineEvent) {
             println!(
                 "Symbol: {}, high: {}, low: {}",
                 event.kline.symbol, event.kline.low, event.kline.high
@@ -141,9 +145,10 @@ fn kline_websocket() {
     }
 
     let kline: String = format!("{}", "ethbtc@kline_1m");
+    let mut handler = WebSocketHandler {};
     let mut web_socket: WebSockets = WebSockets::new();
 
-    web_socket.add_kline_handler(WebSocketHandler);
+    web_socket.add_kline_handler(&mut handler);
     web_socket.connect(&kline).unwrap(); // check error
     web_socket.event_loop();
 }
