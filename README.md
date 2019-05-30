@@ -220,42 +220,37 @@ extern crate binance;
 use binance::api::*;
 use binance::userstream::*;
 use binance::websockets::*;
-use binance::model::{AccountUpdateEvent, OrderTradeEvent};
 
-struct WebSocketHandler;
+let api_key_user = Some("YOUR_KEY".into());
+let user_stream: UserStream = Binance::new(api_key_user, None);
 
-impl UserStreamEventHandler for WebSocketHandler {
-    fn account_update_handler(&self, event: &AccountUpdateEvent) {
-        for balance in &event.balance {
-            println!(
-                "Asset: {}, free: {}, locked: {}",
-                balance.asset, balance.free, balance.locked
-            );
+if let Ok(answer) = user_stream.start() {
+    let listen_key = answer.listen_key;
+
+    let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+        match event {
+            WebsocketEvent::AccountUpdate(account_update) => {
+                for balance in &account_update.balance {
+                    println!(
+                        "Asset: {}, free: {}, locked: {}",
+                        balance.asset, balance.free, balance.locked
+                    );
+                }
+            },
+            WebsocketEvent::OrderTrade(trade) => {
+                println!(
+                    "Symbol: {}, Side: {}, Price: {}, Execution Type: {}",
+                    trade.symbol, trade.side, trade.price, trade.execution_type
+                );
+            },
+            _ => return,
         }
-    }
+    });
 
-    fn order_trade_handler(&self, event: &OrderTradeEvent) {
-        println!(
-            "Symbol: {}, Side: {}, Price: {}, Execution Type: {}",
-            event.symbol, event.side, event.price, event.execution_type
-        );
-    }
-}
-
-fn main() {
-    let api_key_user = Some("YOUR_KEY".into());
-    let user_stream: UserStream = Binance::new(api_key_user, None);
-
-    if let Ok(answer) = user_stream.start() {
-        let listen_key = answer.listen_key;
-
-        let mut web_socket: WebSockets = WebSockets::new();
-        web_socket.add_user_stream_handler(WebSocketHandler);
-        web_socket.connect(&listen_key).unwrap(); // check error
-        web_socket.event_loop();
-    } else {
-        println!("Not able to start an User Stream (Check your API_KEY)");
-    }
+    web_socket.connect(&listen_key).unwrap(); // check error
+    web_socket.event_loop();
+} else {
+    println!("Not able to start an User Stream (Check your API_KEY)");
 }
 ```
 
@@ -266,27 +261,24 @@ extern crate binance;
 
 use binance::api::*;
 use binance::websockets::*;
-use binance::model::TradesEvent;
 
-struct WebSocketHandler;
-
-impl MarketEventHandler for WebSocketHandler {
-    fn aggregated_trades_handler(&self, event: &TradesEvent) {
-        println!(
-            "Symbol: {}, price: {}, qty: {}",
-            event.symbol, event.price, event.qty
-        );
+let agg_trade: String = format!("!ticker@arr");
+let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+    match event {
+        WebsocketEvent::DayTicker(ticker_events) => {
+            for tick_event in ticker_events {
+                println!(
+                    "Symbol: {}, price: {}, qty: {}",
+                    tick_event.symbol, tick_event.best_bid, tick_event.best_bid_qty
+                );
+            }
+        },
+        _ => return,
     }
-}
+});
 
-fn main() {
-    let agg_trade: String = format!("{}@aggTrade", "ethbtc");
-    let mut web_socket: WebSockets = WebSockets::new();
-
-    web_socket.add_market_handler(WebSocketHandler);
-    web_socket.connect(&agg_trade).unwrap(); // check error
-    web_socket.event_loop();
-}
+web_socket.connect(&agg_trade).unwrap(); // check error
+web_socket.event_loop();
 ```
 
 ### WEBSOCKETS - KLINE
@@ -296,27 +288,22 @@ extern crate binance;
 
 use binance::api::*;
 use binance::websockets::*;
-use binance::model::KlineEvent;
 
-struct WebSocketHandler;
-
-impl KlineEventHandler for WebSocketHandler {
-    fn kline_handler(&self, event: &KlineEvent) {
-        println!(
-            "Symbol: {}, high: {}, low: {}",
-            event.kline.symbol, event.kline.low, event.kline.high
-        );
+let kline: String = format!("{}", "ethbtc@kline_1m");
+let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+    match event {
+        WebsocketEvent::Kline(kline_event) => {
+            println!(
+                "Symbol: {}, high: {}, low: {}",
+                kline_event.kline.symbol, kline_event.kline.low, kline_event.kline.high
+            );
+        },
+        _ => return,
     }
-}
+});
 
-fn main() {
-    let kline: String = format!("{}", "ethbtc@kline_1m");
-    let mut web_socket: WebSockets = WebSockets::new();
-
-    web_socket.add_kline_handler(WebSocketHandler);
-    web_socket.connect(&kline).unwrap(); // check error
-    web_socket.event_loop();
-}
+web_socket.connect(&kline).unwrap(); // check error
+web_socket.event_loop();
 ```
 
 ## Other Exchanges
