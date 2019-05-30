@@ -24,19 +24,11 @@ fn save_all_trades_websocket() {
         }
 
         // serialize DayTickerEvent as CSV records
-        pub fn write_to_file(&mut self, event: DayTickerEvent) -> Result<(), Box<Error>> {
-            self.wrt.serialize(event)?;
-            Ok(())
-        }
-    }
-
-    impl DayTickerEventHandler for WebSocketHandler {
-        fn day_ticker_handler(&mut self, events: &[DayTickerEvent]) {
+        pub fn write_to_file(&mut self, events: Vec<DayTickerEvent>) -> Result<(), Box<Error>> {
             for event in events {
-                if let Err(error) = self.write_to_file(event.clone()) {
-                    println!("{}", error);
-                }
+                self.wrt.serialize(event)?;
             }
+            Ok(())
         }
     }
 
@@ -45,9 +37,17 @@ fn save_all_trades_websocket() {
 
     let mut web_socket_handler = WebSocketHandler::new(local_wrt);
     let agg_trade: String = format!("!ticker@arr");
-    let mut web_socket: WebSockets = WebSockets::new();
+    let mut web_socket: WebSockets = WebSockets::new(move |event: WebsocketEvent| {
+        match event {
+            WebsocketEvent::DayTicker(events) => {
+                if let Err(error) = web_socket_handler.write_to_file(events) {
+                    println!("{}", error);
+                }
+            },
+            _ => return,
+        }
+    });
 
-    web_socket.add_day_ticker_handler(&mut web_socket_handler);
     web_socket.connect(&agg_trade).unwrap(); // check error
     web_socket.event_loop();
 }
