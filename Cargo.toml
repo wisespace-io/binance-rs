@@ -27,3 +27,6 @@ ring = "0.14"
 reqwest = "0.9"
 tungstenite = "0.8"
 url = "1.7"
+
+[dev-dependencies]
+csv = "1.0.0"
