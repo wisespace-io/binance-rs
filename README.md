@@ -248,7 +248,13 @@ if let Ok(answer) = user_stream.start() {
     });
 
     web_socket.connect(&listen_key).unwrap(); // check error
-    web_socket.event_loop();
+    if let Err(e) = web_socket.event_loop() {
+        match e {
+            err => {
+                println!("Error: {}", err);
+            }
+        }
+    }
 } else {
     println!("Not able to start an User Stream (Check your API_KEY)");
 }
@@ -278,7 +284,13 @@ let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
 });
 
 web_socket.connect(&agg_trade).unwrap(); // check error
-web_socket.event_loop();
+if let Err(e) = web_socket.event_loop() {
+    match e {
+        err => {
+           println!("Error: {}", err);
+        }
+    }
+}
 ```
 
 ### WEBSOCKETS - KLINE
@@ -303,7 +315,13 @@ let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
 });
 
 web_socket.connect(&kline).unwrap(); // check error
-web_socket.event_loop();
+if let Err(e) = web_socket.event_loop() {
+    match e {
+        err => {
+           println!("Error: {}", err);
+        }
+    }
+}
 ```
 
 ## Other Exchanges

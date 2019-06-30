@@ -49,5 +49,11 @@ fn save_all_trades_websocket() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    web_socket.event_loop();
+    if let Err(e) = web_socket.event_loop() {
+        match e {
+            err => {
+               println!("Error: {}", err);
+            }
+        }
+    }
 }

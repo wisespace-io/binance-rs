@@ -5,11 +5,12 @@ use binance::userstream::*;
 use binance::websockets::*;
 
 fn main() {
-    user_stream();
-    user_stream_websocket();
-    market_websocket();
-    kline_websocket();
-    all_trades_websocket();
+    //user_stream();
+    //user_stream_websocket();
+    //market_websocket();
+    //kline_websocket();
+    //all_trades_websocket();
+    last_price();
 }
 
 fn user_stream() {
@@ -62,7 +63,13 @@ fn user_stream_websocket() {
         });
 
         web_socket.connect(&listen_key).unwrap(); // check error
-        web_socket.event_loop();
+        if let Err(e) = web_socket.event_loop() {
+            match e {
+                err => {
+                    println!("Error: {}", err);
+                }
+            }
+        }
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
     }
@@ -95,7 +102,13 @@ fn market_websocket() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    web_socket.event_loop();
+    if let Err(e) = web_socket.event_loop() {
+        match e {
+            err => { 
+               println!("Error: {}", err);
+            }
+        }
+    }
 }
 
 fn all_trades_websocket() {
@@ -115,7 +128,13 @@ fn all_trades_websocket() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    web_socket.event_loop();
+    if let Err(e) = web_socket.event_loop() {
+        match e {
+            err => {
+               println!("Error: {}", err);
+            }
+        }
+    }
 }
 
 fn kline_websocket() {
@@ -133,5 +152,41 @@ fn kline_websocket() {
     });
 
     web_socket.connect(&kline).unwrap(); // check error
-    web_socket.event_loop();
+    if let Err(e) = web_socket.event_loop() {
+        match e {
+            err => { 
+               println!("Error: {}", err);
+            }
+        }
+    }
+}
+
+fn last_price() {
+    let agg_trade: String = format!("!ticker@arr");
+    let mut btcusdt: f32 = "0".parse().unwrap();
+
+    let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+        match event {
+            WebsocketEvent::DayTicker(ticker_events) => {
+                for tick_event in ticker_events {
+                    if tick_event.symbol == "BTCUSDT" {
+                        btcusdt = tick_event.average_price.parse().unwrap();
+                        let btcusdt_close: f32 = tick_event.current_close.parse().unwrap();
+                        println!("{} - {}", btcusdt, btcusdt_close);
+                    }
+                }
+            },
+            _ => return,
+        }
+    });
+
+    web_socket.connect(&agg_trade).unwrap(); // check error
+    
+    if let Err(e) = web_socket.event_loop() {
+        match e {
+            err => {
+               println!("Error: {}", err);
+            }
+        }
+    }
 }

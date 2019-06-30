@@ -3,7 +3,7 @@ use errors::*;
 use url::Url;
 use serde_json::from_str;
 
-use tungstenite::connect;
+use tungstenite::{connect, Message};
 use tungstenite::protocol::WebSocket;
 use tungstenite::client::AutoStream;
 use tungstenite::handshake::client::Response;
@@ -61,40 +61,43 @@ impl<'a> WebSockets<'a> {
         }
     }
 
-    pub fn event_loop(&mut self) {
+    pub fn event_loop(&mut self) -> Result<()> {
         loop {
             if let Some(ref mut socket) = self.socket {
-                let msg: String = socket.0.read_message().unwrap().into_text().unwrap();
+                let message = socket.0.read_message()?;
 
-                if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
-                    let account_update: AccountUpdateEvent = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::AccountUpdate(account_update));
-                } else if msg.find(EXECUTION_REPORT) != None {
-                    let order_trade: OrderTradeEvent = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::OrderTrade(order_trade));
-                } else if msg.find(AGGREGATED_TRADE) != None {
-                    let trade: TradesEvent = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::Trade(trade));
-                } else if msg.find(DAYTICKER) != None {
-                    let trades: Vec<DayTickerEvent> = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::DayTicker(trades));
-                } else if msg.find(KLINE) != None {
-                    let kline: KlineEvent = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::Kline(kline));
-                } else if msg.find(PARTIAL_ORDERBOOK) != None {
-                    let partial_orderbook: OrderBook = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::OrderBook(partial_orderbook));
-                } else if msg.find(DEPTH_ORDERBOOK) != None {
-                    let depth_orderbook: DepthOrderBookEvent = from_str(msg.as_str()).unwrap();
-
-                    (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook));
-                }
+                match message {
+                    Message::Text(msg) => {
+                        if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
+                            let account_update: AccountUpdateEvent = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::AccountUpdate(account_update));
+                        } else if msg.find(EXECUTION_REPORT) != None {
+                            let order_trade: OrderTradeEvent = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::OrderTrade(order_trade));
+                        } else if msg.find(AGGREGATED_TRADE) != None {
+                            let trade: TradesEvent = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::Trade(trade));
+                        } else if msg.find(DAYTICKER) != None {
+                            let trades: Vec<DayTickerEvent> = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::DayTicker(trades));
+                        } else if msg.find(KLINE) != None {
+                            let kline: KlineEvent = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::Kline(kline));
+                        } else if msg.find(PARTIAL_ORDERBOOK) != None {
+                            let partial_orderbook: OrderBook = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::OrderBook(partial_orderbook));
+                        } else if msg.find(DEPTH_ORDERBOOK) != None {
+                            let depth_orderbook: DepthOrderBookEvent = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook));
+                        }
+                    }
+                    Message::Ping(_) |
+                    Message::Pong(_) |
+                    Message::Binary(_) => {}
+                    Message::Close(e) => {
+                        bail!(format!("Disconnected {:?}", e));
+                    }
+                }                        
             }
         }
     }
