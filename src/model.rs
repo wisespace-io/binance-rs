@@ -134,7 +134,7 @@ pub struct Bids {
     #[serde(with = "string_or_float")] pub qty: f64,
 
     // Never serialized.
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     ignore: Vec<String>,
 }
 
@@ -144,7 +144,7 @@ pub struct Asks {
     #[serde(with = "string_or_float")] pub qty: f64,
 
     // Never serialized.
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     ignore: Vec<String>,
 }
 
@@ -275,13 +275,13 @@ pub struct OrderTradeEvent {
 
     #[serde(rename = "p")] pub price: String,
 
-    #[serde(skip_serializing, rename = "P")] pub p_ignore: String,
+    #[serde(skip, rename = "P")] pub p_ignore: String,
 
-    #[serde(skip_serializing, rename = "F")] pub f_ignore: String,
+    #[serde(skip, rename = "F")] pub f_ignore: String,
 
-    #[serde(skip_serializing)] pub g: i32,
+    #[serde(skip)] pub g: i32,
 
-    #[serde(skip_serializing, rename = "C")] pub c_ignore: Option<String>,
+    #[serde(skip, rename = "C")] pub c_ignore: Option<String>,
 
     #[serde(rename = "x")] pub execution_type: String,
 
@@ -299,19 +299,19 @@ pub struct OrderTradeEvent {
 
     #[serde(rename = "n")] pub commission: String,
 
-    #[serde(skip_serializing, rename = "N")] pub asset_commisioned: Option<String>,
+    #[serde(skip, rename = "N")] pub asset_commisioned: Option<String>,
 
     #[serde(rename = "T")] pub trade_order_time: u64,
 
     #[serde(rename = "t")] pub trade_id: i64,
 
-    #[serde(skip_serializing, rename = "I")] pub i_ignore: u64,
+    #[serde(skip, rename = "I")] pub i_ignore: u64,
 
-    #[serde(skip_serializing)] pub w: bool,
+    #[serde(skip)] pub w: bool,
 
     #[serde(rename = "m")] pub is_buyer_maker: bool,
 
-    #[serde(skip_serializing, rename = "M")] pub m_ignore: bool,
+    #[serde(skip, rename = "M")] pub m_ignore: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -337,7 +337,7 @@ pub struct TradesEvent {
 
     #[serde(rename = "m")] pub is_buyer_maker: bool,
 
-    #[serde(skip_serializing, rename = "M")] pub m_ignore: bool,
+    #[serde(skip, rename = "M")] pub m_ignore: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -462,7 +462,7 @@ pub struct Kline {
 
     #[serde(rename = "Q")] pub active_volume_buy_quote: String,
 
-    #[serde(skip_serializing, rename = "B")] pub ignore_me: String,
+    #[serde(skip, rename = "B")] pub ignore_me: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
