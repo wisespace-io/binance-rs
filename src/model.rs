@@ -383,9 +383,9 @@ pub struct DayTickerEvent {
 
     #[serde(rename = "C")] pub close_time: u64,
 
-    #[serde(rename = "F")] pub first_trade_id: u64,
+    #[serde(rename = "F")] pub first_trade_id: i64,
 
-    #[serde(rename = "L")] pub last_trade_id: u64,
+    #[serde(rename = "L")] pub last_trade_id: i64,
 
     #[serde(rename = "n")] pub num_trades: u64,
 }
