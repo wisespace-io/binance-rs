@@ -44,8 +44,10 @@ fn save_all_trades_websocket() {
                     println!("{}", error);
                 }
             },
-            _ => return,
+            _ => (),
         }
+
+        Ok(())
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error

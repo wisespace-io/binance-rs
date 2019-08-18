@@ -32,13 +32,13 @@ pub enum WebsocketEvent {
 
 pub struct WebSockets<'a> {
     socket: Option<(WebSocket<AutoStream>, Response)>,
-    handler: Box<FnMut(WebsocketEvent) + 'a>,
+    handler: Box<FnMut(WebsocketEvent) -> Result<()> + 'a>,
 }
 
 impl<'a> WebSockets<'a> {
     pub fn new<Callback>(handler: Callback) -> WebSockets<'a>
     where
-        Callback: FnMut(WebsocketEvent) + 'a
+        Callback: FnMut(WebsocketEvent) -> Result<()> + 'a
     {
         WebSockets {
             socket: None,
@@ -70,25 +70,25 @@ impl<'a> WebSockets<'a> {
                     Message::Text(msg) => {
                         if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
                             let account_update: AccountUpdateEvent = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::AccountUpdate(account_update));
+                            (self.handler)(WebsocketEvent::AccountUpdate(account_update))?;
                         } else if msg.find(EXECUTION_REPORT) != None {
                             let order_trade: OrderTradeEvent = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::OrderTrade(order_trade));
+                            (self.handler)(WebsocketEvent::OrderTrade(order_trade))?;
                         } else if msg.find(AGGREGATED_TRADE) != None {
                             let trade: TradesEvent = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::Trade(trade));
+                            (self.handler)(WebsocketEvent::Trade(trade))?;
                         } else if msg.find(DAYTICKER) != None {
                             let trades: Vec<DayTickerEvent> = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::DayTicker(trades));
+                            (self.handler)(WebsocketEvent::DayTicker(trades))?;
                         } else if msg.find(KLINE) != None {
                             let kline: KlineEvent = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::Kline(kline));
+                            (self.handler)(WebsocketEvent::Kline(kline))?;
                         } else if msg.find(PARTIAL_ORDERBOOK) != None {
                             let partial_orderbook: OrderBook = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::OrderBook(partial_orderbook));
+                            (self.handler)(WebsocketEvent::OrderBook(partial_orderbook))?;
                         } else if msg.find(DEPTH_ORDERBOOK) != None {
                             let depth_orderbook: DepthOrderBookEvent = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook));
+                            (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook))?;
                         }
                     }
                     Message::Ping(_) |

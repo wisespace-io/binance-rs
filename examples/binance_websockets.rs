@@ -58,8 +58,10 @@ fn user_stream_websocket() {
                         trade.symbol, trade.side, trade.price, trade.execution_type
                     );
                 },
-                _ => return,
-            }
+                _ => (),
+            };
+
+            Ok(())
         });
 
         web_socket.connect(&listen_key).unwrap(); // check error
@@ -97,8 +99,10 @@ fn market_websocket() {
                     order_book.last_update_id, order_book.bids, order_book.asks
                 );
             },
-            _ => return,
-        }
+            _ => (),
+        };
+
+        Ok(())
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
@@ -123,8 +127,10 @@ fn all_trades_websocket() {
                     );
                 }
             },
-            _ => return,
-        }
+            _ => (),
+        };
+
+        Ok(())
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
@@ -147,8 +153,10 @@ fn kline_websocket() {
                     kline_event.kline.symbol, kline_event.kline.low, kline_event.kline.high
                 );
             },
-            _ => return,
-        }
+            _ => (),
+        };
+
+        Ok(())
     });
 
     web_socket.connect(&kline).unwrap(); // check error
@@ -176,8 +184,10 @@ fn last_price() {
                     }
                 }
             },
-            _ => return,
-        }
+            _ => (),
+        };
+
+        Ok(())
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
