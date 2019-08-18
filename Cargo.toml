@@ -1,6 +1,6 @@
 [package]
 name = "binance"
-version = "0.6.2"
+version = "0.6.3"
 license = "MIT OR Apache-2.0"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
@@ -23,10 +23,10 @@ serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
 error-chain = { version = "0.12", default-features = false }
-ring = "0.14"
+ring = "0.16"
 reqwest = "0.9"
-tungstenite = "0.8"
-url = "1.7"
+tungstenite = "0.9"
+url = "2.1"
 
 [dev-dependencies]
 csv = "1.0.0"

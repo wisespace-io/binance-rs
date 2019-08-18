@@ -4,7 +4,7 @@ use reqwest;
 use reqwest::{Response, StatusCode};
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use std::io::Read;
-use ring::{digest, hmac};
+use ring::hmac;
 
 static API1_HOST: &'static str = "https://www.binance.com";
 
@@ -108,7 +108,7 @@ impl Client {
 
     // Request must be signed
     fn sign_request(&self, endpoint: &str, request: &str) -> String {
-        let signed_key = hmac::SigningKey::new(&digest::SHA256, self.secret_key.as_bytes());
+        let signed_key = hmac::Key::new(hmac::HMAC_SHA256, self.secret_key.as_bytes());
         let signature = hex_encode(hmac::sign(&signed_key, request.as_bytes()).as_ref());
 
         let request_body: String = format!("{}&signature={}", request, signature);
