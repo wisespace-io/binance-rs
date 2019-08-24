@@ -243,8 +243,10 @@ if let Ok(answer) = user_stream.start() {
                     trade.symbol, trade.side, trade.price, trade.execution_type
                 );
             },
-            _ => return,
-        }
+            _ => (),
+        };
+
+        Ok(())
     });
 
     web_socket.connect(&listen_key).unwrap(); // check error
@@ -273,14 +275,17 @@ let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
     match event {
         WebsocketEvent::DayTicker(ticker_events) => {
             for tick_event in ticker_events {
-                println!(
-                    "Symbol: {}, price: {}, qty: {}",
-                    tick_event.symbol, tick_event.best_bid, tick_event.best_bid_qty
-                );
+                if tick_event.symbol == "BTCUSDT" {
+                    btcusdt = tick_event.average_price.parse().unwrap();
+                    let btcusdt_close: f32 = tick_event.current_close.parse().unwrap();
+                    println!("{} - {}", btcusdt, btcusdt_close);
+                }
             }
         },
-        _ => return,
-    }
+        _ => (),
+    };
+
+    Ok(())
 });
 
 web_socket.connect(&agg_trade).unwrap(); // check error
@@ -310,8 +315,9 @@ let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
                 kline_event.kline.symbol, kline_event.kline.low, kline_event.kline.high
             );
         },
-        _ => return,
-    }
+        _ => (),
+    };
+    Ok(())
 });
 
 web_socket.connect(&kline).unwrap(); // check error
