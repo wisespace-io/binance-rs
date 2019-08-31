@@ -27,6 +27,11 @@ Add this to your Cargo.toml
 binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 ```
 
+## Rust >= 1.35
+```
+rustup install stable
+```
+
 ### MARKET DATA
 
 ```rust
