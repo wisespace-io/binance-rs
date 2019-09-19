@@ -103,6 +103,23 @@ impl Account {
         Ok(order)
     }
 
+    /// Place a test status order
+    ///
+    /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    pub fn test_order_status<S>(&self, symbol: S, order_id: u64) -> Result<()>
+        where S: Into<String>
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("orderId".into(), order_id.to_string());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        let data = self.client.get_signed(API_V3_ORDER_TEST, &request)?;
+        let _: TestResponse = from_str(data.as_str())?;
+
+        Ok(())
+    }
+
     // Place a LIMIT order - BUY
     pub fn limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<(Transaction)>
         where S: Into<String>, F: Into<f64>
