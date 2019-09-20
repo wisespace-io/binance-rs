@@ -126,7 +126,7 @@ pub struct Transaction {
 /// hence this struct has no fields.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct TestTransaction {
+pub struct TestResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
