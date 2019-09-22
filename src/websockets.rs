@@ -32,7 +32,7 @@ pub enum WebsocketEvent {
 
 pub struct WebSockets<'a> {
     socket: Option<(WebSocket<AutoStream>, Response)>,
-    handler: Box<FnMut(WebsocketEvent) -> Result<()> + 'a>,
+    handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
 }
 
 impl<'a> WebSockets<'a> {
