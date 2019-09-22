@@ -120,6 +120,15 @@ pub struct Transaction {
     pub transact_time: u64,
 }
 
+/// Response to a test order (endpoint /api/v3/order/test).
+///
+/// Currently, the API responds {} on a successfull test transaction,
+/// hence this struct has no fields.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TestResponse {
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderBook {
