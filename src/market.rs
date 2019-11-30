@@ -22,7 +22,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v1/depth", &request)?;
+        let data = self.client.get("/api/v3/depth", &request)?;
 
         let order_book: OrderBook = from_str(data.as_str())?;
 
@@ -31,7 +31,7 @@ impl Market {
 
     // Latest price for ALL symbols.
     pub fn get_all_prices(&self) -> Result<(Prices)> {
-        let data = self.client.get("/api/v1/ticker/allPrices", "")?;
+        let data = self.client.get("/api/v3/ticker/price", "")?;
 
         let prices: Prices = from_str(data.as_str())?;
 
@@ -39,29 +39,39 @@ impl Market {
     }
 
     // Latest price for ONE symbol.
-    pub fn get_price<S>(&self, symbol: S) -> Result<(f64)>
+    pub fn get_price<S>(&self, symbol: S) -> Result<(SymbolPrice)>
         where S: Into<String>
     {
-        match self.get_all_prices() {
-            Ok(answer) => match answer {
-                Prices::AllPrices(prices) => {
-                    let cmp_symbol = symbol.into();
-                    for par in prices {
-                        if par.symbol == cmp_symbol {
-                            return Ok(par.price);
-                        }
-                    }
-                    bail!("Symbol not found");
-                }
-            },
-            Err(e) => Err(e),
-        }
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/api/v3/ticker/price", &request)?;
+        let symbol_price: SymbolPrice = from_str(data.as_str())?;
+
+        Ok(symbol_price)
+    }
+
+    // Average price for ONE symbol.
+    pub fn get_average_price<S>(&self, symbol: S) -> Result<(AveragePrice)>
+        where S: Into<String>
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/api/v3/avgPrice", &request)?;
+        let average_price: AveragePrice = from_str(data.as_str())?;
+
+        Ok(average_price)
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<(BookTickers)> {
-        let data = self.client.get("/api/v1/ticker/allBookTickers", "")?;
+        let data = self.client.get("/api/v3/ticker/bookTicker", "")?;
 
         let book_tickers: BookTickers = from_str(data.as_str())?;
 
@@ -72,21 +82,15 @@ impl Market {
     pub fn get_book_ticker<S>(&self, symbol: S) -> Result<(Tickers)> 
         where S: Into<String>
     {
-        match self.get_all_book_tickers() {
-            Ok(answer) => match answer {
-                BookTickers::AllBookTickers(book_tickers) => {
-                    let cmp_symbol = symbol.into();
-                    for obj in book_tickers {
-                        if obj.symbol == cmp_symbol {
-                            let ticker: Tickers = obj;
-                            return Ok(ticker);
-                        }
-                    }
-                    bail!("Symbol not found");
-                }
-            },
-            Err(e) => Err(e),
-        }
+       let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/api/v3/ticker/bookTicker", &request)?;
+        let ticker: Tickers = from_str(data.as_str())?;
+
+        Ok(ticker)
     }
 
     // 24hr ticker price change statistics
@@ -98,7 +102,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v1/ticker/24hr", &request)?;
+        let data = self.client.get("/api/v3/ticker/24hr", &request)?;
 
         let stats: PriceStats = from_str(data.as_str())?;
 
@@ -122,7 +126,7 @@ impl Market {
         
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v1/klines", &request)?;
+        let data = self.client.get("/api/v3/klines", &request)?;
         let parsed_data: Vec<Vec<Value>> = from_str(data.as_str())?;
 
         let klines = KlineSummaries::AllKlineSummaries(

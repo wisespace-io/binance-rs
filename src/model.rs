@@ -180,6 +180,13 @@ pub struct SymbolPrice {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AveragePrice {
+    pub mins: u64,
+    #[serde(with = "string_or_float")]
+    pub price: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum BookTickers {

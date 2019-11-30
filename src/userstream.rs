@@ -3,7 +3,7 @@ use client::*;
 use errors::*;
 use serde_json::from_str;
 
-static USER_DATA_STREAM: &'static str = "/api/v1/userDataStream";
+static USER_DATA_STREAM: &'static str = "/api/v3/userDataStream";
 
 #[derive(Clone)]
 pub struct UserStream {

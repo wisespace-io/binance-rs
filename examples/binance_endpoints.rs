@@ -9,7 +9,7 @@ use binance::errors::ErrorKind as BinanceLibErrorKind;
 fn main() {
     general();
     //account();
-    market_data();
+    //market_data();
 }
 
 fn general() {
@@ -37,6 +37,12 @@ fn general() {
         Ok(answer) => println!("Server Time: {}", answer.server_time),
         Err(e) => println!("Error: {}", e),
     }
+
+    let result = general.exchange_info();
+    match result {
+        Ok(answer) => println!("Exchange information: {:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }    
 }
 
 fn account() {
@@ -114,6 +120,12 @@ fn market_data() {
 
     // Latest price for ONE symbol
     match market.get_price("KNCETH") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    // Current average price for ONE symbol
+    match market.get_average_price("KNCETH") {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }

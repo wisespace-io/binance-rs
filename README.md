@@ -56,7 +56,13 @@ fn main() {
     }
 
     // Latest price for ONE symbol
-    match market.get_price("KNCETH") {
+    match market.get_price("BNBETH") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    // Current average price for ONE symbol
+    match market.get_average_price("BNBETH") {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
