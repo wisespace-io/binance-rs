@@ -14,7 +14,7 @@ pub struct Market {
 // Market Data endpoints
 impl Market {
     // Order book (Default 100; max 100)
-    pub fn get_depth<S>(&self, symbol: S) -> Result<(OrderBook)>
+    pub fn get_depth<S>(&self, symbol: S) -> Result<OrderBook>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -30,7 +30,7 @@ impl Market {
     }
 
     // Latest price for ALL symbols.
-    pub fn get_all_prices(&self) -> Result<(Prices)> {
+    pub fn get_all_prices(&self) -> Result<Prices> {
         let data = self.client.get("/api/v3/ticker/price", "")?;
 
         let prices: Prices = from_str(data.as_str())?;
@@ -39,7 +39,7 @@ impl Market {
     }
 
     // Latest price for ONE symbol.
-    pub fn get_price<S>(&self, symbol: S) -> Result<(SymbolPrice)>
+    pub fn get_price<S>(&self, symbol: S) -> Result<SymbolPrice>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -54,7 +54,7 @@ impl Market {
     }
 
     // Average price for ONE symbol.
-    pub fn get_average_price<S>(&self, symbol: S) -> Result<(AveragePrice)>
+    pub fn get_average_price<S>(&self, symbol: S) -> Result<AveragePrice>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -70,7 +70,7 @@ impl Market {
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
-    pub fn get_all_book_tickers(&self) -> Result<(BookTickers)> {
+    pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
         let data = self.client.get("/api/v3/ticker/bookTicker", "")?;
 
         let book_tickers: BookTickers = from_str(data.as_str())?;
@@ -79,7 +79,7 @@ impl Market {
     }
 
     // -> Best price/qty on the order book for ONE symbol
-    pub fn get_book_ticker<S>(&self, symbol: S) -> Result<(Tickers)> 
+    pub fn get_book_ticker<S>(&self, symbol: S) -> Result<Tickers> 
         where S: Into<String>
     {
        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -94,7 +94,7 @@ impl Market {
     }
 
     // 24hr ticker price change statistics
-    pub fn get_24h_price_stats<S>(&self, symbol: S) -> Result<(PriceStats)>
+    pub fn get_24h_price_stats<S>(&self, symbol: S) -> Result<PriceStats>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -111,7 +111,7 @@ impl Market {
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
     // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
-    pub fn get_klines<S1,S2,S3,S4,S5>(&self, symbol: S1, interval: S2, limit: S3, start_time: S4, end_time: S5) -> Result<(KlineSummaries)> 
+    pub fn get_klines<S1,S2,S3,S4,S5>(&self, symbol: S1, interval: S2, limit: S3, start_time: S4, end_time: S5) -> Result<KlineSummaries> 
         where S1: Into<String>, S2: Into<String>, S3: Into<Option<u16>>, S4: Into<Option<u64>>, S5: Into<Option<u64>>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();

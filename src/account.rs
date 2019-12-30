@@ -35,7 +35,7 @@ struct OrderRequest {
 
 impl Account {
     // Account Information
-    pub fn get_account(&self) -> Result<(AccountInformation)> {
+    pub fn get_account(&self) -> Result<AccountInformation> {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
 
         let request = build_signed_request(parameters, self.recv_window)?;
@@ -46,7 +46,7 @@ impl Account {
     }
 
     // Balance for ONE Asset
-    pub fn get_balance<S>(&self, asset: S) -> Result<(Balance)>
+    pub fn get_balance<S>(&self, asset: S) -> Result<Balance>
         where S: Into<String>
     {
         match self.get_account() {
@@ -64,7 +64,7 @@ impl Account {
     }
 
     // Current open orders for ONE symbol
-    pub fn get_open_orders<S>(&self, symbol: S) -> Result<(Vec<Order>)>
+    pub fn get_open_orders<S>(&self, symbol: S) -> Result<Vec<Order>>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -78,7 +78,7 @@ impl Account {
     }
 
     // All current open orders
-    pub fn get_all_open_orders(&self) -> Result<(Vec<Order>)> {
+    pub fn get_all_open_orders(&self) -> Result<Vec<Order>> {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
 
         let request = build_signed_request(parameters, self.recv_window)?;
@@ -89,7 +89,7 @@ impl Account {
     }
 
     // Check an order's status
-    pub fn order_status<S>(&self, symbol: S, order_id: u64) -> Result<(Order)>
+    pub fn order_status<S>(&self, symbol: S, order_id: u64) -> Result<Order>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -121,7 +121,7 @@ impl Account {
     }
 
     // Place a LIMIT order - BUY
-    pub fn limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<(Transaction)>
+    pub fn limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<Transaction>
         where S: Into<String>, F: Into<f64>
     {
         let buy: OrderRequest = OrderRequest {
@@ -163,7 +163,7 @@ impl Account {
     }
 
     // Place a LIMIT order - SELL
-    pub fn limit_sell<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<(Transaction)>
+    pub fn limit_sell<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<Transaction>
         where S: Into<String>, F: Into<f64>
     {
         let sell: OrderRequest = OrderRequest {
@@ -205,7 +205,7 @@ impl Account {
     }
 
     // Place a MARKET order - BUY
-    pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<(Transaction)>
+    pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
         where S: Into<String>, F: Into<f64>
     {
         let buy: OrderRequest = OrderRequest {
@@ -247,7 +247,7 @@ impl Account {
     }
 
     // Place a MARKET order - SELL
-    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<(Transaction)>
+    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
         where S: Into<String>, F: Into<f64>
     {
         let sell: OrderRequest = OrderRequest {
@@ -289,7 +289,7 @@ impl Account {
     }
 
     // Check an order's status
-    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<(OrderCanceled)>
+    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<OrderCanceled>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
@@ -321,7 +321,7 @@ impl Account {
     }
 
     // Trade history
-    pub fn trade_history<S>(&self, symbol: S) -> Result<(Vec<TradeHistory>)>
+    pub fn trade_history<S>(&self, symbol: S) -> Result<Vec<TradeHistory>>
         where S: Into<String>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();

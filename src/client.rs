@@ -22,7 +22,7 @@ impl Client {
         }
     }
 
-    pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<(String)> {
+    pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
         let client = reqwest::Client::new();
         let response = client
@@ -33,7 +33,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<(String)> {
+    pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
         let client = reqwest::Client::new();
         let response = client
@@ -44,7 +44,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<(String)> {
+    pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
         let client = reqwest::Client::new();
         let response = client
@@ -55,7 +55,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn get(&self, endpoint: &str, request: &str) -> Result<(String)> {
+    pub fn get(&self, endpoint: &str, request: &str) -> Result<String> {
         let mut url: String = format!("{}{}", API1_HOST, endpoint);
         if !request.is_empty() {
             url.push_str(format!("?{}", request).as_str());
@@ -66,7 +66,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post(&self, endpoint: &str) -> Result<(String)> {
+    pub fn post(&self, endpoint: &str) -> Result<String> {
         let url: String = format!("{}{}", API1_HOST, endpoint);
 
         let client = reqwest::Client::new();
@@ -78,7 +78,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn put(&self, endpoint: &str, listen_key: &str) -> Result<(String)> {
+    pub fn put(&self, endpoint: &str, listen_key: &str) -> Result<String> {
         let url: String = format!("{}{}", API1_HOST, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
@@ -92,7 +92,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete(&self, endpoint: &str, listen_key: &str) -> Result<(String)> {
+    pub fn delete(&self, endpoint: &str, listen_key: &str) -> Result<String> {
         let url: String = format!("{}{}", API1_HOST, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
@@ -129,7 +129,7 @@ impl Client {
         Ok(custon_headers)
     }
 
-    fn handler(&self, mut response: Response) -> Result<(String)> {
+    fn handler(&self, mut response: Response) -> Result<String> {
         match response.status() {
             StatusCode::OK => {
                 let mut body = String::new();

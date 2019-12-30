@@ -11,14 +11,14 @@ pub struct General {
 
 impl General {
     // Test connectivity
-    pub fn ping(&self) -> Result<(String)> {
+    pub fn ping(&self) -> Result<String> {
         self.client.get("/api/v3/ping", "")?;
 
         Ok("pong".into())
     }
 
     // Check server time
-    pub fn get_server_time(&self) -> Result<(ServerTime)> {
+    pub fn get_server_time(&self) -> Result<ServerTime> {
         let data: String = self.client.get("/api/v3/time", "")?;
 
         let server_time: ServerTime = from_str(data.as_str())?;
@@ -27,7 +27,7 @@ impl General {
     }
 
     // Obtain exchange information (rate limits, symbol metadata etc)
-    pub fn exchange_info(&self) -> Result<(ExchangeInformation)> {
+    pub fn exchange_info(&self) -> Result<ExchangeInformation> {
         let data: String = self.client.get("/api/v3/exchangeInfo", "")?;
 
         let info: ExchangeInformation = from_str(data.as_str())?;

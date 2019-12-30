@@ -31,7 +31,7 @@ pub enum WebsocketEvent {
 }
 
 pub struct WebSockets<'a> {
-    socket: Option<(WebSocket<AutoStream>, Response)>,
+    pub socket: Option<(WebSocket<AutoStream>, Response)>,
     handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
 }
 
@@ -58,6 +58,15 @@ impl<'a> WebSockets<'a> {
             Err(e) => {
                 bail!(format!("Error during handshake {}", e));
             }
+        }
+    }
+
+    pub fn disconnect(&mut self) -> Result<()> {
+        if let Some(ref mut socket) = self.socket {
+            socket.0.close(None)?;
+            Ok(())
+        } else {
+            bail!("Not able to close the connection");
         }
     }
 
@@ -97,7 +106,7 @@ impl<'a> WebSockets<'a> {
                     Message::Close(e) => {
                         bail!(format!("Disconnected {:?}", e));
                     }
-                }                        
+                }                
             }
         }
     }

@@ -13,7 +13,7 @@ pub struct UserStream {
 
 impl UserStream {
     // User Stream
-    pub fn start(&self) -> Result<(UserDataStream)> {
+    pub fn start(&self) -> Result<UserDataStream> {
         let data = self.client.post(USER_DATA_STREAM)?;
         let user_data_stream: UserDataStream = from_str(data.as_str())?;
 
@@ -21,7 +21,7 @@ impl UserStream {
     }
 
     // Current open orders on a symbol
-    pub fn keep_alive(&self, listen_key: &str) -> Result<(Success)> {
+    pub fn keep_alive(&self, listen_key: &str) -> Result<Success> {
         let data = self.client.put(USER_DATA_STREAM, listen_key)?;
 
         let success: Success = from_str(data.as_str())?;
@@ -29,7 +29,7 @@ impl UserStream {
         Ok(success)
     }
 
-    pub fn close(&self, listen_key: &str) -> Result<(Success)> {
+    pub fn close(&self, listen_key: &str) -> Result<Success> {
         let data = self.client.put(USER_DATA_STREAM, listen_key)?;
 
         let success: Success = from_str(data.as_str())?;
