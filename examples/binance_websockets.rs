@@ -3,6 +3,7 @@ extern crate binance;
 use binance::api::*;
 use binance::userstream::*;
 use binance::websockets::*;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 fn main() {
     //user_stream();
@@ -36,6 +37,7 @@ fn user_stream() {
 }
 
 fn user_stream_websocket() {
+    let keep_running = AtomicBool::new(true); // Used to control the event loop
     let api_key_user = Some("YOUR_KEY".into());
     let user_stream: UserStream = Binance::new(api_key_user, None);
 
@@ -65,19 +67,23 @@ fn user_stream_websocket() {
         });
 
         web_socket.connect(&listen_key).unwrap(); // check error
-        if let Err(e) = web_socket.event_loop() {
+        if let Err(e) = web_socket.event_loop(&keep_running) {
             match e {
                 err => {
                     println!("Error: {}", err);
                 }
             }
         }
+        user_stream.close(&listen_key).unwrap();
+        web_socket.disconnect().unwrap();
+        println!("Userstrem closed and disconnected");
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
     }
 }
 
 fn market_websocket() {
+    let keep_running = AtomicBool::new(true); // Used to control the event loop
     let agg_trade: String = format!("{}@aggTrade", "ethbtc");
     let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
         match event {
@@ -106,16 +112,19 @@ fn market_websocket() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    if let Err(e) = web_socket.event_loop() {
+    if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => { 
                println!("Error: {}", err);
             }
         }
     }
+    web_socket.disconnect().unwrap();
+    println!("disconnected");
 }
 
 fn all_trades_websocket() {
+    let keep_running = AtomicBool::new(true); // Used to control the event loop
     let agg_trade: String = format!("!ticker@arr");
     let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
         match event {
@@ -134,16 +143,19 @@ fn all_trades_websocket() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    if let Err(e) = web_socket.event_loop() {
+    if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => {
                println!("Error: {}", err);
             }
         }
     }
+    web_socket.disconnect().unwrap();
+    println!("disconnected");
 }
 
 fn kline_websocket() {
+    let keep_running = AtomicBool::new(true);
     let kline: String = format!("{}", "ethbtc@kline_1m");
     let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
         match event {
@@ -160,16 +172,19 @@ fn kline_websocket() {
     });
 
     web_socket.connect(&kline).unwrap(); // check error
-    if let Err(e) = web_socket.event_loop() {
+    if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => { 
                println!("Error: {}", err);
             }
         }
     }
+    web_socket.disconnect().unwrap();
+    println!("disconnected");
 }
 
 fn last_price() {
+    let keep_running = AtomicBool::new(true);
     let agg_trade: String = format!("!ticker@arr");
     let mut btcusdt: f32 = "0".parse().unwrap();
 
@@ -181,6 +196,11 @@ fn last_price() {
                         btcusdt = tick_event.average_price.parse().unwrap();
                         let btcusdt_close: f32 = tick_event.current_close.parse().unwrap();
                         println!("{} - {}", btcusdt, btcusdt_close);
+
+                        if btcusdt_close as i32 == 7000 {
+                            // Break the event loop
+                            keep_running.store(false, Ordering::Relaxed);
+                        }
                     }
                 }
             },
@@ -191,12 +211,13 @@ fn last_price() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    
-    if let Err(e) = web_socket.event_loop() {
+    if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => {
                println!("Error: {}", err);
             }
         }
     }
+    web_socket.disconnect().unwrap();
+    println!("disconnected");
 }

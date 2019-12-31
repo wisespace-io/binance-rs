@@ -233,6 +233,7 @@ use binance::userstream::*;
 use binance::websockets::*;
 
 let api_key_user = Some("YOUR_KEY".into());
+let keep_running = AtomicBool::new(true); // Used to control the event loop
 let user_stream: UserStream = Binance::new(api_key_user, None);
 
 if let Ok(answer) = user_stream.start() {
@@ -261,7 +262,7 @@ if let Ok(answer) = user_stream.start() {
     });
 
     web_socket.connect(&listen_key).unwrap(); // check error
-    if let Err(e) = web_socket.event_loop() {
+    if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => {
                 println!("Error: {}", err);
@@ -281,6 +282,7 @@ extern crate binance;
 use binance::api::*;
 use binance::websockets::*;
 
+let keep_running = AtomicBool::new(true); // Used to control the event loop
 let agg_trade: String = format!("!ticker@arr");
 let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
     match event {
@@ -300,7 +302,7 @@ let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
 });
 
 web_socket.connect(&agg_trade).unwrap(); // check error
-if let Err(e) = web_socket.event_loop() {
+if let Err(e) = web_socket.event_loop(&keep_running) {
     match e {
         err => {
            println!("Error: {}", err);
@@ -317,6 +319,7 @@ extern crate binance;
 use binance::api::*;
 use binance::websockets::*;
 
+let keep_running = AtomicBool::new(true); // Used to control the event loop
 let kline: String = format!("{}", "ethbtc@kline_1m");
 let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
     match event {
@@ -332,13 +335,14 @@ let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
 });
 
 web_socket.connect(&kline).unwrap(); // check error
-if let Err(e) = web_socket.event_loop() {
+if let Err(e) = web_socket.event_loop(&keep_running) {
     match e {
         err => {
            println!("Error: {}", err);
         }
     }
 }
+web_socket.disconnect().unwrap();
 ```
 
 ## Other Exchanges

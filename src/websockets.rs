@@ -3,6 +3,7 @@ use errors::*;
 use url::Url;
 use serde_json::from_str;
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use tungstenite::{connect, Message};
 use tungstenite::protocol::WebSocket;
 use tungstenite::client::AutoStream;
@@ -70,8 +71,8 @@ impl<'a> WebSockets<'a> {
         }
     }
 
-    pub fn event_loop(&mut self) -> Result<()> {
-        loop {
+    pub fn event_loop(&mut self, running: &AtomicBool) -> Result<()> {
+        while running.load(Ordering::Relaxed) {
             if let Some(ref mut socket) = self.socket {
                 let message = socket.0.read_message()?;
 
@@ -106,8 +107,9 @@ impl<'a> WebSockets<'a> {
                     Message::Close(e) => {
                         bail!(format!("Disconnected {:?}", e));
                     }
-                }                
+                }
             }
         }
+        Ok(())
     }
 }
