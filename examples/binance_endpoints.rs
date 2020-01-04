@@ -20,9 +20,9 @@ fn general() {
         Ok(answer) => println!("{:?}", answer),
         Err(err) => {
             match err.0 {
-                BinanceLibErrorKind::BinanceError(code, msg, _response) => match code {
+                BinanceLibErrorKind::BinanceError(response) => match response.code {
                     -1000_i16 => println!("An unknown error occured while processing the request"),
-                    _ => println!("Non-catched code {}: {}", code, msg),
+                    _ => println!("Non-catched code {}: {}", response.code, response.msg),
                 },
                 BinanceLibErrorKind::Msg(msg) => {
                     println!("Binancelib error msg: {}", msg)

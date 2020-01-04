@@ -1,7 +1,8 @@
 use hex::encode as hex_encode;
 use errors::*;
 use reqwest;
-use reqwest::{Response, StatusCode};
+use reqwest::StatusCode;
+use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use std::io::Read;
 use ring::hmac;
@@ -24,7 +25,7 @@ impl Client {
 
     pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let response = client
             .get(url.as_str())
             .headers(self.build_headers(true)?)
@@ -35,7 +36,7 @@ impl Client {
 
     pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let response = client
             .post(url.as_str())
             .headers(self.build_headers(true)?)
@@ -46,7 +47,7 @@ impl Client {
 
     pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let response = client
             .delete(url.as_str())
             .headers(self.build_headers(true)?)
@@ -61,7 +62,7 @@ impl Client {
             url.push_str(format!("?{}", request).as_str());
         }
 
-        let response = reqwest::get(url.as_str())?;
+        let response = reqwest::blocking::get(url.as_str())?;
 
         self.handler(response)
     }
@@ -69,7 +70,7 @@ impl Client {
     pub fn post(&self, endpoint: &str) -> Result<String> {
         let url: String = format!("{}{}", API1_HOST, endpoint);
 
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let response = client
             .post(url.as_str())
             .headers(self.build_headers(false)?)
@@ -82,7 +83,7 @@ impl Client {
         let url: String = format!("{}{}", API1_HOST, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let response = client
             .put(url.as_str())
             .headers(self.build_headers(false)?)
@@ -96,7 +97,7 @@ impl Client {
         let url: String = format!("{}{}", API1_HOST, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let response = client
             .delete(url.as_str())
             .headers(self.build_headers(false)?)
@@ -146,9 +147,9 @@ impl Client {
                 bail!("Unauthorized");
             }
             StatusCode::BAD_REQUEST => {
-                let error_json: BinanceContentError = response.json()?;
+                let error: BinanceContentError = response.json()?;
 
-                Err(ErrorKind::BinanceError(error_json.code, error_json.msg, response).into())
+                Err(ErrorKind::BinanceError(error).into())
             }
             s => {
                 bail!(format!("Received response: {:?}", s));
@@ -157,8 +158,3 @@ impl Client {
     }
 }
 
-#[derive(Debug, Deserialize)]
-pub struct BinanceContentError {
-    code: i16,
-    msg: String
-}

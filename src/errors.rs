@@ -3,10 +3,21 @@ use reqwest;
 use url;
 use serde_json;
 use tungstenite;
+use serde_json::Value;
+use std::collections::HashMap;
+
+#[derive(Debug, Deserialize)]
+pub struct BinanceContentError {
+    pub code: i16,
+    pub msg: String,
+
+    #[serde(flatten)]
+    extra: HashMap<String, Value>,    
+}
 
 error_chain! {
     errors {
-        BinanceError(code: i16, msg: String, response: reqwest::Response)
+        BinanceError(response: BinanceContentError)
      }
 
     foreign_links {

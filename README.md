@@ -179,10 +179,10 @@ Err(err) => {
     println!("Can't put an order!");
 
     match err.0 {
-        BinanceLibErrorKind::BinanceError(code, msg, response) => match code {
+        BinanceLibErrorKind::BinanceError(response) => match response.code {
             -1013_i16 => println!("Filter failure: LOT_SIZE!"),
-            -2010_i16 => println!("Funds insufficient! {}", msg),
-            _ => println!("Non-catched code {}: {}", code, msg),
+            -2010_i16 => println!("Funds insufficient! {}", response.msg),
+            _ => println!("Non-catched code {}: {}", response.code, response.msg),
         },
         BinanceLibErrorKind::Msg(msg) => {
             println!("Binancelib error msg: {}", msg)

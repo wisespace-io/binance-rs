@@ -4,6 +4,7 @@ extern crate binance;
 use std::error::Error;
 use std::fs::File;
 use csv::Writer;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use binance::websockets::*;
 use binance::model::{DayTickerEvent};
@@ -24,7 +25,7 @@ fn save_all_trades_websocket() {
         }
 
         // serialize DayTickerEvent as CSV records
-        pub fn write_to_file(&mut self, events: Vec<DayTickerEvent>) -> Result<(), Box<Error>> {
+        pub fn write_to_file(&mut self, events: Vec<DayTickerEvent>) -> Result<(), Box<dyn Error>> {
             for event in events {
                 self.wrt.serialize(event)?;
             }
@@ -32,6 +33,7 @@ fn save_all_trades_websocket() {
         }
     }
 
+    let keep_running = AtomicBool::new(true); // Used to control the event loop
     let file_path = std::path::Path::new("test.csv");
     let local_wrt = csv::Writer::from_path(file_path).unwrap();
 
@@ -40,6 +42,8 @@ fn save_all_trades_websocket() {
     let mut web_socket: WebSockets = WebSockets::new(move |event: WebsocketEvent| {
         match event {
             WebsocketEvent::DayTicker(events) => {
+                // You can break the event_loop if some condition is met be setting keep_running to false
+                // keep_running.store(false, Ordering::Relaxed);
                 if let Err(error) = web_socket_handler.write_to_file(events) {
                     println!("{}", error);
                 }
@@ -51,7 +55,7 @@ fn save_all_trades_websocket() {
     });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
-    if let Err(e) = web_socket.event_loop() {
+    if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => {
                println!("Error: {}", err);
