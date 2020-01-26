@@ -28,7 +28,8 @@ binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 ```
 
 ## Rust >= 1.37
-```
+
+```rust
 rustup install stable
 ```
 
