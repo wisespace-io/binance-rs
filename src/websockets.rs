@@ -29,6 +29,7 @@ pub enum WebsocketEvent {
     DayTicker(Vec<DayTickerEvent>),
     Kline(KlineEvent),
     DepthOrderBook(DepthOrderBookEvent),
+    BookTicker(BookTickerEvent)
 }
 
 pub struct WebSockets<'a> {
@@ -75,10 +76,19 @@ impl<'a> WebSockets<'a> {
         while running.load(Ordering::Relaxed) {
             if let Some(ref mut socket) = self.socket {
                 let message = socket.0.read_message()?;
+                let value: serde_json::Value = serde_json::from_str(message.to_text()?)?;
 
                 match message {
                     Message::Text(msg) => {
-                        if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
+                        if value["u"] != serde_json::Value::Null && 
+                           value["s"] != serde_json::Value::Null && 
+                           value["b"] != serde_json::Value::Null && 
+                           value["B"] != serde_json::Value::Null &&
+                           value["a"] != serde_json::Value::Null &&
+                           value["A"] != serde_json::Value::Null {
+                            let book_ticker: BookTickerEvent = from_str(msg.as_str())?;
+                            (self.handler)(WebsocketEvent::BookTicker(book_ticker))?;
+                        } else if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
                             let account_update: AccountUpdateEvent = from_str(msg.as_str())?;
                             (self.handler)(WebsocketEvent::AccountUpdate(account_update))?;
                         } else if msg.find(EXECUTION_REPORT) != None {
