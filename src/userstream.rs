@@ -30,7 +30,7 @@ impl UserStream {
     }
 
     pub fn close(&self, listen_key: &str) -> Result<Success> {
-        let data = self.client.put(USER_DATA_STREAM, listen_key)?;
+        let data = self.client.delete(USER_DATA_STREAM, listen_key)?;
 
         let success: Success = from_str(data.as_str())?;
 
