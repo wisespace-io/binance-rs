@@ -18,6 +18,7 @@ pub struct ExchangeInformation {
 pub struct RateLimit {
     pub rate_limit_type: String,
     pub interval: String,
+    pub interval_num: u16,
     pub limit: u64,
 }
 
@@ -45,19 +46,28 @@ pub enum Filters {
     PriceFilter { min_price: String, max_price: String, tick_size: String },
     #[serde(rename = "PERCENT_PRICE")]
     #[serde(rename_all = "camelCase")]
-    PercentPrice { multiplier_up: String, multiplier_down: String, avg_price_mins: f64 },
+    PercentPrice { multiplier_up: String, multiplier_down: String, avg_price_mins: Option<f64> },
     #[serde(rename = "LOT_SIZE")]
     #[serde(rename_all = "camelCase")]
     LotSize { min_qty: String, max_qty: String, step_size: String },
     #[serde(rename = "MIN_NOTIONAL")]
     #[serde(rename_all = "camelCase")]
-    MinNotional { min_notional: String, apply_to_market: bool, avg_price_mins: f64 },
+    MinNotional { min_notional: String, apply_to_market: bool, avg_price_mins: Option<f64> },
     #[serde(rename = "ICEBERG_PARTS")]
     #[serde(rename_all = "camelCase")]
     IcebergParts { limit: u16 },
+    #[serde(rename = "MAX_NUM_ORDERS")]
+    #[serde(rename_all = "camelCase")]
+    MaxNumOrders { limit: u16 },
     #[serde(rename = "MAX_NUM_ALGO_ORDERS")]
     #[serde(rename_all = "camelCase")]
     MaxNumAlgoOrders { max_num_algo_orders: u16 },
+    #[serde(rename = "MAX_NUM_ICEBERG_ORDERS")]
+    #[serde(rename_all = "camelCase")]
+    MaxNumIcebergOrders { max_num_iceberg_orders: u16 },
+    #[serde(rename = "MAX_POSITION")]
+    #[serde(rename_all = "camelCase")]
+    MaxPosition { max_position: String },
     #[serde(rename = "MARKET_LOT_SIZE")]
     #[serde(rename_all = "camelCase")]
     MarketLotSize { min_qty: String, max_qty: String, step_size: String }

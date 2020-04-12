@@ -32,3 +32,5 @@ pub mod account;
 pub mod market;
 pub mod userstream;
 pub mod websockets;
+
+pub mod futures;
