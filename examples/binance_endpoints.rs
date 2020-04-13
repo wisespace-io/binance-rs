@@ -41,6 +41,12 @@ fn general() {
         Ok(answer) => println!("Exchange information: {:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
+
+    let result = general.get_symbol_info("ethbtc");
+    match result {
+        Ok(answer) => println!("Symbol information: {:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
 }
 
 fn account() {

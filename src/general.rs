@@ -26,12 +26,32 @@ impl General {
         Ok(server_time)
     }
 
-    // Obtain exchange information (rate limits, symbol metadata etc)
+    // Obtain exchange information
+    // - Current exchange trading rules and symbol information
     pub fn exchange_info(&self) -> Result<ExchangeInformation> {
         let data: String = self.client.get("/api/v3/exchangeInfo", "")?;
 
         let info: ExchangeInformation = from_str(data.as_str())?;
 
         Ok(info)
+    }
+
+    // Get Symbol information
+    pub fn get_symbol_info<S>(&self, symbol: S) -> Result<Symbol>
+    where
+        S: Into<String>,
+    {
+        let upper_symbol = symbol.into().to_uppercase();
+        match self.exchange_info() {
+            Ok(info) => {
+                for item in info.symbols {
+                    if item.symbol == upper_symbol {
+                        return Ok(item);
+                    }
+                }
+                bail!("Symbol not found")                    
+            },
+            Err(e) => Err(e),
+        }
     }
 }
