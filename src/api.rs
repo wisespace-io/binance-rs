@@ -2,6 +2,7 @@ use account::*;
 use market::*;
 use general::*;
 use futures::general::*;
+use futures::market::*;
 use userstream::*;
 use client::*;
 
@@ -56,6 +57,15 @@ impl Binance for FuturesGeneral {
     fn new(api_key: Option<String>, secret_key: Option<String>) -> FuturesGeneral {
         FuturesGeneral {
             client: Client::new(api_key, secret_key, FAPI_HOST.to_string()),
+        }
+    }
+}
+
+impl Binance for FuturesMarket {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> FuturesMarket {
+        FuturesMarket {
+            client: Client::new(api_key, secret_key, FAPI_HOST.to_string()),
+            recv_window: 5000,
         }
     }
 }

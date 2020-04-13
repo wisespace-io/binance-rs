@@ -1,0 +1,188 @@
+use util::*;
+use futures::model::*;
+use client::*;
+use errors::*;
+use std::collections::BTreeMap;
+use serde_json::{Value, from_str};
+
+// TODO
+// Make enums for Strings
+// Add limit parameters to functions
+// Implement all functions
+
+#[derive(Clone)]
+pub struct FuturesMarket {
+    pub client: Client,
+    pub recv_window: u64,
+}
+
+impl FuturesMarket {
+    // Order book (Default 100; max 1000)
+    pub fn get_depth<S>(&self, symbol: S) -> Result<OrderBook>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/depth", &request)?;
+
+        let order_book: OrderBook = from_str(data.as_str())?;
+
+        Ok(order_book)
+    }
+
+    pub fn get_trades<S>(&self, symbol: S) -> Result<Trades>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/trades", &request)?;
+
+        let trades: Trades = from_str(data.as_str())?;
+
+        Ok(trades)
+    }
+
+    // TODO Requires API key
+    pub fn get_historical_trades<S1, S2>(&self, _symbol: S1, _from_id: S2) -> Result<Trades>
+    where
+        S1: Into<String>,
+        S2: Into<Option<u64>>,
+    {
+        unimplemented!();
+    }
+
+    // TODO /fapi/v1/aggTrades
+    pub fn get_agg_trades<S1, S2, S3, S4, S5>(
+        _symbol: S1, _from_id: S2, _start_time: S3, _end_time: S4, _limit: S5,
+    ) -> Result<AggTrades>
+    where
+        S1: Into<String>,
+        S2: Into<Option<u64>>,
+        S3: Into<Option<u64>>,
+        S4: Into<Option<u64>>,
+        S5: Into<Option<u16>>,
+    {
+        unimplemented!();
+    }
+
+    // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
+    // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
+    pub fn get_klines<S1, S2, S3, S4, S5>(
+        &self, symbol: S1, interval: S2, limit: S3, start_time: S4, end_time: S5,
+    ) -> Result<KlineSummaries>
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<Option<u16>>,
+        S4: Into<Option<u64>>,
+        S5: Into<Option<u64>>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("interval".into(), interval.into());
+
+        // Add three optional parameters
+        if let Some(lt) = limit.into() {
+            parameters.insert("limit".into(), format!("{}", lt));
+        }
+        if let Some(st) = start_time.into() {
+            parameters.insert("startTime".into(), format!("{}", st));
+        }
+        if let Some(et) = end_time.into() {
+            parameters.insert("endTime".into(), format!("{}", et));
+        }
+
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/klines", &request)?;
+        let parsed_data: Vec<Vec<Value>> = from_str(data.as_str())?;
+
+        let klines = KlineSummaries::AllKlineSummaries(
+            parsed_data
+                .iter()
+                .map(|row| KlineSummary {
+                    open_time: to_i64(&row[0]),
+                    open: to_f64(&row[1]),
+                    high: to_f64(&row[2]),
+                    low: to_f64(&row[3]),
+                    close: to_f64(&row[4]),
+                    volume: to_f64(&row[5]),
+                    close_time: to_i64(&row[6]),
+                    quote_asset_volume: to_f64(&row[7]),
+                    number_of_trades: to_i64(&row[8]),
+                    taker_buy_base_asset_volume: to_f64(&row[9]),
+                    taker_buy_quote_asset_volume: to_f64(&row[10]),
+                })
+                .collect(),
+        );
+        Ok(klines)
+    }
+
+    // 24hr ticker price change statistics
+    pub fn get_24h_price_stats<S>(&self, symbol: S) -> Result<PriceStats>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/ticker/24hr", &request)?;
+
+        let stats: PriceStats = from_str(data.as_str())?;
+
+        Ok(stats)
+    }
+
+    // Latest price for ONE symbol.
+    pub fn get_price<S>(&self, symbol: S) -> Result<SymbolPrice>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/ticker/price", &request)?;
+        let symbol_price: SymbolPrice = from_str(data.as_str())?;
+
+        Ok(symbol_price)
+    }
+
+    // Symbols order book ticker
+    // -> Best price/qty on the order book for ALL symbols.
+    pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
+        let data = self.client.get("/fapi/v1/ticker/bookTicker", "")?;
+
+        let book_tickers: BookTickers = from_str(data.as_str())?;
+
+        Ok(book_tickers)
+    }
+
+    // -> Best price/qty on the order book for ONE symbol
+    pub fn get_book_ticker<S>(&self, symbol: S) -> Result<Tickers>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/ticker/bookTicker", &request)?;
+        let ticker: Tickers = from_str(data.as_str())?;
+
+        Ok(ticker)
+    }
+}

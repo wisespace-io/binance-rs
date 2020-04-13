@@ -1,10 +1,9 @@
-use model::{Filters, RateLimit};
+use model::string_or_float;
 
-#[derive(Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct ServerTime {
-    pub server_time: u64,
-}
+pub use model::{
+    Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
+    SymbolPrice, Tickers,
+};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -32,4 +31,90 @@ pub struct Symbol {
     pub filters: Vec<Filters>,
     pub order_types: Vec<String>,
     pub time_in_force: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderBook {
+    pub last_update_id: u64,
+    // Undocumented
+    #[serde(rename = "E")]
+    pub event_time: u64,
+    // Undocumented
+    #[serde(rename = "T")]
+    pub trade_order_time: u64,
+    pub bids: Vec<Bids>,
+    pub asks: Vec<Asks>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PriceStats {
+    pub price_change: String,
+    pub price_change_percent: String,
+    pub weighted_avg_price: String,
+    #[serde(with = "string_or_float")]
+    pub last_price: f64,
+    #[serde(with = "string_or_float")]
+    pub bid_price: f64,
+    #[serde(with = "string_or_float")]
+    pub ask_price: f64,
+    #[serde(with = "string_or_float")]
+    pub open_price: f64,
+    #[serde(with = "string_or_float")]
+    pub high_price: f64,
+    #[serde(with = "string_or_float")]
+    pub low_price: f64,
+    #[serde(with = "string_or_float")]
+    pub volume: f64,
+    pub open_time: u64,
+    pub close_time: u64,
+    pub first_id: u64,
+    pub last_id: u64,
+    pub count: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum Trades {
+    AllTrades(Vec<Trade>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Trade {
+    id: u64,
+    is_buyer_maker: bool,
+    #[serde(with = "string_or_float")]
+    price: f64,
+    #[serde(with = "string_or_float")]
+    qty: f64,
+    #[serde(with = "string_or_float")]
+    quote_qty: f64,
+    time: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum AggTrades {
+    AllAggTrades(Vec<AggTrade>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AggTrade {
+    #[serde(rename = "T")]
+    time: u64,
+    #[serde(rename = "a")]
+    agg_id: u64,
+    #[serde(rename = "f")]
+    first_id: u64,
+    #[serde(rename = "l")]
+    last_id: u64,
+    #[serde(rename = "m")]
+    maker: bool,
+    #[serde(rename = "p", with = "string_or_float")]
+    price: f64,
+    #[serde(rename = "q", with = "string_or_float")]
+    qty: f64,
 }

@@ -45,8 +45,8 @@ impl FuturesGeneral {
                         return Ok(item);
                     }
                 }
-                bail!("Symbol not found")                    
-            },
+                bail!("Symbol not found")
+            }
             Err(e) => Err(e),
         }
     }

@@ -2,12 +2,13 @@ extern crate binance;
 
 use binance::api::*;
 use binance::futures::general::*;
+use binance::futures::market::*;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
     general();
     //account();
-    //market_data();
+    market_data();
 }
 
 fn general() {
@@ -45,4 +46,8 @@ fn general() {
         Ok(answer) => println!("Symbol information: {:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
+}
+
+fn market_data() {
+    let _market: FuturesMarket = Binance::new(None, None);
 }
