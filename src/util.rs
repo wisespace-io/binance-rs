@@ -14,7 +14,9 @@ pub fn build_request(parameters: &BTreeMap<String, String>) -> String {
     request
 }
 
-pub fn build_signed_request(mut parameters: BTreeMap<String, String>, recv_window: u64) -> Result<String> {
+pub fn build_signed_request(
+    mut parameters: BTreeMap<String, String>, recv_window: u64,
+) -> Result<String> {
     if recv_window > 0 {
         parameters.insert("recvWindow".into(), recv_window.to_string());
     }
@@ -31,16 +33,16 @@ pub fn build_signed_request(mut parameters: BTreeMap<String, String>, recv_windo
 
         Ok(request)
     } else {
-         bail!("Failed to get timestamp")
+        bail!("Failed to get timestamp")
     }
 }
 
-pub fn to_i64(v: &Value) -> i64 { 
-    v.as_i64().unwrap() 
+pub fn to_i64(v: &Value) -> i64 {
+    v.as_i64().unwrap()
 }
 
-pub fn to_f64(v: &Value) -> f64 { 
-    v.as_str().unwrap().parse().unwrap() 
+pub fn to_f64(v: &Value) -> f64 {
+    v.as_str().unwrap().parse().unwrap()
 }
 
 fn get_timestamp() -> Result<u64> {

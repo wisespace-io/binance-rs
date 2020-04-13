@@ -19,7 +19,7 @@ impl Client {
         Client {
             api_key: api_key.unwrap_or_else(|| "".into()),
             secret_key: secret_key.unwrap_or_else(|| "".into()),
-            host: host,
+            host,
         }
     }
 
@@ -123,9 +123,15 @@ impl Client {
 
         custon_headers.insert(USER_AGENT, HeaderValue::from_static("binance-rs"));
         if content_type {
-            custon_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/x-www-form-urlencoded"));
+            custon_headers.insert(
+                CONTENT_TYPE,
+                HeaderValue::from_static("application/x-www-form-urlencoded"),
+            );
         }
-        custon_headers.insert(HeaderName::from_static("x-mbx-apikey"), HeaderValue::from_str(self.api_key.as_str())?);
+        custon_headers.insert(
+            HeaderName::from_static("x-mbx-apikey"),
+            HeaderValue::from_str(self.api_key.as_str())?,
+        );
 
         Ok(custon_headers)
     }

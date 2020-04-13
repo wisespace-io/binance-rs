@@ -1,4 +1,4 @@
-use model::{ Filters, RateLimit };
+use model::{Filters, RateLimit};
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -31,5 +31,5 @@ pub struct Symbol {
     pub quote_precision: u64,
     pub filters: Vec<Filters>,
     pub order_types: Vec<String>,
-    pub time_in_force: Vec<String>
+    pub time_in_force: Vec<String>,
 }

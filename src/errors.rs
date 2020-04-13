@@ -12,7 +12,7 @@ pub struct BinanceContentError {
     pub msg: String,
 
     #[serde(flatten)]
-    extra: HashMap<String, Value>,    
+    extra: HashMap<String, Value>,
 }
 
 error_chain! {

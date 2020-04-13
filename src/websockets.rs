@@ -9,18 +9,19 @@ use tungstenite::protocol::WebSocket;
 use tungstenite::client::AutoStream;
 use tungstenite::handshake::client::Response;
 
-static WEBSOCKET_URL: &'static str = "wss://stream.binance.com:9443/ws/";
+static WEBSOCKET_URL: &str = "wss://stream.binance.com:9443/ws/";
 
-static OUTBOUND_ACCOUNT_INFO: &'static str = "outboundAccountInfo";
-static EXECUTION_REPORT: &'static str = "executionReport";
+static OUTBOUND_ACCOUNT_INFO: &str = "outboundAccountInfo";
+static EXECUTION_REPORT: &str = "executionReport";
 
-static KLINE: &'static str = "kline";
-static AGGREGATED_TRADE: &'static str = "aggTrade";
-static DEPTH_ORDERBOOK : &'static str = "depthUpdate";
-static PARTIAL_ORDERBOOK : &'static str = "lastUpdateId";
+static KLINE: &str = "kline";
+static AGGREGATED_TRADE: &str = "aggTrade";
+static DEPTH_ORDERBOOK: &str = "depthUpdate";
+static PARTIAL_ORDERBOOK: &str = "lastUpdateId";
 
-static DAYTICKER: &'static str = "24hrTicker";
+static DAYTICKER: &str = "24hrTicker";
 
+#[allow(clippy::large_enum_variant)]
 pub enum WebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
     OrderTrade(OrderTradeEvent),
@@ -29,7 +30,7 @@ pub enum WebsocketEvent {
     DayTicker(Vec<DayTickerEvent>),
     Kline(KlineEvent),
     DepthOrderBook(DepthOrderBookEvent),
-    BookTicker(BookTickerEvent)
+    BookTicker(BookTickerEvent),
 }
 
 pub struct WebSockets<'a> {
@@ -40,7 +41,7 @@ pub struct WebSockets<'a> {
 impl<'a> WebSockets<'a> {
     pub fn new<Callback>(handler: Callback) -> WebSockets<'a>
     where
-        Callback: FnMut(WebsocketEvent) -> Result<()> + 'a
+        Callback: FnMut(WebsocketEvent) -> Result<()> + 'a,
     {
         WebSockets {
             socket: None,
@@ -80,12 +81,13 @@ impl<'a> WebSockets<'a> {
 
                 match message {
                     Message::Text(msg) => {
-                        if value["u"] != serde_json::Value::Null && 
-                           value["s"] != serde_json::Value::Null && 
-                           value["b"] != serde_json::Value::Null && 
-                           value["B"] != serde_json::Value::Null &&
-                           value["a"] != serde_json::Value::Null &&
-                           value["A"] != serde_json::Value::Null {
+                        if value["u"] != serde_json::Value::Null &&
+                            value["s"] != serde_json::Value::Null &&
+                            value["b"] != serde_json::Value::Null &&
+                            value["B"] != serde_json::Value::Null &&
+                            value["a"] != serde_json::Value::Null &&
+                            value["A"] != serde_json::Value::Null
+                        {
                             let book_ticker: BookTickerEvent = from_str(msg.as_str())?;
                             (self.handler)(WebsocketEvent::BookTicker(book_ticker))?;
                         } else if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
@@ -111,9 +113,7 @@ impl<'a> WebSockets<'a> {
                             (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook))?;
                         }
                     }
-                    Message::Ping(_) |
-                    Message::Pong(_) |
-                    Message::Binary(_) => {}
+                    Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => {}
                     Message::Close(e) => {
                         bail!(format!("Disconnected {:?}", e));
                     }

@@ -13,8 +13,7 @@ fn main() {
     save_all_trades_websocket();
 }
 
-fn save_all_trades_websocket() { 
-
+fn save_all_trades_websocket() {
     struct WebSocketHandler {
         wrt: Writer<File>,
     };
@@ -47,7 +46,7 @@ fn save_all_trades_websocket() {
                 if let Err(error) = web_socket_handler.write_to_file(events) {
                     println!("{}", error);
                 }
-            },
+            }
             _ => (),
         }
 
@@ -58,7 +57,7 @@ fn save_all_trades_websocket() {
     if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
             err => {
-               println!("Error: {}", err);
+                println!("Error: {}", err);
             }
         }
     }

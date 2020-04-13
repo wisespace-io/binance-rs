@@ -22,9 +22,7 @@ fn general() {
                     -1000_i16 => println!("An unknown error occured while processing the request"),
                     _ => println!("Non-catched code {}: {}", response.code, response.msg),
                 },
-                BinanceLibErrorKind::Msg(msg) => {
-                    println!("Binancelib error msg: {}", msg)
-                }
+                BinanceLibErrorKind::Msg(msg) => println!("Binancelib error msg: {}", msg),
                 _ => println!("Other errors: {}.", err.0),
             };
         }
@@ -40,5 +38,5 @@ fn general() {
     match result {
         Ok(answer) => println!("Exchange information: {:?}", answer),
         Err(e) => println!("Error: {}", e),
-    }    
+    }
 }
