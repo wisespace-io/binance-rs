@@ -19,7 +19,7 @@ impl Client {
         Client {
             api_key: api_key.unwrap_or_else(|| "".into()),
             secret_key: secret_key.unwrap_or_else(|| "".into()),
-            host: host,
+            host,
         }
     }
 

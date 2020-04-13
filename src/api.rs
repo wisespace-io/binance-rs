@@ -5,8 +5,8 @@ use futures::general::*;
 use userstream::*;
 use client::*;
 
-static API_HOST: &'static str = "https://www.binance.com";
-static FAPI_HOST: &'static str = "https://fapi.binance.com";
+static API_HOST: &str = "https://www.binance.com";
+static FAPI_HOST: &str = "https://fapi.binance.com";
 
 //#[derive(Clone)]
 pub trait Binance {

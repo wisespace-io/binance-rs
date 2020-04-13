@@ -5,18 +5,18 @@ use errors::*;
 use std::collections::BTreeMap;
 use serde_json::from_str;
 
-static ORDER_TYPE_LIMIT: &'static str = "LIMIT";
-static ORDER_TYPE_MARKET: &'static str = "MARKET";
-static ORDER_SIDE_BUY: &'static str = "BUY";
-static ORDER_SIDE_SELL: &'static str = "SELL";
-static TIME_IN_FORCE_GTC: &'static str = "GTC";
+static ORDER_TYPE_LIMIT: &str = "LIMIT";
+static ORDER_TYPE_MARKET: &str = "MARKET";
+static ORDER_SIDE_BUY: &str = "BUY";
+static ORDER_SIDE_SELL: &str = "SELL";
+static TIME_IN_FORCE_GTC: &str = "GTC";
 
-static API_V3_ORDER: &'static str = "/api/v3/order";
+static API_V3_ORDER: &str = "/api/v3/order";
 
 /// Endpoint for test orders.
 ///
 /// Orders issued to this endpoint are validated, but not sent into the matching engine.
-static API_V3_ORDER_TEST: &'static str = "/api/v3/order/test";
+static API_V3_ORDER_TEST: &str = "/api/v3/order/test";
 
 #[derive(Clone)]
 pub struct Account {
@@ -133,7 +133,7 @@ impl Account {
         let buy: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: price,
+            price,
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -157,7 +157,7 @@ impl Account {
         let buy: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: price,
+            price,
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -179,7 +179,7 @@ impl Account {
         let sell: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: price,
+            price,
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -203,7 +203,7 @@ impl Account {
         let sell: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
-            price: price,
+            price,
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),

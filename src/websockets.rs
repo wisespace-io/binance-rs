@@ -9,18 +9,19 @@ use tungstenite::protocol::WebSocket;
 use tungstenite::client::AutoStream;
 use tungstenite::handshake::client::Response;
 
-static WEBSOCKET_URL: &'static str = "wss://stream.binance.com:9443/ws/";
+static WEBSOCKET_URL: &str = "wss://stream.binance.com:9443/ws/";
 
-static OUTBOUND_ACCOUNT_INFO: &'static str = "outboundAccountInfo";
-static EXECUTION_REPORT: &'static str = "executionReport";
+static OUTBOUND_ACCOUNT_INFO: &str = "outboundAccountInfo";
+static EXECUTION_REPORT: &str = "executionReport";
 
-static KLINE: &'static str = "kline";
-static AGGREGATED_TRADE: &'static str = "aggTrade";
-static DEPTH_ORDERBOOK: &'static str = "depthUpdate";
-static PARTIAL_ORDERBOOK: &'static str = "lastUpdateId";
+static KLINE: &str = "kline";
+static AGGREGATED_TRADE: &str = "aggTrade";
+static DEPTH_ORDERBOOK: &str = "depthUpdate";
+static PARTIAL_ORDERBOOK: &str = "lastUpdateId";
 
-static DAYTICKER: &'static str = "24hrTicker";
+static DAYTICKER: &str = "24hrTicker";
 
+#[allow(clippy::large_enum_variant)]
 pub enum WebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
     OrderTrade(OrderTradeEvent),
