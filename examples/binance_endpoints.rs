@@ -1,5 +1,3 @@
-extern crate binance;
-
 use binance::api::*;
 use binance::general::*;
 use binance::account::*;

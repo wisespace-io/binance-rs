@@ -1,5 +1,3 @@
-extern crate binance;
-
 use binance::api::*;
 use binance::futures::general::*;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
