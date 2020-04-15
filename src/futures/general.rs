@@ -1,6 +1,6 @@
-use futures::model::*;
-use client::*;
-use errors::*;
+use crate::futures::model::*;
+use crate::client::*;
+use crate::errors::*;
 use serde_json::from_str;
 
 #[derive(Clone)]

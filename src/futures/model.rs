@@ -1,6 +1,6 @@
-use model::string_or_float;
+use crate::model::string_or_float;
 
-pub use model::{
+pub use crate::model::{
     Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
     SymbolPrice, Tickers,
 };

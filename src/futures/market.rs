@@ -20,10 +20,10 @@
 - [ ] `Taker Buy/Sell Volume (MARKET_DATA)`
 */
 
-use util::*;
-use futures::model::*;
-use client::*;
-use errors::*;
+use crate::util::*;
+use crate::futures::model::*;
+use crate::client::*;
+use crate::errors::*;
 use std::collections::BTreeMap;
 use serde_json::{Value, from_str};
 
