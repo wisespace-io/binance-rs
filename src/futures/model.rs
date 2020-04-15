@@ -118,3 +118,21 @@ pub struct AggTrade {
     #[serde(rename = "q", with = "string_or_float")]
     qty: f64,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum MarkPrices {
+    AllMarkPrices(Vec<MarkPrice>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkPrice {
+    symbol: String,
+    #[serde(with = "string_or_float")]
+    mark_price: f64,
+    #[serde(with = "string_or_float")]
+    last_funding_rate: f64,
+    next_funding_time: u64,
+    time: u64,
+}

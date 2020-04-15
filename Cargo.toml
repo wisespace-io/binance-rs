@@ -6,6 +6,7 @@ authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 
 description = "Rust Library for the Binance API"
 keywords = ["cryptocurrency", "trading", "binance"]
+categories = ["api-bindings", "cryptography::cryptocurrencies"]
 documentation = "https://docs.rs/crate/binance/"
 repository = "https://github.com/wisespace-io/binance-rs"
 readme = "README.md"

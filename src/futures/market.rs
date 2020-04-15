@@ -1,3 +1,25 @@
+/*!
+## Implemented functionality
+- [x] `Order Book`
+- [x] `Recent Trades List`
+- [ ] `Old Trades Lookup (MARKET_DATA)`
+- [x] `Compressed/Aggregate Trades List`
+- [x] `Kline/Candlestick Data`
+- [ ] `Mark Price`
+- [ ] `Get Funding Rate History (MARKET_DATA)`
+- [x] `24hr Ticker Price Change Statistics`
+- [x] `Symbol Price Ticker`
+- [x] `Symbol Order Book Ticker`
+- [ ] `Get all Liquidation Orders`
+- [ ] `Open Interest`
+- [ ] `Notional and Leverage Brackets (MARKET_DATA)`
+- [ ] `Open Interest Statistics (MARKET_DATA)`
+- [ ] `Top Trader Long/Short Ratio (Accounts) (MARKET_DATA)`
+- [ ] `Top Trader Long/Short Ratio (Positions) (MARKET_DATA)`
+- [ ] `Long/Short Ratio (MARKET_DATA)`
+- [ ] `Taker Buy/Sell Volume (MARKET_DATA)`
+*/
+
 use util::*;
 use futures::model::*;
 use client::*;
@@ -51,17 +73,37 @@ impl FuturesMarket {
     }
 
     // TODO Requires API key
-    pub fn get_historical_trades<S1, S2>(&self, _symbol: S1, _from_id: S2) -> Result<Trades>
+    pub fn get_historical_trades<S1, S2, S3>(
+        &self, symbol: S1, from_id: S2, limit: S3,
+    ) -> Result<Trades>
     where
         S1: Into<String>,
         S2: Into<Option<u64>>,
+        S3: Into<Option<u16>>,
     {
-        unimplemented!();
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+
+        // Add three optional parameters
+        if let Some(lt) = limit.into() {
+            parameters.insert("limit".into(), format!("{}", lt));
+        }
+        if let Some(fi) = from_id.into() {
+            parameters.insert("fromId".into(), format!("{}", fi));
+        }
+
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/historicalTrades", &request)?;
+
+        let trades: Trades = from_str(data.as_str())?;
+
+        Ok(trades)
     }
 
-    // TODO /fapi/v1/aggTrades
     pub fn get_agg_trades<S1, S2, S3, S4, S5>(
-        _symbol: S1, _from_id: S2, _start_time: S3, _end_time: S4, _limit: S5,
+        &self, symbol: S1, from_id: S2, start_time: S3, end_time: S4, limit: S5,
     ) -> Result<AggTrades>
     where
         S1: Into<String>,
@@ -70,7 +112,31 @@ impl FuturesMarket {
         S4: Into<Option<u64>>,
         S5: Into<Option<u16>>,
     {
-        unimplemented!();
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+
+        // Add three optional parameters
+        if let Some(lt) = limit.into() {
+            parameters.insert("limit".into(), format!("{}", lt));
+        }
+        if let Some(st) = start_time.into() {
+            parameters.insert("startTime".into(), format!("{}", st));
+        }
+        if let Some(et) = end_time.into() {
+            parameters.insert("endTime".into(), format!("{}", et));
+        }
+        if let Some(fi) = from_id.into() {
+            parameters.insert("fromId".into(), format!("{}", fi));
+        }
+
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/aggTrades", &request)?;
+
+        let aggtrades: AggTrades = from_str(data.as_str())?;
+
+        Ok(aggtrades)
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
