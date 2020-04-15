@@ -1,6 +1,5 @@
 use hex::encode as hex_encode;
-use errors::*;
-use reqwest;
+use crate::errors::*;
 use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};

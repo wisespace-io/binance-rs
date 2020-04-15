@@ -1,9 +1,9 @@
-use account::*;
-use market::*;
-use general::*;
-use futures::general::*;
-use userstream::*;
-use client::*;
+use crate::account::*;
+use crate::market::*;
+use crate::general::*;
+use crate::futures::general::*;
+use crate::userstream::*;
+use crate::client::*;
 
 static API_HOST: &str = "https://www.binance.com";
 static FAPI_HOST: &str = "https://fapi.binance.com";

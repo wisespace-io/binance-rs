@@ -1,5 +1,5 @@
-use model::*;
-use errors::*;
+use crate::model::*;
+use crate::errors::*;
 use url::Url;
 use serde_json::from_str;
 

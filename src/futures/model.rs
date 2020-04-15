@@ -1,4 +1,4 @@
-use model::{Filters, RateLimit};
+use crate::model::{Filters, RateLimit};
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
