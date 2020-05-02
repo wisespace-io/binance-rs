@@ -50,15 +50,12 @@ pub struct OrderBook {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PriceStats {
+    pub symbol: String,
     pub price_change: String,
     pub price_change_percent: String,
     pub weighted_avg_price: String,
     #[serde(with = "string_or_float")]
     pub last_price: f64,
-    #[serde(with = "string_or_float")]
-    pub bid_price: f64,
-    #[serde(with = "string_or_float")]
-    pub ask_price: f64,
     #[serde(with = "string_or_float")]
     pub open_price: f64,
     #[serde(with = "string_or_float")]
@@ -67,6 +64,10 @@ pub struct PriceStats {
     pub low_price: f64,
     #[serde(with = "string_or_float")]
     pub volume: f64,
+    #[serde(with = "string_or_float")]
+    pub quote_volume: f64,
+    #[serde(with = "string_or_float")]
+    pub last_qty: f64,
     pub open_time: u64,
     pub close_time: u64,
     pub first_id: u64,
@@ -83,15 +84,15 @@ pub enum Trades {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Trade {
-    id: u64,
-    is_buyer_maker: bool,
+    pub id: u64,
+    pub is_buyer_maker: bool,
     #[serde(with = "string_or_float")]
-    price: f64,
+    pub price: f64,
     #[serde(with = "string_or_float")]
-    qty: f64,
+    pub qty: f64,
     #[serde(with = "string_or_float")]
-    quote_qty: f64,
-    time: u64,
+    pub quote_qty: f64,
+    pub time: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -104,19 +105,19 @@ pub enum AggTrades {
 #[serde(rename_all = "camelCase")]
 pub struct AggTrade {
     #[serde(rename = "T")]
-    time: u64,
+    pub time: u64,
     #[serde(rename = "a")]
-    agg_id: u64,
+    pub agg_id: u64,
     #[serde(rename = "f")]
-    first_id: u64,
+    pub first_id: u64,
     #[serde(rename = "l")]
-    last_id: u64,
+    pub last_id: u64,
     #[serde(rename = "m")]
-    maker: bool,
+    pub maker: bool,
     #[serde(rename = "p", with = "string_or_float")]
-    price: f64,
+    pub price: f64,
     #[serde(rename = "q", with = "string_or_float")]
-    qty: f64,
+    pub qty: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -128,11 +129,44 @@ pub enum MarkPrices {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MarkPrice {
-    symbol: String,
+    pub symbol: String,
     #[serde(with = "string_or_float")]
-    mark_price: f64,
+    pub mark_price: f64,
     #[serde(with = "string_or_float")]
-    last_funding_rate: f64,
-    next_funding_time: u64,
-    time: u64,
+    pub last_funding_rate: f64,
+    pub next_funding_time: u64,
+    pub time: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum LiquidationOrders {
+    AllLiquidationOrders(Vec<LiquidationOrder>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LiquidationOrder {
+    #[serde(with = "string_or_float")]
+    pub average_price: f64,
+    #[serde(with = "string_or_float")]
+    pub executed_qty: f64,
+    #[serde(with = "string_or_float")]
+    pub orig_qty: f64,
+    #[serde(with = "string_or_float")]
+    pub price: f64,
+    pub side: String,
+    pub status: String,
+    pub symbol: String,
+    pub time: u64,
+    pub time_in_force: String,
+    pub r#type: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct OpenInterest {
+    #[serde(with = "string_or_float")]
+    pub open_interest: f64,
+    pub symbol: String,
 }

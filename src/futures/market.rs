@@ -5,13 +5,13 @@
 - [ ] `Old Trades Lookup (MARKET_DATA)`
 - [x] `Compressed/Aggregate Trades List`
 - [x] `Kline/Candlestick Data`
-- [ ] `Mark Price`
+- [x] `Mark Price`
 - [ ] `Get Funding Rate History (MARKET_DATA)`
 - [x] `24hr Ticker Price Change Statistics`
 - [x] `Symbol Price Ticker`
 - [x] `Symbol Order Book Ticker`
-- [ ] `Get all Liquidation Orders`
-- [ ] `Open Interest`
+- [x] `Get all Liquidation Orders`
+- [x] `Open Interest`
 - [ ] `Notional and Leverage Brackets (MARKET_DATA)`
 - [ ] `Open Interest Statistics (MARKET_DATA)`
 - [ ] `Top Trader Long/Short Ratio (Accounts) (MARKET_DATA)`
@@ -73,6 +73,7 @@ impl FuturesMarket {
     }
 
     // TODO Requires API key
+    // TODO test this
     pub fn get_historical_trades<S1, S2, S3>(
         &self, symbol: S1, from_id: S2, limit: S3,
     ) -> Result<Trades>
@@ -95,7 +96,7 @@ impl FuturesMarket {
 
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/historicalTrades", &request)?;
+        let data = self.client.get_signed("/fapi/v1/historicalTrades", &request)?;
 
         let trades: Trades = from_str(data.as_str())?;
 
@@ -250,5 +251,35 @@ impl FuturesMarket {
         let ticker: Tickers = from_str(data.as_str())?;
 
         Ok(ticker)
+    }
+
+    pub fn get_mark_prices(&self) -> Result<MarkPrices> {
+        let data = self.client.get("/fapi/v1/premiumIndex", "")?;
+
+        let mark_prices: MarkPrices = from_str(data.as_str())?;
+
+        Ok(mark_prices)
+    }
+
+    pub fn get_all_liquidation_orders(&self) -> Result<LiquidationOrders> {
+        let data = self.client.get("/fapi/v1/allForceOrders", "")?;
+        let liquidation_orders: LiquidationOrders = from_str(data.as_str())?;
+
+        Ok(liquidation_orders)
+    }
+
+    pub fn open_interest<S>(&self, symbol: S) -> Result<OpenInterest>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/fapi/v1/openInterest", &request)?;
+        let open_interest: OpenInterest = from_str(data.as_str())?;
+
+        Ok(open_interest)
     }
 }
