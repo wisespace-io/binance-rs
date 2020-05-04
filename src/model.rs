@@ -71,13 +71,13 @@ pub enum Filters {
     },
     #[serde(rename = "ICEBERG_PARTS")]
     #[serde(rename_all = "camelCase")]
-    IcebergParts { limit: u16 },
+    IcebergParts { limit: Option<u16> },
     #[serde(rename = "MAX_NUM_ORDERS")]
     #[serde(rename_all = "camelCase")]
-    MaxNumOrders { limit: u16 },
+    MaxNumOrders { limit: Option<u16> },
     #[serde(rename = "MAX_NUM_ALGO_ORDERS")]
     #[serde(rename_all = "camelCase")]
-    MaxNumAlgoOrders { max_num_algo_orders: u16 },
+    MaxNumAlgoOrders { max_num_algo_orders: Option<u16> },
     #[serde(rename = "MAX_NUM_ICEBERG_ORDERS")]
     #[serde(rename_all = "camelCase")]
     MaxNumIcebergOrders { max_num_iceberg_orders: u16 },
