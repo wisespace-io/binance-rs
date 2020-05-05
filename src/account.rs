@@ -217,7 +217,7 @@ impl Account {
     }
 
     // Place a MARKET order - BUY
-    pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
+    pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<MarketOrder>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -233,9 +233,9 @@ impl Account {
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
         let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
+        let market_order: MarketOrder = from_str(data.as_str())?;
 
-        Ok(transaction)
+        Ok(market_order)
     }
 
     /// Place a test MARKET order - BUY
@@ -263,7 +263,7 @@ impl Account {
     }
 
     // Place a MARKET order - SELL
-    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
+    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<MarketOrder>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -279,9 +279,9 @@ impl Account {
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
         let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
+        let market_order: MarketOrder = from_str(data.as_str())?;
 
-        Ok(transaction)
+        Ok(market_order)
     }
 
     /// Place a test MARKET order - SELL
