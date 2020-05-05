@@ -170,7 +170,7 @@ pub struct FillInfo {
     pub qty: String,
     pub commission: String,
     pub commission_asset: String,
-    pub tradeId: u64,
+    pub trade_id: u64,
 }
 /// Response to a test order (endpoint /api/v3/order/test).
 ///
