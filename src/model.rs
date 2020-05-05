@@ -137,34 +137,6 @@ pub struct Order {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct MarketOrder {
-    pub symbol: String,
-    pub order_id: u64,
-    pub order_list_id: i64,
-    pub client_order_id: String,
-    pub transact_time: u64,
-    pub price: String,
-    pub orig_qty: String,
-    pub executed_qty: String,
-    pub cummulative_quote_qty: String,
-    pub status: String,
-    pub time_in_force: String,
-    pub side: String,
-    pub fills: Vec<FillInfo>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct FillInfo {
-    pub price: String,
-    pub qty: String,
-    pub commission: String,
-    pub commission_asset: String,
-    pub trade_id: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
 pub struct OrderCanceled {
     pub symbol: String,
     pub orig_client_order_id: String,
@@ -179,8 +151,27 @@ pub struct Transaction {
     pub order_id: u64,
     pub client_order_id: String,
     pub transact_time: u64,
+    #[serde(with = "string_or_float")]
+    pub price: f64,
+    pub orig_qty: String,
+    pub executed_qty: String,
+    pub cummulative_quote_qty: String,
+    pub status: String,
+    pub time_in_force: String,
+    pub side: String,
+    pub fills: Vec<FillInfo>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FillInfo {
+    #[serde(with = "string_or_float")]
+    pub price: f64,
+    pub qty: String,
+    pub commission: String,
+    pub commission_asset: String,
+    pub tradeId: u64,
+}
 /// Response to a test order (endpoint /api/v3/order/test).
 ///
 /// Currently, the API responds {} on a successfull test transaction,
