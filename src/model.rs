@@ -153,9 +153,12 @@ pub struct Transaction {
     pub transact_time: u64,
     #[serde(with = "string_or_float")]
     pub price: f64,
-    pub orig_qty: String,
-    pub executed_qty: String,
-    pub cummulative_quote_qty: String,
+    #[serde(with = "string_or_float")]    
+    pub orig_qty: f64,
+    #[serde(with = "string_or_float")]    
+    pub executed_qty: f64,
+    #[serde(with = "string_or_float")]    
+    pub cummulative_quote_qty: f64,
     pub status: String,
     pub time_in_force: String,
     pub side: String,
@@ -167,10 +170,12 @@ pub struct Transaction {
 pub struct FillInfo {
     #[serde(with = "string_or_float")]
     pub price: f64,
-    pub qty: String,
-    pub commission: String,
+    #[serde(with = "string_or_float")]    
+    pub qty: f64,
+    #[serde(with = "string_or_float")]    
+    pub commission: f64,
     pub commission_asset: String,
-    pub trade_id: u64,
+    pub trade_id: Option<u64>,
 }
 /// Response to a test order (endpoint /api/v3/order/test).
 ///
