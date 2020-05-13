@@ -92,7 +92,9 @@ fn market_data() {
     }
 
     match market.get_all_liquidation_orders() {
-        Ok(LiquidationOrders::AllLiquidationOrders(answer)) => println!("First liquidation order: {:?}", answer[0]),
+        Ok(LiquidationOrders::AllLiquidationOrders(answer)) => {
+            println!("First liquidation order: {:?}", answer[0])
+        }
         Err(e) => println!("Error: {}", e),
     }
 

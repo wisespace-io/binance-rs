@@ -72,8 +72,7 @@ impl FuturesMarket {
         Ok(trades)
     }
 
-    // TODO Requires API key
-    // TODO test this
+    // TODO This may be incomplete, as it hasn't been tested
     pub fn get_historical_trades<S1, S2, S3>(
         &self, symbol: S1, from_id: S2, limit: S3,
     ) -> Result<Trades>
@@ -94,9 +93,11 @@ impl FuturesMarket {
             parameters.insert("fromId".into(), format!("{}", fi));
         }
 
-        let request = build_request(&parameters);
+        let request = build_signed_request(parameters, self.recv_window)?;
 
-        let data = self.client.get_signed("/fapi/v1/historicalTrades", &request)?;
+        let data = self
+            .client
+            .get_signed("/fapi/v1/historicalTrades", &request)?;
 
         let trades: Trades = from_str(data.as_str())?;
 
