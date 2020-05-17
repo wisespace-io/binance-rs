@@ -2,6 +2,7 @@ use crate::account::*;
 use crate::market::*;
 use crate::general::*;
 use crate::futures::general::*;
+use crate::futures::market::*;
 use crate::userstream::*;
 use crate::client::*;
 
@@ -56,6 +57,15 @@ impl Binance for FuturesGeneral {
     fn new(api_key: Option<String>, secret_key: Option<String>) -> FuturesGeneral {
         FuturesGeneral {
             client: Client::new(api_key, secret_key, FAPI_HOST.to_string()),
+        }
+    }
+}
+
+impl Binance for FuturesMarket {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> FuturesMarket {
+        FuturesMarket {
+            client: Client::new(api_key, secret_key, FAPI_HOST.to_string()),
+            recv_window: 5000,
         }
     }
 }
