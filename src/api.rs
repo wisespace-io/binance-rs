@@ -6,7 +6,7 @@ use crate::futures::market::*;
 use crate::userstream::*;
 use crate::client::*;
 
-static API_HOST: &str = "https://www.binance.com";
+static API_HOST: &str = "https://api.binance.com";
 static FAPI_HOST: &str = "https://fapi.binance.com";
 
 //#[derive(Clone)]
