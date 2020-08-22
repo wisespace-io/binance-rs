@@ -1,10 +1,11 @@
 use hex::encode as hex_encode;
+use hmac::{Hmac, Mac, NewMac};
 use crate::errors::*;
 use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
+use sha2::Sha256;
 use std::io::Read;
-use ring::hmac;
 
 #[derive(Clone)]
 pub struct Client {
@@ -108,9 +109,9 @@ impl Client {
 
     // Request must be signed
     fn sign_request(&self, endpoint: &str, request: &str) -> String {
-        let signed_key = hmac::Key::new(hmac::HMAC_SHA256, self.secret_key.as_bytes());
-        let signature = hex_encode(hmac::sign(&signed_key, request.as_bytes()).as_ref());
-
+        let mut signed_key = Hmac::<Sha256>::new_varkey(self.secret_key.as_bytes()).unwrap();
+        signed_key.update(request.as_bytes());
+        let signature = hex_encode(signed_key.finalize().into_bytes());
         let request_body: String = format!("{}&signature={}", request, signature);
         let url: String = format!("{}{}?{}", self.host, endpoint, request_body);
 
@@ -118,21 +119,21 @@ impl Client {
     }
 
     fn build_headers(&self, content_type: bool) -> Result<HeaderMap> {
-        let mut custon_headers = HeaderMap::new();
+        let mut custom_headers = HeaderMap::new();
 
-        custon_headers.insert(USER_AGENT, HeaderValue::from_static("binance-rs"));
+        custom_headers.insert(USER_AGENT, HeaderValue::from_static("binance-rs"));
         if content_type {
-            custon_headers.insert(
+            custom_headers.insert(
                 CONTENT_TYPE,
                 HeaderValue::from_static("application/x-www-form-urlencoded"),
             );
         }
-        custon_headers.insert(
+        custom_headers.insert(
             HeaderName::from_static("x-mbx-apikey"),
             HeaderValue::from_str(self.api_key.as_str())?,
         );
 
-        Ok(custon_headers)
+        Ok(custom_headers)
     }
 
     fn handler(&self, mut response: Response) -> Result<String> {
