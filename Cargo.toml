@@ -21,9 +21,8 @@ path = "src/lib.rs"
 
 [dependencies]
 hex = "0.4"
-serde = "1.0"
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_derive = "1.0"
 error-chain = { version = "0.12", default-features = false }
 ring = "0.16"
 reqwest = { version = "0.10", features = ["blocking", "json"] }

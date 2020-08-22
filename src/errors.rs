@@ -1,7 +1,7 @@
 use serde_json::Value;
 use std::collections::HashMap;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, serde::Deserialize)]
 pub struct BinanceContentError {
     pub code: i16,
     pub msg: String,

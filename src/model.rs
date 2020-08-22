@@ -1,10 +1,10 @@
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ServerTime {
     pub server_time: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ExchangeInformation {
     pub timezone: String,
@@ -13,7 +13,7 @@ pub struct ExchangeInformation {
     pub symbols: Vec<Symbol>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RateLimit {
     pub rate_limit_type: String,
@@ -22,7 +22,7 @@ pub struct RateLimit {
     pub limit: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Symbol {
     pub symbol: String,
@@ -38,7 +38,7 @@ pub struct Symbol {
     pub filters: Vec<Filters>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(tag = "filterType")]
 pub enum Filters {
     #[serde(rename = "PRICE_FILTER")]
@@ -93,7 +93,7 @@ pub enum Filters {
     },
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountInformation {
     pub maker_commission: f32,
@@ -106,7 +106,7 @@ pub struct AccountInformation {
     pub balances: Vec<Balance>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Balance {
     pub asset: String,
@@ -114,7 +114,7 @@ pub struct Balance {
     pub locked: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Order {
     pub symbol: String,
@@ -135,7 +135,7 @@ pub struct Order {
     pub time: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderCanceled {
     pub symbol: String,
@@ -144,7 +144,7 @@ pub struct OrderCanceled {
     pub client_order_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
     pub symbol: String,
@@ -165,7 +165,7 @@ pub struct Transaction {
     pub fills: Vec<FillInfo>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FillInfo {
     #[serde(with = "string_or_float")]
@@ -181,11 +181,11 @@ pub struct FillInfo {
 ///
 /// Currently, the API responds {} on a successfull test transaction,
 /// hence this struct has no fields.
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TestResponse {}
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderBook {
     pub last_update_id: u64,
@@ -193,7 +193,7 @@ pub struct OrderBook {
     pub asks: Vec<Asks>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Bids {
     #[serde(with = "string_or_float")]
     pub price: f64,
@@ -205,7 +205,7 @@ pub struct Bids {
     ignore: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Asks {
     #[serde(with = "string_or_float")]
     pub price: f64,
@@ -217,37 +217,37 @@ pub struct Asks {
     ignore: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UserDataStream {
     pub listen_key: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Success {}
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum Prices {
     AllPrices(Vec<SymbolPrice>),
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct SymbolPrice {
     pub symbol: String,
     #[serde(with = "string_or_float")]
     pub price: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct AveragePrice {
     pub mins: u64,
     #[serde(with = "string_or_float")]
     pub price: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum BookTickers {
@@ -259,7 +259,7 @@ pub enum KlineSummaries {
     AllKlineSummaries(Vec<KlineSummary>),
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Tickers {
     pub symbol: String,
@@ -273,7 +273,7 @@ pub struct Tickers {
     pub ask_qty: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeHistory {
     pub id: u64,
@@ -289,7 +289,7 @@ pub struct TradeHistory {
     pub is_best_match: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PriceStats {
     pub price_change: String,
@@ -318,7 +318,7 @@ pub struct PriceStats {
     pub count: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountUpdateEvent {
     #[serde(rename = "e")]
@@ -343,7 +343,7 @@ pub struct AccountUpdateEvent {
     pub balance: Vec<EventBalance>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct EventBalance {
     #[serde(rename = "a")]
@@ -354,7 +354,7 @@ pub struct EventBalance {
     pub locked: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderTradeEvent {
     #[serde(rename = "e")]
@@ -442,7 +442,7 @@ pub struct OrderTradeEvent {
     pub m_ignore: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TradesEvent {
     #[serde(rename = "e")]
@@ -479,7 +479,7 @@ pub struct TradesEvent {
     pub m_ignore: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct BookTickerEvent {
     #[serde(rename = "u")]
@@ -501,7 +501,7 @@ pub struct BookTickerEvent {
     pub best_ask_qty: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DayTickerEvent {
     #[serde(rename = "e")]
@@ -574,7 +574,7 @@ pub struct DayTickerEvent {
     pub num_trades: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct KlineEvent {
     #[serde(rename = "e")]
@@ -615,7 +615,7 @@ pub struct KlineSummary {
     pub taker_buy_quote_asset_volume: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Kline {
     #[serde(rename = "t")]
@@ -670,7 +670,7 @@ pub struct Kline {
     pub ignore_me: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DepthOrderBookEvent {
     #[serde(rename = "e")]
@@ -712,7 +712,7 @@ pub(crate) mod string_or_float {
     where
         D: Deserializer<'de>,
     {
-        #[derive(Deserialize)]
+        #[derive(serde::Deserialize)]
         #[serde(untagged)]
         enum StringOrFloat {
             String(String),
