@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use crate::model::string_or_float;
 
 pub use crate::model::{
