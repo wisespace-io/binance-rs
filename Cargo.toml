@@ -21,10 +21,11 @@ path = "src/lib.rs"
 
 [dependencies]
 hex = "0.4"
+hmac = "0.9"
+sha2 = "0.9"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 error-chain = { version = "0.12", default-features = false }
-ring = "0.16"
 reqwest = { version = "0.10", features = ["blocking", "json"] }
 tungstenite = "0.11.1"
 url = "2.1"
