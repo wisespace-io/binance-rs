@@ -36,7 +36,7 @@ fn save_all_trades_websocket() {
     let mut web_socket_handler = WebSocketHandler::new(local_wrt);
     let agg_trade: String = String::from("!ticker@arr");
     let mut web_socket: WebSockets<'_> = WebSockets::new(move |event: WebsocketEvent| {
-        if let WebsocketEvent::DayTicker(events) = event {
+        if let WebsocketEvent::DayTickerAll(events) = event {
             // You can break the event_loop if some condition is met be setting keep_running to false
             // keep_running.store(false, Ordering::Relaxed);
             if let Err(error) = web_socket_handler.write_to_file(events) {

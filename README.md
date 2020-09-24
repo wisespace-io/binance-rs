@@ -281,10 +281,11 @@ use std::sync::atomic::{AtomicBool};
 
 fn main() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
-    let agg_trade: String = format!("!ticker@arr");
+    let agg_trade: String = format!("!ticker@arr"); // All Symbols
     let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
 	match event {
-	    WebsocketEvent::DayTicker(ticker_events) => {
+        // 24hr rolling window ticker statistics for all symbols that changed in an array.
+	    WebsocketEvent::DayTickerAll(ticker_events) => {
 	        for tick_event in ticker_events {
 		    if tick_event.symbol == "BTCUSDT" {
 			let btcusdt: f32 = tick_event.average_price.parse().unwrap();

@@ -9,7 +9,7 @@ fn main() {
     //market_websocket();
     //kline_websocket();
     //all_trades_websocket();
-    last_price();
+    last_price_for_one_symbol();
 }
 
 fn user_stream() {
@@ -117,7 +117,7 @@ fn all_trades_websocket() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
     let agg_trade: String = String::from("!ticker@arr");
     let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
-        if let WebsocketEvent::DayTicker(ticker_events) = event {
+        if let WebsocketEvent::DayTickerAll(ticker_events) = event {
             for tick_event in ticker_events {
                 println!(
                     "Symbol: {}, price: {}, qty: {}",
@@ -159,24 +159,20 @@ fn kline_websocket() {
     println!("disconnected");
 }
 
-fn last_price() {
+fn last_price_for_one_symbol() {
     let keep_running = AtomicBool::new(true);
-    let agg_trade: String = String::from("!ticker@arr");
+    let agg_trade: String = String::from("btcusdt@ticker");
     let mut btcusdt: f32 = "0".parse().unwrap();
 
     let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
-        if let WebsocketEvent::DayTicker(ticker_events) = event {
-            for tick_event in ticker_events {
-                if tick_event.symbol == "BTCUSDT" {
-                    btcusdt = tick_event.average_price.parse().unwrap();
-                    let btcusdt_close: f32 = tick_event.current_close.parse().unwrap();
-                    println!("{} - {}", btcusdt, btcusdt_close);
+        if let WebsocketEvent::DayTicker(ticker_event) = event {
+            btcusdt = ticker_event.average_price.parse().unwrap();
+            let btcusdt_close: f32 = ticker_event.current_close.parse().unwrap();
+            println!("{} - {}", btcusdt, btcusdt_close);
 
-                    if btcusdt_close as i32 == 7000 {
-                        // Break the event loop
-                        keep_running.store(false, Ordering::Relaxed);
-                    }
-                }
+            if btcusdt_close as i32 == 7000 {
+                // Break the event loop
+                keep_running.store(false, Ordering::Relaxed);
             }
         }
 

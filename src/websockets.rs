@@ -27,7 +27,8 @@ pub enum WebsocketEvent {
     OrderTrade(OrderTradeEvent),
     Trade(TradesEvent),
     OrderBook(OrderBook),
-    DayTicker(Vec<DayTickerEvent>),
+    DayTicker(DayTickerEvent),
+    DayTickerAll(Vec<DayTickerEvent>),
     Kline(KlineEvent),
     DepthOrderBook(DepthOrderBookEvent),
     BookTicker(BookTickerEvent),
@@ -36,6 +37,7 @@ pub enum WebsocketEvent {
 pub struct WebSockets<'a> {
     pub socket: Option<(WebSocket<AutoStream>, Response)>,
     handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
+    subscription: &'a str
 }
 
 impl<'a> WebSockets<'a> {
@@ -46,11 +48,13 @@ impl<'a> WebSockets<'a> {
         WebSockets {
             socket: None,
             handler: Box::new(handler),
+            subscription: "",
         }
     }
 
-    pub fn connect(&mut self, endpoint: &str) -> Result<()> {
-        let wss: String = format!("{}{}", WEBSOCKET_URL, endpoint);
+    pub fn connect(&mut self, subscription: &'a str) -> Result<()> {
+        self.subscription = subscription;
+        let wss: String = format!("{}{}", WEBSOCKET_URL, subscription);
         let url = Url::parse(&wss)?;
 
         match connect(url) {
@@ -100,8 +104,13 @@ impl<'a> WebSockets<'a> {
                             let trade: TradesEvent = from_str(msg.as_str())?;
                             (self.handler)(WebsocketEvent::Trade(trade))?;
                         } else if msg.find(DAYTICKER) != None {
-                            let trades: Vec<DayTickerEvent> = from_str(msg.as_str())?;
-                            (self.handler)(WebsocketEvent::DayTicker(trades))?;
+                            if self.subscription == "!ticker@arr" {
+                                let trades: Vec<DayTickerEvent> = from_str(msg.as_str())?;
+                                (self.handler)(WebsocketEvent::DayTickerAll(trades))?;
+                            } else {
+                                let trades: DayTickerEvent = from_str(msg.as_str())?;
+                                (self.handler)(WebsocketEvent::DayTicker(trades))?;
+                            }
                         } else if msg.find(KLINE) != None {
                             let kline: KlineEvent = from_str(msg.as_str())?;
                             (self.handler)(WebsocketEvent::Kline(kline))?;
