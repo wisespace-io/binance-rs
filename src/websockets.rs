@@ -10,7 +10,7 @@ use tungstenite::client::AutoStream;
 use tungstenite::handshake::client::Response;
 
 static WEBSOCKET_URL: &str = "wss://stream.binance.com:9443/ws/";
-static WEBSOCKET_MULTI_STREAM: &'static str = "wss://stream.binance.com:9443/stream?streams="; // <streamName1>/<streamName2>/<streamName3>
+static WEBSOCKET_MULTI_STREAM: &str = "wss://stream.binance.com:9443/stream?streams="; // <streamName1>/<streamName2>/<streamName3>
 
 static OUTBOUND_ACCOUNT_INFO: &str = "outboundAccountInfo";
 static EXECUTION_REPORT: &str = "executionReport";
@@ -19,7 +19,7 @@ static KLINE: &str = "kline";
 static AGGREGATED_TRADE: &str = "aggTrade";
 static DEPTH_ORDERBOOK: &str = "depthUpdate";
 static PARTIAL_ORDERBOOK: &str = "lastUpdateId";
-static STREAM: &'static str = "stream";
+static STREAM: &str = "stream";
 
 static DAYTICKER: &str = "24hrTicker";
 
@@ -94,8 +94,14 @@ impl<'a> WebSockets<'a> {
         }
     }
 
-    fn handle_msg(&mut self, msg: &String, value: &serde_json::Value) -> Result<()> {
-        if value["u"] != serde_json::Value::Null
+    fn handle_msg(&mut self, msg: &String) -> Result<()> {
+        let value: serde_json::Value = serde_json::from_str(msg)?;
+        if msg.find(STREAM) != None {
+            if value["data"] != serde_json::Value::Null {
+                let data = format!("{}", value["data"]);
+                self.handle_msg(&data)?;
+            }
+        } else if value["u"] != serde_json::Value::Null
             && value["s"] != serde_json::Value::Null
             && value["b"] != serde_json::Value::Null
             && value["B"] != serde_json::Value::Null
@@ -130,13 +136,6 @@ impl<'a> WebSockets<'a> {
         } else if msg.find(DEPTH_ORDERBOOK) != None {
             let depth_orderbook: DepthOrderBookEvent = from_str(msg.as_str())?;
             (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook))?;
-        } else if msg.find(STREAM) != None {
-            let i_msg = msg.find("\"data\":");
-            let i_end = msg.rfind("}");
-            if let (Some(i_msg_), Some(i_end_)) = (i_msg, i_end) {
-                let sub_string = msg.chars().skip(i_msg_).take(i_end_ - i_msg_ - 1).collect();
-                self.handle_msg(&sub_string, &value).unwrap();
-            };
         }
         Ok(())
     }
@@ -145,16 +144,17 @@ impl<'a> WebSockets<'a> {
         while running.load(Ordering::Relaxed) {
             if let Some(ref mut socket) = self.socket {
                 let message = socket.0.read_message()?;
-                let value: serde_json::Value = serde_json::from_str(message.to_text()?)?;
-
                 match message {
-                    Message::Text(msg) => self.handle_msg(&msg, &value),
-                    Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => Ok(()),
+                    Message::Text(msg) => {
+                        if let Err(e) = self.handle_msg(&msg) {
+                            bail!(format!("Error on handling stream message: {}", e));
+                        }
+                    }
+                    Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => (),
                     Message::Close(e) => {
                         bail!(format!("Disconnected {:?}", e));
                     }
                 }
-                .unwrap();
             }
         }
         Ok(())
