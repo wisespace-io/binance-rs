@@ -70,7 +70,7 @@ impl<'a> WebSockets<'a> {
         }
     }
 
-    pub fn connect_multiple_streams(&mut self, endpoints: &Vec<String>) -> Result<()> {
+    pub fn connect_multiple_streams(&mut self, endpoints: &[String]) -> Result<()> {
         let wss: String = format!("{}{}", WEBSOCKET_MULTI_STREAM, endpoints.join("/"));
         let url = Url::parse(&wss)?;
 
@@ -94,7 +94,7 @@ impl<'a> WebSockets<'a> {
         }
     }
 
-    fn handle_msg(&mut self, msg: &String) -> Result<()> {
+    fn handle_msg(&mut self, msg: &str) -> Result<()> {
         let value: serde_json::Value = serde_json::from_str(msg)?;
         if msg.find(STREAM) != None {
             if value["data"] != serde_json::Value::Null {
@@ -108,33 +108,33 @@ impl<'a> WebSockets<'a> {
             && value["a"] != serde_json::Value::Null
             && value["A"] != serde_json::Value::Null
         {
-            let book_ticker: BookTickerEvent = from_str(msg.as_str())?;
+            let book_ticker: BookTickerEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::BookTicker(book_ticker))?;
         } else if msg.find(OUTBOUND_ACCOUNT_INFO) != None {
-            let account_update: AccountUpdateEvent = from_str(msg.as_str())?;
+            let account_update: AccountUpdateEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::AccountUpdate(account_update))?;
         } else if msg.find(EXECUTION_REPORT) != None {
-            let order_trade: OrderTradeEvent = from_str(msg.as_str())?;
+            let order_trade: OrderTradeEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::OrderTrade(order_trade))?;
         } else if msg.find(AGGREGATED_TRADE) != None {
-            let trade: TradesEvent = from_str(msg.as_str())?;
+            let trade: TradesEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::Trade(trade))?;
         } else if msg.find(DAYTICKER) != None {
             if self.subscription == "!ticker@arr" {
-                let trades: Vec<DayTickerEvent> = from_str(msg.as_str())?;
+                let trades: Vec<DayTickerEvent> = from_str(msg)?;
                 (self.handler)(WebsocketEvent::DayTickerAll(trades))?;
             } else {
-                let trades: DayTickerEvent = from_str(msg.as_str())?;
+                let trades: DayTickerEvent = from_str(msg)?;
                 (self.handler)(WebsocketEvent::DayTicker(trades))?;
             }
         } else if msg.find(KLINE) != None {
-            let kline: KlineEvent = from_str(msg.as_str())?;
+            let kline: KlineEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::Kline(kline))?;
         } else if msg.find(PARTIAL_ORDERBOOK) != None {
-            let partial_orderbook: OrderBook = from_str(msg.as_str())?;
+            let partial_orderbook: OrderBook = from_str(msg)?;
             (self.handler)(WebsocketEvent::OrderBook(partial_orderbook))?;
         } else if msg.find(DEPTH_ORDERBOOK) != None {
-            let depth_orderbook: DepthOrderBookEvent = from_str(msg.as_str())?;
+            let depth_orderbook: DepthOrderBookEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::DepthOrderBook(depth_orderbook))?;
         }
         Ok(())
