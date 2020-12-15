@@ -9,7 +9,8 @@ fn main() {
     //market_websocket();
     //kline_websocket();
     //all_trades_websocket();
-    last_price_for_one_symbol();
+    //last_price_for_one_symbol();
+    multiple_streams();
 }
 
 fn user_stream() {
@@ -185,4 +186,28 @@ fn last_price_for_one_symbol() {
     }
     web_socket.disconnect().unwrap();
     println!("disconnected");
+}
+
+fn multiple_streams() {
+    let symbols: Vec<_> = vec!["ethbtc", "bnbeth"].into_iter().map(String::from).collect();
+    let mut endpoints: Vec<String> = Vec::new();
+
+    for symbol in symbols.iter() {
+        endpoints.push(format!("{}@depth@100ms", symbol.to_lowercase()));
+    }
+
+    let keep_running = AtomicBool::new(true);
+    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+        if let WebsocketEvent::DepthOrderBook(depth_order_book) = event {
+            println!("{:?}", depth_order_book);
+        }
+
+        Ok(())
+    });
+
+    web_socket.connect_multiple_streams(&endpoints).unwrap(); // check error
+    if let Err(e) = web_socket.event_loop(&keep_running) {
+        println!("Error: {}", e);
+    }
+    web_socket.disconnect().unwrap();
 }
