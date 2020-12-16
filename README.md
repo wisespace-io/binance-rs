@@ -42,7 +42,7 @@ rustup install stable
   - [USER STREAM](#user-stream)
   - [TRADES](#trades)
   - [KLINE](#kline)
-  - [MULTIPLE STREAMS](#multiple-websockets)
+  - [MULTIPLE STREAMS](#multiple-streams)
 
 ### MARKET DATA
 
