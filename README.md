@@ -33,6 +33,17 @@ binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 rustup install stable
 ```
 
+##### Table of Contents  
+- [MARKET DATA](#market-data)
+- [ACCOUNT DATA](#account-data)
+- [ERROR HANDLING](#error-handling)
+- [USER STREAM](#user-stream)
+- [WEBSOCKETS - USER STREAM](#user-websockets)
+- [WEBSOCKETS - TRADES](#trades-websockets)
+- [WEBSOCKETS - KLINE](#kline-websockets)
+- [WEBSOCKETS - MULTIPLE STREAMS](#multiple-websockets)
+
+<a name="market-data"/>
 ### MARKET DATA
 
 ```rust
@@ -100,6 +111,7 @@ fn main() {
 }
 ```
 
+<a name="account-data"/>
 ### ACCOUNT DATA
 
 ```rust
@@ -167,6 +179,7 @@ fn main() {
 }
 ```
 
+<a name="error-handling"/>
 ### ERROR HANDLING - More detailed error information
 
 You can check out the [Binance Error Codes](https://github.com/binance-exchange/binance-official-api-docs/blob/master/errors.md)
@@ -193,6 +206,7 @@ Err(err) => {
 }
 ```
 
+<a name="user-stream"/>
 ### USER STREAM
 
 ```rust
@@ -224,6 +238,7 @@ fn main() {
 }
 ```
 
+<a name="user-websockets"/>
 ### WEBSOCKETS - USER STREAM
 
 ```rust
@@ -271,6 +286,7 @@ fn main() {
 }
 ```
 
+<a name="trades-websockets"/>
 ### WEBSOCKETS - TRADES
 
 ```rust
@@ -311,6 +327,7 @@ fn main() {
 }
 ```
 
+<a name="kline-websockets"/>
 ### WEBSOCKETS - KLINE
 
 ```rust
@@ -345,6 +362,7 @@ fn main() {
 
 ```
 
+<a name="multiple-websockets"/>
 ### WEBSOCKETS - MULTIPLE STREAMS
 
 ```rust
