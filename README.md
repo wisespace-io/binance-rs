@@ -33,17 +33,17 @@ binance = { git = "https://github.com/wisespace-io/binance-rs.git" }
 rustup install stable
 ```
 
-##### Table of Contents  
+### Table of Contents  
 - [MARKET DATA](#market-data)
 - [ACCOUNT DATA](#account-data)
 - [ERROR HANDLING](#error-handling)
-- [USER STREAM](#user-stream)
-- [WEBSOCKETS - USER STREAM](#user-websockets)
-- [WEBSOCKETS - TRADES](#trades-websockets)
-- [WEBSOCKETS - KLINE](#kline-websockets)
-- [WEBSOCKETS - MULTIPLE STREAMS](#multiple-websockets)
+- [USER STREAM CONFIGURATION](#user-stream-configuration)
+- [WEBSOCKETS](#websockets)
+  - [USER STREAM](#user-stream)
+  - [TRADES](#trades)
+  - [KLINE](#kline)
+  - [MULTIPLE STREAMS](#multiple-websockets)
 
-<a name="market-data"/>
 ### MARKET DATA
 
 ```rust
@@ -111,7 +111,6 @@ fn main() {
 }
 ```
 
-<a name="account-data"/>
 ### ACCOUNT DATA
 
 ```rust
@@ -179,8 +178,9 @@ fn main() {
 }
 ```
 
-<a name="error-handling"/>
-### ERROR HANDLING - More detailed error information
+### ERROR HANDLING
+
+Provides more detailed error information
 
 You can check out the [Binance Error Codes](https://github.com/binance-exchange/binance-official-api-docs/blob/master/errors.md)
 
@@ -206,8 +206,7 @@ Err(err) => {
 }
 ```
 
-<a name="user-stream"/>
-### USER STREAM
+### USER STREAM CONFIGURATION
 
 ```rust
 extern crate binance;
@@ -238,8 +237,7 @@ fn main() {
 }
 ```
 
-<a name="user-websockets"/>
-### WEBSOCKETS - USER STREAM
+#### USER STREAM
 
 ```rust
 extern crate binance;
@@ -286,8 +284,7 @@ fn main() {
 }
 ```
 
-<a name="trades-websockets"/>
-### WEBSOCKETS - TRADES
+#### TRADES
 
 ```rust
 extern crate binance;
@@ -327,8 +324,7 @@ fn main() {
 }
 ```
 
-<a name="kline-websockets"/>
-### WEBSOCKETS - KLINE
+#### KLINE
 
 ```rust
 extern crate binance;
@@ -362,8 +358,7 @@ fn main() {
 
 ```
 
-<a name="multiple-websockets"/>
-### WEBSOCKETS - MULTIPLE STREAMS
+#### MULTIPLE STREAMS
 
 ```rust
 extern crate binance;
@@ -397,6 +392,6 @@ fn main() {
 
 ```
 
-## Other Exchanges
+### Other Exchanges
 
 If you use [Bitfinex](https://www.bitfinex.com/) check out my [Rust library for bitfinex API](https://github.com/wisespace-io/bitfinex-rs)
