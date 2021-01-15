@@ -322,6 +322,70 @@ impl Account {
         Ok(())
     }
 
+
+    /// Place a custom order
+    pub fn custom_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        order_side: S,
+        order_type: S,
+        execution_type: S,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            order_side: order_side.into(),
+            order_type: order_type.into(),
+            time_in_force: execution_type.into(),
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
+        let transaction: Transaction = from_str(data.as_str())?;
+
+        Ok(transaction)
+    }
+
+
+    /// Place a test custom order
+    ///
+    /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    pub fn test_custom_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        order_side: S,
+        order_type: S,
+        execution_type: S,
+    ) -> Result<()>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            order_side: order_side.into(),
+            order_type: order_type.into(),
+            time_in_force: execution_type.into(),
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER_TEST, &request)?;
+        let _: TestResponse = from_str(data.as_str())?;
+
+        Ok(())
+    }
+
     // Check an order's status
     pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<OrderCanceled>
     where
