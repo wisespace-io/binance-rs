@@ -155,6 +155,11 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 
+    match account.custom_order("WTCETH", 9999, 0.0123, "SELL", "LIMIT", "IOC") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
     let order_id = 1_957_528;
     match account.order_status("WTCETH", order_id) {
         Ok(answer) => println!("{:?}", answer),
