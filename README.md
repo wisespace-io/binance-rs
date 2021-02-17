@@ -167,7 +167,7 @@ fn main() {
         Err(e) => println!("Error: {:?}", e),
     }
 
-    match account.cancel_all_open_order("WTCETH") {
+    match account.cancel_all_open_orders("WTCETH") {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {:?}", e),
     }
