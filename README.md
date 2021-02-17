@@ -1,13 +1,13 @@
 # binance-rs
 
-Unofficial Rust Library for the [Binance API](https://github.com/binance-exchange/binance-official-api-docs) and [Binance Futures API](https://binance-docs.github.io/apidocs/futures/en/#general-info)
+Unofficial Rust Library for the [Binance API](https://github.com/binance/binance-spot-api-docs) and [Binance Futures API](https://binance-docs.github.io/apidocs/futures/en/#general-info)
 
 [![Crates.io](https://img.shields.io/crates/v/binance.svg)](https://crates.io/crates/binance)
 [![Build Status](https://travis-ci.org/wisespace-io/binance-rs.png?branch=master)](https://travis-ci.org/wisespace-io/binance-rs)
 [![MIT licensed](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE-MIT)
 [![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
-[Documentation](https://docs.rs/crate/binance/)
+[Documentation on docs.rs](https://docs.rs/crate/binance/)
 
 ## Binance API Telegram
 
@@ -47,8 +47,6 @@ rustup install stable
 ### MARKET DATA
 
 ```rust
-extern crate binance;
-
 use binance::api::*;
 use binance::market::*;
 
@@ -58,31 +56,31 @@ fn main() {
     // Order book
     match market.get_depth("BNBETH") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // Latest price for ALL symbols
     match market.get_all_prices() {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // Latest price for ONE symbol
     match market.get_price("BNBETH") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // Current average price for ONE symbol
     match market.get_average_price("BNBETH") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // Best price/qty on the order book for ALL symbols
     match market.get_all_book_tickers() {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // Best price/qty on the order book for ONE symbol
@@ -91,7 +89,7 @@ fn main() {
             "Bid Price: {}, Ask Price: {}",
             answer.bid_price, answer.ask_price
         ),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // 24hr ticker price change statistics
@@ -100,13 +98,13 @@ fn main() {
             "Open Price: {}, Higher Price: {}, Lower Price: {:?}",
             answer.open_price, answer.high_price, answer.low_price
         ),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     // last 10 5min klines (candlesticks) for a symbol:
     match market.get_klines("BNBETH", "5m", 10, None, None) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 }
 ```
@@ -114,8 +112,6 @@ fn main() {
 ### ACCOUNT DATA
 
 ```rust
-extern crate binance;
-
 use binance::api::*;
 use binance::account::*;
 
@@ -127,58 +123,63 @@ fn main() {
 
     match account.get_account() {
         Ok(answer) => println!("{:?}", answer.balances),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.get_open_orders("WTCETH") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.limit_buy("WTCETH", 10, 0.014000) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.market_buy("WTCETH", 5) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.limit_sell("WTCETH", 10, 0.035000) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.market_sell("WTCETH", 5) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.custom_order("WTCETH", 9999, 0.0123, "SELL", "LIMIT", "IOC") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     let order_id = 1_957_528;
     match account.order_status("WTCETH", order_id) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.cancel_order("WTCETH", order_id) {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
+    }
+
+    match account.cancel_all_open_order("WTCETH") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.get_balance("KNC") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 
     match account.trade_history("WTCETH") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {:?}", e),
     }
 }
 ```
@@ -214,8 +215,6 @@ Err(err) => {
 ### USER STREAM CONFIGURATION
 
 ```rust
-extern crate binance;
-
 use binance::api::*;
 use binance::userstream::*;
 
@@ -229,12 +228,12 @@ fn main() {
 
         match user_stream.keep_alive(&listen_key) {
             Ok(msg) => println!("Keepalive user data stream: {:?}", msg),
-            Err(e) => println!("Error: {}", e),
+            Err(e) => println!("Error: {:?}", e),
         }
 
         match user_stream.close(&listen_key) {
             Ok(msg) => println!("Close user data stream: {:?}", msg),
-            Err(e) => println!("Error: {}", e),
+            Err(e) => println!("Error: {:?}", e),
         }
     } else {
         println!("Not able to start an User Stream (Check your API_KEY)");
@@ -245,8 +244,6 @@ fn main() {
 #### USER STREAM
 
 ```rust
-extern crate binance;
-
 use binance::api::*;
 use binance::userstream::*;
 use binance::websockets::*;
@@ -279,7 +276,7 @@ fn main() {
 	    if let Err(e) = web_socket.event_loop(&keep_running) {
 		match e {
 		    err => {
-		        println!("Error: {}", err);
+		        println!("Error: {:?}", err);
 		    }
 		}
 	     }
@@ -292,8 +289,6 @@ fn main() {
 #### TRADES
 
 ```rust
-extern crate binance;
-
 use binance::websockets::*;
 use std::sync::atomic::{AtomicBool};
 
@@ -322,7 +317,7 @@ fn main() {
     if let Err(e) = web_socket.event_loop(&keep_running) {
 	match e {
 	    err => {
-	        println!("Error: {}", err);
+	        println!("Error: {:?}", err);
 	    }
 	}
      }
@@ -332,8 +327,6 @@ fn main() {
 #### KLINE
 
 ```rust
-extern crate binance;
-
 use binance::websockets::*;
 use std::sync::atomic::{AtomicBool};
 
@@ -354,7 +347,7 @@ fn main() {
     if let Err(e) = web_socket.event_loop(&keep_running) {
         match e {
           err => {
-             println!("Error: {}", err);
+             println!("Error: {:?}", err);
           }
         }
      }
@@ -366,8 +359,6 @@ fn main() {
 #### MULTIPLE STREAMS
 
 ```rust
-extern crate binance;
-
 use binance::websockets::*;
 use std::sync::atomic::{AtomicBool};
 
@@ -390,7 +381,7 @@ fn main() {
 
     web_socket.connect_multiple_streams(&endpoints).unwrap(); // check error
     if let Err(e) = web_socket.event_loop(&keep_running) {
-        println!("Error: {}", e);
+        println!("Error: {:?}", e);
     }
     web_socket.disconnect().unwrap();
 }
