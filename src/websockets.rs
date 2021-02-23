@@ -17,6 +17,7 @@ static EXECUTION_REPORT: &str = "executionReport";
 
 static KLINE: &str = "kline";
 static AGGREGATED_TRADE: &str = "aggTrade";
+static TRADE: &str = "trade";
 static DEPTH_ORDERBOOK: &str = "depthUpdate";
 static PARTIAL_ORDERBOOK: &str = "lastUpdateId";
 static STREAM: &str = "stream";
@@ -27,7 +28,8 @@ static DAYTICKER: &str = "24hrTicker";
 pub enum WebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
     OrderTrade(OrderTradeEvent),
-    Trade(TradesEvent),
+    AggrTrades(AggrTradesEvent),
+    Trade(TradeEvent),
     OrderBook(OrderBook),
     DayTicker(DayTickerEvent),
     DayTickerAll(Vec<DayTickerEvent>),
@@ -117,7 +119,10 @@ impl<'a> WebSockets<'a> {
             let order_trade: OrderTradeEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::OrderTrade(order_trade))?;
         } else if msg.find(AGGREGATED_TRADE) != None {
-            let trade: TradesEvent = from_str(msg)?;
+            let trade: AggrTradesEvent = from_str(msg)?;
+            (self.handler)(WebsocketEvent::AggrTrades(trade))?;
+        } else if msg.find(TRADE) != None {
+            let trade: TradeEvent = from_str(msg)?;
             (self.handler)(WebsocketEvent::Trade(trade))?;
         } else if msg.find(DAYTICKER) != None {
             if self.subscription == "!ticker@arr" {
