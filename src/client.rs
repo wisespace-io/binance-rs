@@ -5,18 +5,24 @@ use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use sha2::Sha256;
-use std::io::Read;
 
 #[derive(Clone)]
 pub struct Client {
+    inner_client: reqwest::blocking::Client,
     api_key: String,
     secret_key: String,
     host: String,
 }
 
 impl Client {
-    pub fn new(api_key: Option<String>, secret_key: Option<String>, host: String) -> Self {
+    pub fn new(
+        inner_client: Option<reqwest::blocking::Client>, 
+        api_key: Option<String>,
+        secret_key: Option<String>, 
+        host: String,
+    ) -> Self {
         Client {
+            inner_client: inner_client.unwrap_or_else(|| reqwest::blocking::Client::new()),
             api_key: api_key.unwrap_or_else(|| "".into()),
             secret_key: secret_key.unwrap_or_else(|| "".into()),
             host,
@@ -25,8 +31,7 @@ impl Client {
 
     pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::blocking::Client::new();
-        let response = client
+        let response = self.inner_client
             .get(url.as_str())
             .headers(self.build_headers(true)?)
             .send()?;
@@ -36,8 +41,7 @@ impl Client {
 
     pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::blocking::Client::new();
-        let response = client
+        let response = self.inner_client
             .post(url.as_str())
             .headers(self.build_headers(true)?)
             .send()?;
@@ -47,8 +51,7 @@ impl Client {
 
     pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::blocking::Client::new();
-        let response = client
+        let response = self.inner_client
             .delete(url.as_str())
             .headers(self.build_headers(true)?)
             .send()?;
@@ -62,7 +65,7 @@ impl Client {
             url.push_str(format!("?{}", request).as_str());
         }
 
-        let response = reqwest::blocking::get(url.as_str())?;
+        let response = self.inner_client.get(url.as_str()).send()?;
 
         self.handler(response)
     }
@@ -70,8 +73,7 @@ impl Client {
     pub fn post(&self, endpoint: &str) -> Result<String> {
         let url: String = format!("{}{}", self.host, endpoint);
 
-        let client = reqwest::blocking::Client::new();
-        let response = client
+        let response = self.inner_client
             .post(url.as_str())
             .headers(self.build_headers(false)?)
             .send()?;
@@ -83,8 +85,7 @@ impl Client {
         let url: String = format!("{}{}", self.host, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
-        let client = reqwest::blocking::Client::new();
-        let response = client
+        let response = self.inner_client
             .put(url.as_str())
             .headers(self.build_headers(false)?)
             .body(data)
@@ -97,8 +98,7 @@ impl Client {
         let url: String = format!("{}{}", self.host, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
-        let client = reqwest::blocking::Client::new();
-        let response = client
+        let response = self.inner_client
             .delete(url.as_str())
             .headers(self.build_headers(false)?)
             .body(data)
@@ -136,12 +136,10 @@ impl Client {
         Ok(custom_headers)
     }
 
-    fn handler(&self, mut response: Response) -> Result<String> {
+    fn handler(&self, response: Response) -> Result<String> {
         match response.status() {
             StatusCode::OK => {
-                let mut body = String::new();
-                response.read_to_string(&mut body)?;
-                Ok(body)
+                Ok(response.text()?)
             }
             StatusCode::INTERNAL_SERVER_ERROR => {
                 bail!("Internal Server Error");
