@@ -5,13 +5,13 @@ use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use sha2::Sha256;
-use std::io::Read;
 
 #[derive(Clone)]
 pub struct Client {
     api_key: String,
     secret_key: String,
     host: String,
+    inner_client: reqwest::blocking::Client,
 }
 
 impl Client {
@@ -20,12 +20,16 @@ impl Client {
             api_key: api_key.unwrap_or_else(|| "".into()),
             secret_key: secret_key.unwrap_or_else(|| "".into()),
             host,
+            inner_client: reqwest::blocking::Client::builder()
+                .pool_idle_timeout(None)
+                .build()
+                .unwrap(),
         }
     }
 
     pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::blocking::Client::new();
+        let client = &self.inner_client;
         let response = client
             .get(url.as_str())
             .headers(self.build_headers(true)?)
@@ -36,7 +40,7 @@ impl Client {
 
     pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::blocking::Client::new();
+        let client = &self.inner_client;
         let response = client
             .post(url.as_str())
             .headers(self.build_headers(true)?)
@@ -47,7 +51,7 @@ impl Client {
 
     pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
-        let client = reqwest::blocking::Client::new();
+        let client = &self.inner_client;
         let response = client
             .delete(url.as_str())
             .headers(self.build_headers(true)?)
@@ -62,7 +66,8 @@ impl Client {
             url.push_str(format!("?{}", request).as_str());
         }
 
-        let response = reqwest::blocking::get(url.as_str())?;
+        let client = &self.inner_client;
+        let response = client.get(url.as_str()).send()?;
 
         self.handler(response)
     }
@@ -70,7 +75,7 @@ impl Client {
     pub fn post(&self, endpoint: &str) -> Result<String> {
         let url: String = format!("{}{}", self.host, endpoint);
 
-        let client = reqwest::blocking::Client::new();
+        let client = &self.inner_client;
         let response = client
             .post(url.as_str())
             .headers(self.build_headers(false)?)
@@ -83,7 +88,7 @@ impl Client {
         let url: String = format!("{}{}", self.host, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
-        let client = reqwest::blocking::Client::new();
+        let client = &self.inner_client;
         let response = client
             .put(url.as_str())
             .headers(self.build_headers(false)?)
@@ -97,7 +102,7 @@ impl Client {
         let url: String = format!("{}{}", self.host, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
-        let client = reqwest::blocking::Client::new();
+        let client = &self.inner_client;
         let response = client
             .delete(url.as_str())
             .headers(self.build_headers(false)?)
@@ -136,12 +141,10 @@ impl Client {
         Ok(custom_headers)
     }
 
-    fn handler(&self, mut response: Response) -> Result<String> {
+    fn handler(&self, response: Response) -> Result<String> {
         match response.status() {
             StatusCode::OK => {
-                let mut body = String::new();
-                response.read_to_string(&mut body)?;
-                Ok(body)
+                Ok(response.text()?)
             }
             StatusCode::INTERNAL_SERVER_ERROR => {
                 bail!("Internal Server Error");
