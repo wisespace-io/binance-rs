@@ -91,7 +91,7 @@ impl Account {
     }
 
     // Cancel all open orders for ONE symbol
-    pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<Vec<Order>>
+    pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<Vec<OrderCanceled>>
     where
         S: Into<String>,
     {
@@ -99,7 +99,7 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_signed_request(parameters, self.recv_window)?;
         let data = self.client.delete_signed("/api/v3/openOrders", &request)?;
-        let order: Vec<Order> = from_str(data.as_str())?;
+        let order: Vec<OrderCanceled> = from_str(data.as_str())?;
 
         Ok(order)
     }
