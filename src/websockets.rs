@@ -1,5 +1,6 @@
-use crate::model::*;
 use crate::errors::*;
+use crate::config::*;
+use crate::model::*;
 use url::Url;
 use serde_json::from_str;
 
@@ -59,6 +60,22 @@ impl<'a> WebSockets<'a> {
     pub fn connect(&mut self, subscription: &'a str) -> Result<()> {
         self.subscription = subscription;
         let wss: String = format!("{}{}", WEBSOCKET_URL, subscription);
+        let url = Url::parse(&wss)?;
+
+        match connect(url) {
+            Ok(answer) => {
+                self.socket = Some(answer);
+                Ok(())
+            }
+            Err(e) => {
+                bail!(format!("Error during handshake {}", e));
+            }
+        }
+    }
+
+    pub fn connect_with_config(&mut self, subscription: &'a str, config: &'a Config) -> Result<()> {
+        self.subscription = subscription;
+        let wss: String = format!("{}{}", &config.ws_endpoint, subscription);
         let url = Url::parse(&wss)?;
 
         match connect(url) {

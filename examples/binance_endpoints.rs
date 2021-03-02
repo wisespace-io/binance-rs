@@ -1,17 +1,27 @@
 use binance::api::*;
+use binance::config::*;
 use binance::general::*;
 use binance::account::*;
 use binance::market::*;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
-    general();
+    general(false);
+    general(true);
     //account();
     //market_data();
 }
 
-fn general() {
-    let general: General = Binance::new(None, None);
+fn general(use_testnet: bool) {
+    let general: General = if use_testnet {
+        let config = Config {
+            rest_api_endpoint: "https://api.binance.com".into(),
+            ws_endpoint: "wss://stream.binance.com:9443/ws/".into(),
+        };
+        Binance::new_with_config(None, None, &config)
+    } else {
+        Binance::new(None, None)
+    };
 
     let ping = general.ping();
     match ping {
