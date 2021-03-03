@@ -316,8 +316,8 @@ pub struct PriceStats {
     pub volume: f64,
     pub open_time: u64,
     pub close_time: u64,
-    pub first_id: u64,
-    pub last_id: u64,
+    pub first_id: i64,
+    pub last_id: i64,
     pub count: u64,
 }
 
