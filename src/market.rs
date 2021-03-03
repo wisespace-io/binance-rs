@@ -115,7 +115,7 @@ impl Market {
     }
 
     // 24hr ticker price change statistics for all symbols
-    pub fn get_24h_price_stats_all(&self) -> Result<Vec<PriceStats>> {
+    pub fn get_all_24h_price_stats(&self) -> Result<Vec<PriceStats>> {
         let data = self.client.get("/api/v3/ticker/24hr", "")?;
 
         let stats: Vec<PriceStats> = from_str(data.as_str())?;
