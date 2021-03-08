@@ -294,6 +294,7 @@ pub struct TradeHistory {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PriceStats {
+    pub symbol: String,
     pub price_change: String,
     pub price_change_percent: String,
     pub weighted_avg_price: String,
@@ -315,8 +316,8 @@ pub struct PriceStats {
     pub volume: f64,
     pub open_time: u64,
     pub close_time: u64,
-    pub first_id: u64,
-    pub last_id: u64,
+    pub first_id: i64,
+    pub last_id: i64,
     pub count: u64,
 }
 
