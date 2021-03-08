@@ -33,6 +33,15 @@ struct OrderRequest {
     pub time_in_force: String,
 }
 
+struct OrderQuoteQuantityRequest {
+    pub symbol: String,
+    pub quote_order_qty: f64,
+    pub price: f64,
+    pub order_side: String,
+    pub order_type: String,
+    pub time_in_force: String,
+}
+
 impl Account {
     // Account Information
     pub fn get_account(&self) -> Result<AccountInformation> {
@@ -276,6 +285,56 @@ impl Account {
         Ok(())
     }
 
+    // Place a MARKET order with quote quantity - BUY
+    pub fn market_buy_using_quote_quantity<S, F>(
+        &self, symbol: S, quote_order_qty: F,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let buy: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+            symbol: symbol.into(),
+            quote_order_qty: quote_order_qty.into(),
+            price: 0.0,
+            order_side: ORDER_SIDE_BUY.to_string(),
+            order_type: ORDER_TYPE_MARKET.to_string(),
+            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+        };
+        let order = self.build_quote_quantity_order(buy);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
+        let transaction: Transaction = from_str(data.as_str())?;
+
+        Ok(transaction)
+    }
+
+    /// Place a test MARKET order with quote quantity - BUY
+    ///
+    /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    pub fn test_market_buy_using_quote_quantity<S, F>(
+        &self, symbol: S, quote_order_qty: F,
+    ) -> Result<()>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let buy: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+            symbol: symbol.into(),
+            quote_order_qty: quote_order_qty.into(),
+            price: 0.0,
+            order_side: ORDER_SIDE_BUY.to_string(),
+            order_type: ORDER_TYPE_MARKET.to_string(),
+            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+        };
+        let order = self.build_quote_quantity_order(buy);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER_TEST, &request)?;
+        let _: TestResponse = from_str(data.as_str())?;
+
+        Ok(())
+    }
+
     // Place a MARKET order - SELL
     pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
     where
@@ -322,6 +381,55 @@ impl Account {
         Ok(())
     }
 
+    // Place a MARKET order with quote quantity - SELL
+    pub fn market_sell_using_quote_quantity<S, F>(
+        &self, symbol: S, quote_order_qty: F,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+            symbol: symbol.into(),
+            quote_order_qty: quote_order_qty.into(),
+            price: 0.0,
+            order_side: ORDER_SIDE_SELL.to_string(),
+            order_type: ORDER_TYPE_MARKET.to_string(),
+            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+        };
+        let order = self.build_quote_quantity_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
+        let transaction: Transaction = from_str(data.as_str())?;
+
+        Ok(transaction)
+    }
+
+    /// Place a test MARKET order with quote quantity - SELL
+    ///
+    /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    pub fn test_market_sell_using_quote_quantity<S, F>(
+        &self, symbol: S, quote_order_qty: F,
+    ) -> Result<()>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+            symbol: symbol.into(),
+            quote_order_qty: quote_order_qty.into(),
+            price: 0.0,
+            order_side: ORDER_SIDE_SELL.to_string(),
+            order_type: ORDER_TYPE_MARKET.to_string(),
+            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+        };
+        let order = self.build_quote_quantity_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER_TEST, &request)?;
+        let _: TestResponse = from_str(data.as_str())?;
+
+        Ok(())
+    }
 
     /// Place a custom order
     pub fn custom_order<S, F>(
@@ -352,7 +460,6 @@ impl Account {
 
         Ok(transaction)
     }
-
 
     /// Place a test custom order
     ///
@@ -442,6 +549,24 @@ impl Account {
         order_parameters.insert("side".into(), order.order_side);
         order_parameters.insert("type".into(), order.order_type);
         order_parameters.insert("quantity".into(), order.qty.to_string());
+
+        if order.price != 0.0 {
+            order_parameters.insert("price".into(), order.price.to_string());
+            order_parameters.insert("timeInForce".into(), order.time_in_force);
+        }
+
+        order_parameters
+    }
+
+    fn build_quote_quantity_order(
+        &self, order: OrderQuoteQuantityRequest,
+    ) -> BTreeMap<String, String> {
+        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        order_parameters.insert("symbol".into(), order.symbol);
+        order_parameters.insert("side".into(), order.order_side);
+        order_parameters.insert("type".into(), order.order_type);
+        order_parameters.insert("quoteOrderQty".into(), order.quote_order_qty.to_string());
 
         if order.price != 0.0 {
             order_parameters.insert("price".into(), order.price.to_string());

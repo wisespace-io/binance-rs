@@ -73,12 +73,22 @@ fn account() {
         Err(e) => println!("Error: {}", e),
     }
 
+    match account.market_buy_using_quote_quantity("WTCETH", 5) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
     match account.limit_sell("WTCETH", 10, 0.035000) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     match account.market_sell("WTCETH", 5) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    match account.market_sell_using_quote_quantity("WTCETH", 5) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
