@@ -114,6 +114,15 @@ impl Market {
         Ok(stats)
     }
 
+    // 24hr ticker price change statistics for all symbols
+    pub fn get_all_24h_price_stats(&self) -> Result<Vec<PriceStats>> {
+        let data = self.client.get("/api/v3/ticker/24hr", "")?;
+
+        let stats: Vec<PriceStats> = from_str(data.as_str())?;
+
+        Ok(stats)
+    }
+
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
     // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
     pub fn get_klines<S1, S2, S3, S4, S5>(
