@@ -103,7 +103,7 @@ impl Binance for FuturesGeneral {
         api_key: Option<String>, secret_key: Option<String>, config: &Config,
     ) -> FuturesGeneral {
         FuturesGeneral {
-            client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
+            client: Client::new(api_key, secret_key, config.futures_rest_api_endpoint.clone()),
         }
     }
 }
@@ -120,7 +120,7 @@ impl Binance for FuturesMarket {
         api_key: Option<String>, secret_key: Option<String>, config: &Config,
     ) -> FuturesMarket {
         FuturesMarket {
-            client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
+            client: Client::new(api_key, secret_key, config.futures_rest_api_endpoint.clone()),
             recv_window: 5000,
         }
     }
