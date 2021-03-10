@@ -224,6 +224,9 @@ The same is applicable for Testnet and Binance.US support. See example below:
 ```rust
 let general: General = if use_testnet {
     let config = Config::default().set_rest_api_endpoint("https://testnet.binance.vision");
+                                  // .set_ws_endpoint("wss://testnet.binance.vision/ws")
+                                  // .set_futures_rest_api_endpoint("https://testnet.binancefuture.com/api")
+                                  // .set_futures_ws_endpoint("https://testnet.binancefuture.com/ws")
     Binance::new_with_config(None, None, &config)
 } else {
     Binance::new(None, None)
