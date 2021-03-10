@@ -18,6 +18,16 @@ impl Config {
         }
     }
 
+    pub fn testnet() -> Config {
+        let config = Config::default()
+        .set_rest_api_endpoint("https://testnet.binance.vision/api".into())
+        .set_ws_endpoint("wss://testnet.binance.vision/ws".into())
+        .set_futures_rest_api_endpoint("https://testnet.binancefuture.com/api".into())
+        .set_futures_ws_endpoint("https://testnet.binancefuture.com/ws".into());
+
+        config
+    }
+
     pub fn set_rest_api_endpoint(mut self, rest_api_endpoint: String) -> Self {
         self.rest_api_endpoint = rest_api_endpoint;
         self
@@ -36,4 +46,6 @@ impl Config {
         self.futures_ws_endpoint = futures_ws_endpoint;
         self
     }
+
+
 }
