@@ -37,6 +37,7 @@ rustup install stable
 - [MARKET DATA](#market-data)
 - [ACCOUNT DATA](#account-data)
 - [ERROR HANDLING](#error-handling)
+- [TESTNET AND API CLUSTERS](#testnet-and-api-clusters)
 - [USER STREAM CONFIGURATION](#user-stream-configuration)
 - [WEBSOCKETS](#websockets)
   - [USER STREAM](#user-stream)
@@ -210,6 +211,23 @@ Err(err) => {
         _ => println!("Other errors: {}.", err.0),
     };
 }
+```
+
+### TESTNET AND API CLUSTERS
+
+You can overwrite the default binance api urls if there are performance issues with the endpoints.
+
+You can check out the [Binance API Clusters](https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#general-api-information).
+
+The same is applicable for Testnet and Binance.US support. See example below:
+
+```rust
+let general: General = if use_testnet {
+    let config = Config::default().set_rest_api_endpoint("https://testnet.binance.vision");
+    Binance::new_with_config(None, None, &config)
+} else {
+    Binance::new(None, None)
+};
 ```
 
 ### USER STREAM CONFIGURATION
