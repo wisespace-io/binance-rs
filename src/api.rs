@@ -38,7 +38,7 @@ impl Binance for Account {
     ) -> Account {
         Account {
             client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
-            recv_window: 5000,
+            recv_window: config.recv_window,
         }
     }
 }
@@ -53,7 +53,7 @@ impl Binance for Market {
     ) -> Market {
         Market {
             client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
-            recv_window: 5000,
+            recv_window: config.recv_window,
         }
     }
 }
@@ -68,7 +68,7 @@ impl Binance for UserStream {
     ) -> UserStream {
         UserStream {
             client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
-            recv_window: 5000,
+            recv_window: config.recv_window,
         }
     }
 }
@@ -101,7 +101,7 @@ impl Binance for FuturesMarket {
     ) -> FuturesMarket {
         FuturesMarket {
             client: Client::new(api_key, secret_key, config.futures_rest_api_endpoint.clone()),
-            recv_window: 5000,
+            recv_window: config.recv_window,
         }
     }
 }
