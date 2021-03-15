@@ -5,6 +5,8 @@ pub struct Config {
 
     pub futures_rest_api_endpoint: String,
     pub futures_ws_endpoint: String,
+
+    pub recv_window: u64,
 }
 
 impl Config {
@@ -15,6 +17,8 @@ impl Config {
 
             futures_rest_api_endpoint: "https://fapi.binance.com".into(),
             futures_ws_endpoint: "wss://fstream.binance.com".into(),
+
+            recv_window: 5000,
         }
     }
 
@@ -45,5 +49,8 @@ impl Config {
         self
     }
 
-
+    pub fn set_recv_window(mut self, recv_window: u64) -> Self {
+        self.recv_window = recv_window;
+        self
+    }
 }
