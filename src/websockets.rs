@@ -3,6 +3,7 @@ use crate::config::*;
 use crate::model::*;
 use url::Url;
 use serde_json::from_str;
+use serde::{Deserialize, Serialize};
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use tungstenite::{connect, Message};
@@ -26,6 +27,7 @@ static STREAM: &str = "stream";
 static DAYTICKER: &str = "24hrTicker";
 
 #[allow(clippy::large_enum_variant)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum WebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
     OrderTrade(OrderTradeEvent),
