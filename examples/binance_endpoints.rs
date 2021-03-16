@@ -6,7 +6,7 @@ use binance::market::*;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
-    // The general spot API endpoints; shown with 
+    // The general spot API endpoints; shown with
     // testnet=false and testnet=true
     general(false);
     general(true);
@@ -139,7 +139,6 @@ fn market_data() {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
-    
     // Order book at depth 500
     match market.get_custom_depth("BNBETH", 500) {
         Ok(answer) => println!("{:?}", answer),

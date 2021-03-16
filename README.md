@@ -59,13 +59,13 @@ fn main() {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
-    
+
     // Order book at depth 500
     match market.get_custom_depth("BNBETH", 500) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
-    
+
     // Latest price for ALL symbols
     match market.get_all_prices() {
         Ok(answer) => println!("{:?}", answer),
