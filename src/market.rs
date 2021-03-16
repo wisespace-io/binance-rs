@@ -13,7 +13,7 @@ pub struct Market {
 
 // Market Data endpoints
 impl Market {
-    // Order book (Default 100; max 100)
+    // Order book at the default depth of 100
     pub fn get_depth<S>(&self, symbol: S) -> Result<OrderBook>
     where
         S: Into<String>,
@@ -24,7 +24,24 @@ impl Market {
         let request = build_request(&parameters);
 
         let data = self.client.get("/api/v3/depth", &request)?;
+        let order_book: OrderBook = from_str(data.as_str())?;
 
+        Ok(order_book)
+    }
+
+    // Order book at a custom depth. Currently supported values
+    // are 5, 10, 20, 50, 100, 500, 1000 and 5000
+    pub fn get_custom_depth<S>(&self, symbol: S, depth: u64) -> Result<OrderBook>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("limit".into(), depth.to_string());
+        let request = build_request(&parameters);
+
+        let data = self.client.get("/api/v3/depth", &request)?;
         let order_book: OrderBook = from_str(data.as_str())?;
 
         Ok(order_book)
