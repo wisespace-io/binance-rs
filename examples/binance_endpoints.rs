@@ -6,13 +6,17 @@ use binance::market::*;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
+    // The general spot API endpoints; shown with
+    // testnet=false and testnet=true
     general(false);
     general(true);
 
-    // those examples need an API key. change those lines locally
-    // and uncomment those (and do not commit your api key :))
+    // The market data API endpoint
+    market_data();
+
+    // The account data API endpoint examples need an API key. Change those lines locally
+    // and uncomment the line below (and do not commit your api key :)).
     //account();
-    //market_data();
 }
 
 fn general(use_testnet: bool) {
@@ -130,8 +134,13 @@ fn account() {
 fn market_data() {
     let market: Market = Binance::new(None, None);
 
-    // Order book
+    // Order book at default depth
     match market.get_depth("BNBETH") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+    // Order book at depth 500
+    match market.get_custom_depth("BNBETH", 500) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }

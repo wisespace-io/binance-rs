@@ -54,10 +54,16 @@ use binance::market::*;
 fn main() {
     let market: Market = Binance::new(None, None);
 
-    // Order book
+    // Order book at default depth
     match market.get_depth("BNBETH") {
         Ok(answer) => println!("{:?}", answer),
-        Err(e) => println!("Error: {:?}", e),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    // Order book at depth 500
+    match market.get_custom_depth("BNBETH", 500) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
     }
 
     // Latest price for ALL symbols
