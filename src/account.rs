@@ -28,6 +28,7 @@ struct OrderRequest {
     pub symbol: String,
     pub qty: f64,
     pub price: f64,
+    pub stop_price: Option<f64>,
     pub order_side: String,
     pub order_type: String,
     pub time_in_force: String,
@@ -41,6 +42,24 @@ struct OrderQuoteQuantityRequest {
     pub order_type: String,
     pub time_in_force: String,
 }
+
+// #[allow(non_camel_case_types)]
+pub enum TimeInForce {
+    GTC,
+    IOC,
+    FOK,
+}
+
+impl From<TimeInForce> for String {
+    fn from(item: TimeInForce) -> Self {
+        match item {
+            TimeInForce::GTC => String::from("GTC"),
+            TimeInForce::IOC => String::from("IOC"),
+            TimeInForce::FOK => String::from("FOK"),
+        }
+    }
+}
+
 
 impl Account {
     // Account Information
@@ -157,6 +176,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
+            stop_price: None,
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -181,6 +201,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
+            stop_price: None,
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -203,6 +224,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
+            stop_price: None,
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -227,6 +249,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
+            stop_price: None,
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_LIMIT.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -249,6 +272,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
+            stop_price: None,
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_MARKET.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -273,6 +297,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
+            stop_price: None,
             order_side: ORDER_SIDE_BUY.to_string(),
             order_type: ORDER_TYPE_MARKET.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -345,6 +370,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
+            stop_price: None,
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_MARKET.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -369,6 +395,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
+            stop_price: None,
             order_side: ORDER_SIDE_SELL.to_string(),
             order_type: ORDER_TYPE_MARKET.to_string(),
             time_in_force: TIME_IN_FORCE_GTC.to_string(),
@@ -431,12 +458,43 @@ impl Account {
         Ok(())
     }
 
+    /// Place a stop limit sell order
+    pub fn stop_limit_sell_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: Some(stop_price),
+            order_side: String::from("SELL"),
+            order_type: String::from("STOP_LOSS_LIMIT"),
+            time_in_force: time_in_force.into(),
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
+        let transaction: Transaction = from_str(data.as_str())?;
+
+        Ok(transaction)
+    }
+
     /// Place a custom order
     pub fn custom_order<S, F>(
         &self,
         symbol: S,
         qty: F,
         price: f64,
+        stop_price: f64,
         order_side: S,
         order_type: S,
         execution_type: S,
@@ -449,6 +507,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
+            stop_price: Some(stop_price),
             order_side: order_side.into(),
             order_type: order_type.into(),
             time_in_force: execution_type.into(),
@@ -481,6 +540,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
+            stop_price: None,
             order_side: order_side.into(),
             order_type: order_type.into(),
             time_in_force: execution_type.into(),
@@ -549,6 +609,10 @@ impl Account {
         order_parameters.insert("side".into(), order.order_side);
         order_parameters.insert("type".into(), order.order_type);
         order_parameters.insert("quantity".into(), order.qty.to_string());
+
+        if let Some(stop_price) = order.stop_price {
+            order_parameters.insert("stopPrice".into(), stop_price.to_string());
+        }
 
         if order.price != 0.0 {
             order_parameters.insert("price".into(), order.price.to_string());
