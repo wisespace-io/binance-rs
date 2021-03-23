@@ -43,7 +43,6 @@ struct OrderQuoteQuantityRequest {
     pub time_in_force: String,
 }
 
-// #[allow(non_camel_case_types)]
 pub enum TimeInForce {
     GTC,
     IOC,
