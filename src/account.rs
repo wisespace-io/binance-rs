@@ -610,11 +610,13 @@ impl Account {
         order_parameters.insert("quantity".into(), order.qty.to_string());
 
         if let Some(stop_price) = order.stop_price {
-            order_parameters.insert("stopPrice".into(), stop_price.to_string());
+            let valid_stop_price = format!("{:.7}", stop_price);
+            order_parameters.insert("stopPrice".into(), valid_stop_price.to_string());
         }
 
         if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
+            let valid_price = format!("{:.7}", order.price);
+            order_parameters.insert("price".into(), valid_price.to_string());
             order_parameters.insert("timeInForce".into(), order.time_in_force);
         }
 
@@ -633,7 +635,8 @@ impl Account {
         order_parameters.insert("quoteOrderQty".into(), order.quote_order_qty.to_string());
 
         if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
+            let valid_price = format!("{:.7}", order.price);
+            order_parameters.insert("price".into(), valid_price.to_string());
             order_parameters.insert("timeInForce".into(), order.time_in_force);
         }
 
