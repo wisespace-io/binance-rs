@@ -496,7 +496,7 @@ impl Account {
         stop_price: f64,
         order_side: S,
         order_type: S,
-        execution_type: S,
+        time_in_force: TimeInForce,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -509,7 +509,7 @@ impl Account {
             stop_price: Some(stop_price),
             order_side: order_side.into(),
             order_type: order_type.into(),
-            time_in_force: execution_type.into(),
+            time_in_force: time_in_force.into(),
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -529,7 +529,7 @@ impl Account {
         price: f64,
         order_side: S,
         order_type: S,
-        execution_type: S,
+        time_in_force: TimeInForce,
     ) -> Result<()>
     where
         S: Into<String>,
@@ -542,7 +542,7 @@ impl Account {
             stop_price: None,
             order_side: order_side.into(),
             order_type: order_type.into(),
-            time_in_force: execution_type.into(),
+            time_in_force: time_in_force.into(),
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -618,6 +618,7 @@ impl Account {
             order_parameters.insert("timeInForce".into(), order.time_in_force);
         }
 
+        println!("{:?}", order_parameters);
         order_parameters
     }
 
