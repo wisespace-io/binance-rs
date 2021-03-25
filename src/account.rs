@@ -3,7 +3,6 @@ use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
 use std::collections::BTreeMap;
-use serde_json::from_str;
 use crate::api::API;
 use crate::api::Spot;
 
@@ -81,13 +80,8 @@ impl From<TimeInForce> for String {
 impl Account {
     // Account Information
     pub fn get_account(&self) -> Result<AccountInformation> {
-        let parameters: BTreeMap<String, String> = BTreeMap::new();
-
-        let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.get_signed(API::Spot(Spot::Account), &request)?;
-        let account_info: AccountInformation = from_str(data.as_str())?;
-
-        Ok(account_info)
+        let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
+        self.client.get_signed(API::Spot(Spot::Account), &request)
     }
 
     // Balance for ONE Asset
@@ -118,10 +112,7 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.get_signed(API::Spot(Spot::OpenOrders), &request)?;
-        let order: Vec<Order> = from_str(data.as_str())?;
-
-        Ok(order)
+        self.client.get_signed(API::Spot(Spot::OpenOrders), &request)
     }
 
     // All current open orders
@@ -129,10 +120,7 @@ impl Account {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.get_signed(API::Spot(Spot::OpenOrders), &request)?;
-        let order: Vec<Order> = from_str(data.as_str())?;
-
-        Ok(order)
+        self.client.get_signed(API::Spot(Spot::OpenOrders), &request)
     }
 
     // Cancel all open orders for ONE symbol
@@ -143,10 +131,7 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.delete_signed(API::Spot(Spot::OpenOrders), &request)?;
-        let order: Vec<OrderCanceled> = from_str(data.as_str())?;
-
-        Ok(order)
+        self.client.delete_signed(API::Spot(Spot::OpenOrders), &request)
     }
 
     // Check an order's status
@@ -159,10 +144,7 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.get_signed(API::Spot(Spot::Order), &request)?;
-        let order: Order = from_str(data.as_str())?;
-
-        Ok(order)
+        self.client.get_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test status order
@@ -177,10 +159,7 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.get_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.get_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Place a LIMIT order - BUY
@@ -200,10 +179,7 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test limit order - BUY
@@ -225,10 +201,7 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Place a LIMIT order - SELL
@@ -248,10 +221,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test LIMIT order - SELL
@@ -273,10 +243,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Place a MARKET order - BUY
@@ -296,10 +263,7 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test MARKET order - BUY
@@ -321,10 +285,7 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Place a MARKET order with quote quantity - BUY
@@ -345,10 +306,7 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test MARKET order with quote quantity - BUY
@@ -371,10 +329,7 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Place a MARKET order - SELL
@@ -394,10 +349,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test MARKET order - SELL
@@ -419,10 +371,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Place a MARKET order with quote quantity - SELL
@@ -443,10 +392,7 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test MARKET order with quote quantity - SELL
@@ -469,10 +415,7 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     /// Place a stop limit sell order
@@ -499,10 +442,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test stop limit sell order
@@ -531,10 +471,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     /// Place a stop limit buy order
@@ -561,10 +498,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test stop limit buy order
@@ -593,10 +527,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     /// Place a custom order
@@ -625,10 +556,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::Order), &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
+        self.client.post_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test custom order
@@ -658,10 +586,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Check an order's status
@@ -674,10 +599,7 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.delete_signed(API::Spot(Spot::Order), &request)?;
-        let order_canceled: OrderCanceled = from_str(data.as_str())?;
-
-        Ok(order_canceled)
+        self.client.delete_signed(API::Spot(Spot::Order), &request)
     }
 
     /// Place a test cancel order
@@ -690,12 +612,8 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
-
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.delete_signed(API::Spot(Spot::OrderTest), &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
+        self.client.delete_signed::<()>(API::Spot(Spot::OrderTest), &request)
     }
 
     // Trade history
@@ -707,10 +625,7 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        let data = self.client.get_signed(API::Spot(Spot::MyTrades), &request)?;
-        let trade_history: Vec<TradeHistory> = from_str(data.as_str())?;
-
-        Ok(trade_history)
+        self.client.get_signed(API::Spot(Spot::MyTrades), &request)
     }
 
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {

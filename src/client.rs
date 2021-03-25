@@ -5,6 +5,7 @@ use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use sha2::Sha256;
+use serde::de::DeserializeOwned;
 use crate::api::API;
 
 #[derive(Clone)]
@@ -16,6 +17,7 @@ pub struct Client {
 }
 
 impl Client {
+
     pub fn new(api_key: Option<String>, secret_key: Option<String>, host: String) -> Self {
         Client {
             api_key: api_key.unwrap_or_else(|| "".into()),
@@ -28,7 +30,7 @@ impl Client {
         }
     }
 
-    pub fn get_signed(&self, endpoint: API, request: &str) -> Result<String> {
+    pub fn get_signed<T: DeserializeOwned>(&self, endpoint: API, request: &str) -> Result<T> {
         let url = self.sign_request(endpoint, request);
         let client = &self.inner_client;
         let response = client
@@ -39,7 +41,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post_signed(&self, endpoint: API, request: &str) -> Result<String> {
+    pub fn post_signed<T: DeserializeOwned>(&self, endpoint: API, request: &str) -> Result<T> {
         let url = self.sign_request(endpoint, request);
         let client = &self.inner_client;
         let response = client
@@ -50,7 +52,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete_signed(&self, endpoint: API, request: &str) -> Result<String> {
+    pub fn delete_signed<T: DeserializeOwned>(&self, endpoint: API, request: &str) -> Result<T> {
         let url = self.sign_request(endpoint, request);
         let client = &self.inner_client;
         let response = client
@@ -61,7 +63,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn get(&self, endpoint: API, request: &str) -> Result<String> {
+    pub fn get<T: DeserializeOwned>(&self, endpoint: API, request: &str) -> Result<T> {
         let mut url: String = format!("{}{}", self.host, String::from(endpoint));
         if !request.is_empty() {
             url.push_str(format!("?{}", request).as_str());
@@ -73,7 +75,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post(&self, endpoint: API) -> Result<String> {
+    pub fn post<T: DeserializeOwned>(&self, endpoint: API) -> Result<T> {
         let url: String = format!("{}{}", self.host, String::from(endpoint));
 
         let client = &self.inner_client;
@@ -85,7 +87,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn put(&self, endpoint: API, listen_key: &str) -> Result<String> {
+    pub fn put<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
         let url: String = format!("{}{}", self.host, String::from(endpoint));
         let data: String = format!("listenKey={}", listen_key);
 
@@ -99,7 +101,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete(&self, endpoint: API, listen_key: &str) -> Result<String> {
+    pub fn delete<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
         let url: String = format!("{}{}", self.host, String::from(endpoint));
         let data: String = format!("listenKey={}", listen_key);
 
@@ -119,9 +121,7 @@ impl Client {
         signed_key.update(request.as_bytes());
         let signature = hex_encode(signed_key.finalize().into_bytes());
         let request_body: String = format!("{}&signature={}", request, signature);
-        let url: String = format!("{}{}?{}", self.host, String::from(endpoint), request_body);
-
-        url
+        format!("{}{}?{}", self.host, String::from(endpoint), request_body)
     }
 
     fn build_headers(&self, content_type: bool) -> Result<HeaderMap> {
@@ -142,10 +142,10 @@ impl Client {
         Ok(custom_headers)
     }
 
-    fn handler(&self, response: Response) -> Result<String> {
+    fn handler<T: DeserializeOwned>(&self, response: Response) -> Result<T> {
         match response.status() {
             StatusCode::OK => {
-                Ok(response.text()?)
+                Ok(response.json::<T>()?)
             }
             StatusCode::INTERNAL_SERVER_ERROR => {
                 bail!("Internal Server Error");

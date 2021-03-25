@@ -25,7 +25,7 @@ use crate::futures::model::*;
 use crate::client::*;
 use crate::errors::*;
 use std::collections::BTreeMap;
-use serde_json::{Value, from_str};
+use serde_json::Value;
 use crate::api::API;
 use crate::api::Futures;
 
@@ -51,11 +51,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get(API::Futures(Futures::Depth), &request)?;
-
-        let order_book: OrderBook = from_str(data.as_str())?;
-
-        Ok(order_book)
+        self.client.get(API::Futures(Futures::Depth), &request)
     }
 
     pub fn get_trades<S>(&self, symbol: S) -> Result<Trades>
@@ -67,11 +63,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get(API::Futures(Futures::Trades), &request)?;
-
-        let trades: Trades = from_str(data.as_str())?;
-
-        Ok(trades)
+        self.client.get(API::Futures(Futures::Trades), &request)
     }
 
     // TODO This may be incomplete, as it hasn't been tested
@@ -97,13 +89,7 @@ impl FuturesMarket {
 
         let request = build_signed_request(parameters, self.recv_window)?;
 
-        let data = self
-            .client
-            .get_signed(API::Futures(Futures::HistoricalTrades), &request)?;
-
-        let trades: Trades = from_str(data.as_str())?;
-
-        Ok(trades)
+        self.client.get_signed(API::Futures(Futures::HistoricalTrades), &request)
     }
 
     pub fn get_agg_trades<S1, S2, S3, S4, S5>(
@@ -136,11 +122,7 @@ impl FuturesMarket {
 
         let request = build_request(&parameters);
 
-        let data = self.client.get(API::Futures(Futures::AggTrades), &request)?;
-
-        let aggtrades: AggTrades = from_str(data.as_str())?;
-
-        Ok(aggtrades)
+        self.client.get(API::Futures(Futures::AggTrades), &request)
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
@@ -173,12 +155,12 @@ impl FuturesMarket {
 
         let request = build_request(&parameters);
 
-        let data = self.client.get(API::Futures(Futures::Klines), &request)?;
-        let parsed_data: Vec<Vec<Value>> = from_str(data.as_str())?;
+        let data: Vec<Vec<Value>> = self
+            .client
+            .get(API::Futures(Futures::Klines), &request)?;
 
         let klines = KlineSummaries::AllKlineSummaries(
-            parsed_data
-                .iter()
+            data.iter()
                 .map(|row| KlineSummary {
                     open_time: to_i64(&row[0]),
                     open: to_f64(&row[1]),
@@ -207,11 +189,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get(API::Futures(Futures::Ticker24hr), &request)?;
-
-        let stats: PriceStats = from_str(data.as_str())?;
-
-        Ok(stats)
+        self.client.get(API::Futures(Futures::Ticker24hr), &request)
     }
 
     // Latest price for ONE symbol.
@@ -224,20 +202,13 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get(API::Futures(Futures::TickerPrice), &request)?;
-        let symbol_price: SymbolPrice = from_str(data.as_str())?;
-
-        Ok(symbol_price)
+        self.client.get(API::Futures(Futures::TickerPrice), &request)
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
-        let data = self.client.get(API::Futures(Futures::BookTicker), "")?;
-
-        let book_tickers: BookTickers = from_str(data.as_str())?;
-
-        Ok(book_tickers)
+        self.client.get(API::Futures(Futures::BookTicker), "")
     }
 
     // -> Best price/qty on the order book for ONE symbol
@@ -246,29 +217,17 @@ impl FuturesMarket {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
-        let data = self.client.get(API::Futures(Futures::BookTicker), &request)?;
-        let ticker: Tickers = from_str(data.as_str())?;
-
-        Ok(ticker)
+        self.client.get(API::Futures(Futures::BookTicker), &request)
     }
 
     pub fn get_mark_prices(&self) -> Result<MarkPrices> {
-        let data = self.client.get(API::Futures(Futures::PremiumIndex), "")?;
-
-        let mark_prices: MarkPrices = from_str(data.as_str())?;
-
-        Ok(mark_prices)
+        self.client.get(API::Futures(Futures::PremiumIndex), "")
     }
 
     pub fn get_all_liquidation_orders(&self) -> Result<LiquidationOrders> {
-        let data = self.client.get(API::Futures(Futures::AllForceOrders), "")?;
-        let liquidation_orders: LiquidationOrders = from_str(data.as_str())?;
-
-        Ok(liquidation_orders)
+        self.client.get(API::Futures(Futures::AllForceOrders), "")
     }
 
     pub fn open_interest<S>(&self, symbol: S) -> Result<OpenInterest>
@@ -276,13 +235,8 @@ impl FuturesMarket {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
-        let data = self.client.get(API::Futures(Futures::OpenInterest), &request)?;
-        let open_interest: OpenInterest = from_str(data.as_str())?;
-
-        Ok(open_interest)
+        self.client.get(API::Futures(Futures::OpenInterest), &request)
     }
 }
