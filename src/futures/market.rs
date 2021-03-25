@@ -26,6 +26,8 @@ use crate::client::*;
 use crate::errors::*;
 use std::collections::BTreeMap;
 use serde_json::{Value, from_str};
+use crate::api::API;
+use crate::api::Futures;
 
 // TODO
 // Make enums for Strings
@@ -49,7 +51,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/depth", &request)?;
+        let data = self.client.get(API::Futures(Futures::Depth), &request)?;
 
         let order_book: OrderBook = from_str(data.as_str())?;
 
@@ -65,7 +67,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/trades", &request)?;
+        let data = self.client.get(API::Futures(Futures::Trades), &request)?;
 
         let trades: Trades = from_str(data.as_str())?;
 
@@ -97,7 +99,7 @@ impl FuturesMarket {
 
         let data = self
             .client
-            .get_signed("/fapi/v1/historicalTrades", &request)?;
+            .get_signed(API::Futures(Futures::HistoricalTrades), &request)?;
 
         let trades: Trades = from_str(data.as_str())?;
 
@@ -134,7 +136,7 @@ impl FuturesMarket {
 
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/aggTrades", &request)?;
+        let data = self.client.get(API::Futures(Futures::AggTrades), &request)?;
 
         let aggtrades: AggTrades = from_str(data.as_str())?;
 
@@ -171,7 +173,7 @@ impl FuturesMarket {
 
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/klines", &request)?;
+        let data = self.client.get(API::Futures(Futures::Klines), &request)?;
         let parsed_data: Vec<Vec<Value>> = from_str(data.as_str())?;
 
         let klines = KlineSummaries::AllKlineSummaries(
@@ -205,7 +207,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/ticker/24hr", &request)?;
+        let data = self.client.get(API::Futures(Futures::Ticker24hr), &request)?;
 
         let stats: PriceStats = from_str(data.as_str())?;
 
@@ -222,7 +224,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/ticker/price", &request)?;
+        let data = self.client.get(API::Futures(Futures::TickerPrice), &request)?;
         let symbol_price: SymbolPrice = from_str(data.as_str())?;
 
         Ok(symbol_price)
@@ -231,7 +233,7 @@ impl FuturesMarket {
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
-        let data = self.client.get("/fapi/v1/ticker/bookTicker", "")?;
+        let data = self.client.get(API::Futures(Futures::BookTicker), "")?;
 
         let book_tickers: BookTickers = from_str(data.as_str())?;
 
@@ -248,14 +250,14 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/ticker/bookTicker", &request)?;
+        let data = self.client.get(API::Futures(Futures::BookTicker), &request)?;
         let ticker: Tickers = from_str(data.as_str())?;
 
         Ok(ticker)
     }
 
     pub fn get_mark_prices(&self) -> Result<MarkPrices> {
-        let data = self.client.get("/fapi/v1/premiumIndex", "")?;
+        let data = self.client.get(API::Futures(Futures::PremiumIndex), "")?;
 
         let mark_prices: MarkPrices = from_str(data.as_str())?;
 
@@ -263,7 +265,7 @@ impl FuturesMarket {
     }
 
     pub fn get_all_liquidation_orders(&self) -> Result<LiquidationOrders> {
-        let data = self.client.get("/fapi/v1/allForceOrders", "")?;
+        let data = self.client.get(API::Futures(Futures::AllForceOrders), "")?;
         let liquidation_orders: LiquidationOrders = from_str(data.as_str())?;
 
         Ok(liquidation_orders)
@@ -278,7 +280,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/fapi/v1/openInterest", &request)?;
+        let data = self.client.get(API::Futures(Futures::OpenInterest), &request)?;
         let open_interest: OpenInterest = from_str(data.as_str())?;
 
         Ok(open_interest)

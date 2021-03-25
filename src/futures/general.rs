@@ -2,6 +2,8 @@ use crate::futures::model::*;
 use crate::client::*;
 use crate::errors::*;
 use serde_json::from_str;
+use crate::api::API;
+use crate::api::Futures;
 
 #[derive(Clone)]
 pub struct FuturesGeneral {
@@ -11,13 +13,13 @@ pub struct FuturesGeneral {
 impl FuturesGeneral {
     // Test connectivity
     pub fn ping(&self) -> Result<String> {
-        self.client.get("/fapi/v1/ping", "")?;
+        self.client.get(API::Futures(Futures::Ping), "")?;
         Ok("pong".into())
     }
 
     // Check server time
     pub fn get_server_time(&self) -> Result<ServerTime> {
-        let data: String = self.client.get("/fapi/v1/time", "")?;
+        let data: String = self.client.get(API::Futures(Futures::Time), "")?;
         let server_time: ServerTime = from_str(data.as_str())?;
 
         Ok(server_time)
@@ -26,7 +28,7 @@ impl FuturesGeneral {
     // Obtain exchange information
     // - Current exchange trading rules and symbol information
     pub fn exchange_info(&self) -> Result<ExchangeInformation> {
-        let data: String = self.client.get("/fapi/v1/exchangeInfo", "")?;
+        let data: String = self.client.get(API::Futures(Futures::ExchangeInfo), "")?;
         let info: ExchangeInformation = from_str(data.as_str())?;
 
         Ok(info)
