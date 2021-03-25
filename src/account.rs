@@ -438,7 +438,7 @@ impl Account {
             stop_price: Some(stop_price),
             order_side: OrderSide::Sell,
             order_type: OrderType::StopLossLimit,
-            time_in_force: time_in_force,
+            time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -467,7 +467,7 @@ impl Account {
             stop_price: Some(stop_price),
             order_side: OrderSide::Sell,
             order_type: OrderType::StopLossLimit,
-            time_in_force: time_in_force,
+            time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -494,7 +494,7 @@ impl Account {
             stop_price: Some(stop_price),
             order_side: OrderSide::Buy,
             order_type: OrderType::StopLossLimit,
-            time_in_force: time_in_force,
+            time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -523,7 +523,7 @@ impl Account {
             stop_price: Some(stop_price),
             order_side: OrderSide::Buy,
             order_type: OrderType::StopLossLimit,
-            time_in_force: time_in_force,
+            time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -550,9 +550,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: Some(stop_price),
-            order_side: order_side,
-            order_type: order_type,
-            time_in_force: time_in_force,
+            order_side,
+            order_type,
+            time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -580,9 +580,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: None,
-            order_side: order_side,
-            order_type: order_type,
-            time_in_force: time_in_force,
+            order_side,
+            order_type,
+            time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
