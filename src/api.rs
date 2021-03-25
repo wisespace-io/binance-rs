@@ -52,7 +52,6 @@ pub enum Futures {
 
 impl From<API> for String {
     fn from(item: API) -> Self {
-
         match item {
             API::Spot(route) => {
                 match route {
@@ -92,38 +91,6 @@ impl From<API> for String {
                 }
             }
         }
-
-        // match item {
-        //     API::Ping => String::from("/api/v3/ping"),
-        //     API::FuturesPing => String::from("/fapi/v1/ping"),
-        //     API::Time => String::from("/api/v3/time"),
-        //     API::FuturesTime => String::from("/fapi/v1/time"),
-        //     API::ExchangeInfo => String::from("/api/v3/exchangeInfo"),
-        //     API::FuturesExchangeInfo => String::from("/fapi/v1/exchangeInfo"),
-        //     API::Order => String::from("/api/v3/order"),
-        //     API::OrderTest => String::from("/api/v3/order/test"),
-        //     API::Account => String::from("/api/v3/account"),
-        //     API::OpenOrders => String::from("/api/v3/openOrders"),
-        //     API::MyTrades => String::from("/api/v3/myTrades"),
-        //     API::FuturesTrades => String::from("/fapi/v1/trades"),
-        //     API::FuturesHistoricalTrades => String::from("/fapi/v1/historicalTrades"),
-        //     API::FuturesAggTrades => String::from("/fapi/v1/aggTrades"),
-        //     API::Depth => String::from("/api/v3/depth"),
-        //     API::FuturesDepth => String::from("/fapi/v1/depth"),
-        //     API::Price => String::from("/api/v3/price"),
-        //     API::AvgPrice => String::from("/api/v3/avgPrice"),
-        //     API::BookTicker => String::from("/api/v3/ticker/bookTicker"),
-        //     API::FuturesBookTicker => String::from("/fapi/v1/ticker/bookTicker"),
-        //     API::Ticker24hr => String::from("/api/v3/ticker/24h"),
-        //     API::FuturesTicker24hr => String::from("/fapi/v1/ticker/24hr"),
-        //     API::FuturesTickerPrice => String::from("/fapi/v1/ticker/price"),
-        //     API::Klines => String::from("/api/v3/klines"),
-        //     API::FuturesKlines => String::from("/fapi/v1/klines"),
-        //     API::UserDataStream => String::from("/api/v3/userDataStream"),
-        //     API::FuturesPremiumIndex => String::from("/fapi/v1/premiumIndex"),
-        //     API::FuturesAllForceOrders => String::from("/fapi/v1/allForceOrders"),
-        //     API::FuturesOpenInterest => String::from("/fapi/v1/openInterest"),
-        // }
     }
 }
 
