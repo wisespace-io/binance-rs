@@ -5,11 +5,10 @@ use crate::errors::*;
 use std::collections::BTreeMap;
 use serde_json::from_str;
 
-static ORDER_TYPE_LIMIT: &str = "LIMIT";
-static ORDER_TYPE_MARKET: &str = "MARKET";
-static ORDER_SIDE_BUY: &str = "BUY";
-static ORDER_SIDE_SELL: &str = "SELL";
-static TIME_IN_FORCE_GTC: &str = "GTC";
+// static ORDER_TYPE_LIMIT: &str = "LIMIT";
+// static ORDER_TYPE_MARKET: &str = "MARKET";
+// static ORDER_SIDE_BUY: &str = "BUY";
+// static ORDER_SIDE_SELL: &str = "SELL";
 
 static API_V3_ORDER: &str = "/api/v3/order";
 
@@ -29,18 +28,48 @@ struct OrderRequest {
     pub qty: f64,
     pub price: f64,
     pub stop_price: Option<f64>,
-    pub order_side: String,
-    pub order_type: String,
-    pub time_in_force: String,
+    pub order_side: OrderSide,
+    pub order_type: OrderType,
+    pub time_in_force: TimeInForce,
 }
 
 struct OrderQuoteQuantityRequest {
     pub symbol: String,
     pub quote_order_qty: f64,
     pub price: f64,
-    pub order_side: String,
-    pub order_type: String,
-    pub time_in_force: String,
+    pub order_side: OrderSide,
+    pub order_type: OrderType,
+    pub time_in_force: TimeInForce,
+}
+
+pub enum OrderType {
+    Limit,
+    Market,
+    StopLossLimit,
+}
+
+impl From<OrderType> for String {
+    fn from(item: OrderType) -> Self {
+        match item {
+            OrderType::Limit => String::from("LIMIT"),
+            OrderType::Market => String::from("MARKET"),
+            OrderType::StopLossLimit => String::from("STOP_LOSS_LIMIT"),
+        }
+    }
+}
+
+pub enum OrderSide {
+    Buy,
+    Sell,
+}
+
+impl From<OrderSide> for String {
+    fn from(item: OrderSide) -> Self {
+        match item {
+            OrderSide::Buy => String::from("BUY"),
+            OrderSide::Sell => String::from("SELL"),
+        }
+    }
 }
 
 pub enum TimeInForce {
@@ -58,7 +87,6 @@ impl From<TimeInForce> for String {
         }
     }
 }
-
 
 impl Account {
     // Account Information
@@ -176,9 +204,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: None,
-            order_side: ORDER_SIDE_BUY.to_string(),
-            order_type: ORDER_TYPE_LIMIT.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Buy,
+            order_type: OrderType::Limit,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
@@ -201,9 +229,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: None,
-            order_side: ORDER_SIDE_BUY.to_string(),
-            order_type: ORDER_TYPE_LIMIT.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Buy,
+            order_type: OrderType::Limit,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
@@ -224,9 +252,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: None,
-            order_side: ORDER_SIDE_SELL.to_string(),
-            order_type: ORDER_TYPE_LIMIT.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::Limit,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -249,9 +277,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: None,
-            order_side: ORDER_SIDE_SELL.to_string(),
-            order_type: ORDER_TYPE_LIMIT.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::Limit,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -272,9 +300,9 @@ impl Account {
             qty: qty.into(),
             price: 0.0,
             stop_price: None,
-            order_side: ORDER_SIDE_BUY.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Buy,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
@@ -297,9 +325,9 @@ impl Account {
             qty: qty.into(),
             price: 0.0,
             stop_price: None,
-            order_side: ORDER_SIDE_BUY.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Buy,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
@@ -321,9 +349,9 @@ impl Account {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
-            order_side: ORDER_SIDE_BUY.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Buy,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_quote_quantity_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
@@ -347,9 +375,9 @@ impl Account {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
-            order_side: ORDER_SIDE_BUY.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Buy,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_quote_quantity_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
@@ -370,9 +398,9 @@ impl Account {
             qty: qty.into(),
             price: 0.0,
             stop_price: None,
-            order_side: ORDER_SIDE_SELL.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -395,9 +423,9 @@ impl Account {
             qty: qty.into(),
             price: 0.0,
             stop_price: None,
-            order_side: ORDER_SIDE_SELL.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -419,9 +447,9 @@ impl Account {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
-            order_side: ORDER_SIDE_SELL.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_quote_quantity_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -445,9 +473,9 @@ impl Account {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
-            order_side: ORDER_SIDE_SELL.to_string(),
-            order_type: ORDER_TYPE_MARKET.to_string(),
-            time_in_force: TIME_IN_FORCE_GTC.to_string(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::Market,
+            time_in_force: TimeInForce::GTC,
         };
         let order = self.build_quote_quantity_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -475,9 +503,39 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: Some(stop_price),
-            order_side: String::from("SELL"),
-            order_type: String::from("STOP_LOSS_LIMIT"),
-            time_in_force: time_in_force.into(),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::StopLossLimit,
+            time_in_force: time_in_force,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        let data = self.client.post_signed(API_V3_ORDER, &request)?;
+        let transaction: Transaction = from_str(data.as_str())?;
+
+        Ok(transaction)
+    }
+
+    /// Place a stop limit buy order
+    pub fn stop_limit_buy_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: Some(stop_price),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::StopLossLimit,
+            time_in_force: time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -494,8 +552,8 @@ impl Account {
         qty: F,
         price: f64,
         stop_price: f64,
-        order_side: S,
-        order_type: S,
+        order_side: OrderSide,
+        order_type: OrderType,
         time_in_force: TimeInForce,
     ) -> Result<Transaction>
     where
@@ -507,9 +565,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: Some(stop_price),
-            order_side: order_side.into(),
-            order_type: order_type.into(),
-            time_in_force: time_in_force.into(),
+            order_side: order_side,
+            order_type: order_type,
+            time_in_force: time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -527,8 +585,8 @@ impl Account {
         symbol: S,
         qty: F,
         price: f64,
-        order_side: S,
-        order_type: S,
+        order_side: OrderSide,
+        order_type: OrderType,
         time_in_force: TimeInForce,
     ) -> Result<()>
     where
@@ -540,9 +598,9 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: None,
-            order_side: order_side.into(),
-            order_type: order_type.into(),
-            time_in_force: time_in_force.into(),
+            order_side: order_side,
+            order_type: order_type,
+            time_in_force: time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
@@ -605,22 +663,19 @@ impl Account {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side);
-        order_parameters.insert("type".into(), order.order_type);
+        order_parameters.insert("side".into(), order.order_side.into());
+        order_parameters.insert("type".into(), order.order_type.into());
         order_parameters.insert("quantity".into(), order.qty.to_string());
 
         if let Some(stop_price) = order.stop_price {
-            let valid_stop_price = format!("{:.7}", stop_price);
-            order_parameters.insert("stopPrice".into(), valid_stop_price.to_string());
+            order_parameters.insert("stopPrice".into(), stop_price.to_string());
         }
 
         if order.price != 0.0 {
-            let valid_price = format!("{:.7}", order.price);
-            order_parameters.insert("price".into(), valid_price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force);
+            order_parameters.insert("price".into(), order.price.to_string());
+            order_parameters.insert("timeInForce".into(), order.time_in_force.into());
         }
 
-        println!("{:?}", order_parameters);
         order_parameters
     }
 
@@ -630,14 +685,13 @@ impl Account {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side);
-        order_parameters.insert("type".into(), order.order_type);
+        order_parameters.insert("side".into(), order.order_side.into());
+        order_parameters.insert("type".into(), order.order_type.into());
         order_parameters.insert("quoteOrderQty".into(), order.quote_order_qty.to_string());
 
         if order.price != 0.0 {
-            let valid_price = format!("{:.7}", order.price);
-            order_parameters.insert("price".into(), valid_price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force);
+            order_parameters.insert("price".into(), order.price.to_string());
+            order_parameters.insert("timeInForce".into(), order.time_in_force.into());
         }
 
         order_parameters
