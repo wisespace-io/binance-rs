@@ -533,7 +533,7 @@ impl Account {
             qty: qty.into(),
             price,
             stop_price: Some(stop_price),
-            order_side: OrderSide::Sell,
+            order_side: OrderSide::Buy,
             order_type: OrderType::StopLossLimit,
             time_in_force: time_in_force,
         };
