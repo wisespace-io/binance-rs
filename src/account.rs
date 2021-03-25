@@ -518,7 +518,7 @@ impl Account {
     /// Place a test stop limit sell order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_stop_limit_buy_order<S, F>(
+    pub fn test_stop_limit_sell_order<S, F>(
         &self,
         symbol: S,
         qty: F,
