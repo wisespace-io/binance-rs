@@ -124,10 +124,8 @@ impl Client {
                 let mut signed_key = Hmac::<Sha256>::new_varkey(self.secret_key.as_bytes()).unwrap();
                 signed_key.update(request.as_bytes());
                 let signature = hex_encode(signed_key.finalize().into_bytes());
-                let request_body: String = format!("{:?}&signature={}", request, signature);
-                let d = format!("{}{}?{}", self.host, String::from(endpoint), request_body);
-                println!("sign request {}", d);
-                d
+                let request_body: String = format!("{}&signature={}", request, signature);
+                format!("{}{}?{}", self.host, String::from(endpoint), request_body)
             },
             None => {
                 let signed_key = Hmac::<Sha256>::new_varkey(self.secret_key.as_bytes()).unwrap();
