@@ -2,9 +2,10 @@ use crate::util::*;
 use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
-use std::collections::BTreeMap;
 use crate::api::API;
 use crate::api::Spot;
+use std::collections::BTreeMap;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
 pub struct Account {
@@ -31,6 +32,7 @@ struct OrderQuoteQuantityRequest {
     pub time_in_force: TimeInForce,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OrderType {
     Limit,
     Market,
@@ -47,6 +49,7 @@ impl From<OrderType> for String {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OrderSide {
     Buy,
     Sell,
@@ -61,6 +64,7 @@ impl From<OrderSide> for String {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum TimeInForce {
     GTC,
     IOC,

@@ -1,4 +1,7 @@
 use serde::{Deserialize, Serialize};
+use crate::account::TimeInForce;
+use crate::account::OrderType;
+use crate::account::OrderSide;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -33,7 +36,7 @@ pub struct Symbol {
     pub base_asset_precision: u64,
     pub quote_asset: String,
     pub quote_precision: u64,
-    pub order_types: Vec<String>,
+    pub order_types: Vec<OrderType>,
     pub iceberg_allowed: bool,
     pub is_spot_trading_allowed: bool,
     pub is_margin_trading_allowed: bool,
@@ -127,10 +130,10 @@ pub struct Order {
     pub orig_qty: String,
     pub executed_qty: String,
     pub status: String,
-    pub time_in_force: String,
+    pub time_in_force: TimeInForce,
     #[serde(rename = "type")]
-    pub type_name: String,
-    pub side: String,
+    pub r#type: OrderType,
+    pub side: OrderSide,
     #[serde(with = "string_or_float")]
     pub stop_price: f64,
     pub iceberg_qty: String,
@@ -162,8 +165,8 @@ pub struct Transaction {
     #[serde(with = "string_or_float")]
     pub cummulative_quote_qty: f64,
     pub status: String,
-    pub time_in_force: String,
-    pub side: String,
+    pub time_in_force: TimeInForce,
+    pub side: OrderSide,
     pub fills: Vec<FillInfo>,
 }
 
@@ -373,13 +376,13 @@ pub struct OrderTradeEvent {
     pub new_client_order_id: String,
 
     #[serde(rename = "S")]
-    pub side: String,
+    pub side: OrderSide,
 
     #[serde(rename = "o")]
-    pub order_type: String,
+    pub order_type: OrderType,
 
     #[serde(rename = "f")]
-    pub time_in_force: String,
+    pub time_in_force: TimeInForce,
 
     #[serde(rename = "q")]
     pub qty: String,
