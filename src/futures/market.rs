@@ -51,7 +51,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Futures(Futures::Depth), &request)
+        self.client.get(API::Futures(Futures::Depth), Some(request))
     }
 
     pub fn get_trades<S>(&self, symbol: S) -> Result<Trades>
@@ -59,11 +59,9 @@ impl FuturesMarket {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
-        self.client.get(API::Futures(Futures::Trades), &request)
+        self.client.get(API::Futures(Futures::Trades), Some(request))
     }
 
     // TODO This may be incomplete, as it hasn't been tested
@@ -89,7 +87,7 @@ impl FuturesMarket {
 
         let request = build_signed_request(parameters, self.recv_window)?;
 
-        self.client.get_signed(API::Futures(Futures::HistoricalTrades), &request)
+        self.client.get_signed(API::Futures(Futures::HistoricalTrades), Some(request))
     }
 
     pub fn get_agg_trades<S1, S2, S3, S4, S5>(
@@ -122,7 +120,7 @@ impl FuturesMarket {
 
         let request = build_request(&parameters);
 
-        self.client.get(API::Futures(Futures::AggTrades), &request)
+        self.client.get(API::Futures(Futures::AggTrades), Some(request))
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
@@ -157,7 +155,7 @@ impl FuturesMarket {
 
         let data: Vec<Vec<Value>> = self
             .client
-            .get(API::Futures(Futures::Klines), &request)?;
+            .get(API::Futures(Futures::Klines), Some(request))?;
 
         let klines = KlineSummaries::AllKlineSummaries(
             data.iter()
@@ -189,7 +187,7 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Futures(Futures::Ticker24hr), &request)
+        self.client.get(API::Futures(Futures::Ticker24hr), Some(request))
     }
 
     // Latest price for ONE symbol.
@@ -202,13 +200,13 @@ impl FuturesMarket {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Futures(Futures::TickerPrice), &request)
+        self.client.get(API::Futures(Futures::TickerPrice), Some(request))
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
-        self.client.get(API::Futures(Futures::BookTicker), "")
+        self.client.get(API::Futures(Futures::BookTicker), None)
     }
 
     // -> Best price/qty on the order book for ONE symbol
@@ -219,15 +217,15 @@ impl FuturesMarket {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-        self.client.get(API::Futures(Futures::BookTicker), &request)
+        self.client.get(API::Futures(Futures::BookTicker), Some(request))
     }
 
     pub fn get_mark_prices(&self) -> Result<MarkPrices> {
-        self.client.get(API::Futures(Futures::PremiumIndex), "")
+        self.client.get(API::Futures(Futures::PremiumIndex), None)
     }
 
     pub fn get_all_liquidation_orders(&self) -> Result<LiquidationOrders> {
-        self.client.get(API::Futures(Futures::AllForceOrders), "")
+        self.client.get(API::Futures(Futures::AllForceOrders), None)
     }
 
     pub fn open_interest<S>(&self, symbol: S) -> Result<OpenInterest>
@@ -237,6 +235,6 @@ impl FuturesMarket {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-        self.client.get(API::Futures(Futures::OpenInterest), &request)
+        self.client.get(API::Futures(Futures::OpenInterest), Some(request))
     }
 }

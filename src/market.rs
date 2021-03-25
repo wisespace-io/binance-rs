@@ -25,7 +25,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Depth), &request)
+        self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
     // Order book at a custom depth. Currently supported values
@@ -40,12 +40,12 @@ impl Market {
         parameters.insert("limit".into(), depth.to_string());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Depth), &request)
+        self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
     // Latest price for ALL symbols.
     pub fn get_all_prices(&self) -> Result<Prices> {
-        self.client.get(API::Spot(Spot::Price), "")
+        self.client.get(API::Spot(Spot::Price), None)
     }
 
     // Latest price for ONE symbol.
@@ -58,7 +58,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Price), &request)
+        self.client.get(API::Spot(Spot::Price), Some(request))
     }
 
     // Average price for ONE symbol.
@@ -71,13 +71,13 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::AvgPrice), &request)
+        self.client.get(API::Spot(Spot::AvgPrice), Some(request))
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
-        self.client.get(API::Spot(Spot::BookTicker), "")
+        self.client.get(API::Spot(Spot::BookTicker), None)
     }
 
     // -> Best price/qty on the order book for ONE symbol
@@ -90,7 +90,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::BookTicker), &request)
+        self.client.get(API::Spot(Spot::BookTicker), Some(request))
     }
 
     // 24hr ticker price change statistics
@@ -103,12 +103,12 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Ticker24hr), &request)
+        self.client.get(API::Spot(Spot::Ticker24hr), Some(request))
     }
 
     // 24hr ticker price change statistics for all symbols
     pub fn get_all_24h_price_stats(&self) -> Result<Vec<PriceStats>> {
-        self.client.get(API::Spot(Spot::Ticker24hr), "")
+        self.client.get(API::Spot(Spot::Ticker24hr), None)
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
@@ -140,8 +140,7 @@ impl Market {
         }
 
         let request = build_request(&parameters);
-
-        let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), &request)?;
+        let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), Some(request))?;
 
         let klines = KlineSummaries::AllKlineSummaries(
             data.iter()
