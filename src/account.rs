@@ -2,20 +2,10 @@ use crate::util::*;
 use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
+use crate::api::API;
+use crate::api::Spot;
 use std::collections::BTreeMap;
-use serde_json::from_str;
-
-// static ORDER_TYPE_LIMIT: &str = "LIMIT";
-// static ORDER_TYPE_MARKET: &str = "MARKET";
-// static ORDER_SIDE_BUY: &str = "BUY";
-// static ORDER_SIDE_SELL: &str = "SELL";
-
-static API_V3_ORDER: &str = "/api/v3/order";
-
-/// Endpoint for test orders.
-///
-/// Orders issued to this endpoint are validated, but not sent into the matching engine.
-static API_V3_ORDER_TEST: &str = "/api/v3/order/test";
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
 pub struct Account {
@@ -42,6 +32,7 @@ struct OrderQuoteQuantityRequest {
     pub time_in_force: TimeInForce,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OrderType {
     Limit,
     Market,
@@ -58,6 +49,7 @@ impl From<OrderType> for String {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OrderSide {
     Buy,
     Sell,
@@ -72,6 +64,7 @@ impl From<OrderSide> for String {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum TimeInForce {
     GTC,
     IOC,
