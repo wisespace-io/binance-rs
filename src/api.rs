@@ -64,7 +64,7 @@ impl From<API> for String {
                     Spot::OpenOrders => String::from("/api/v3/openOrders"),
                     Spot::MyTrades => String::from("/api/v3/myTrades"),
                     Spot::Depth => String::from("/api/v3/depth"),
-                    Spot::Price => String::from("/api/v3/price"),
+                    Spot::Price => String::from("/api/v3/ticker/price"),
                     Spot::AvgPrice => String::from("/api/v3/avgPrice"),
                     Spot::BookTicker => String::from("/api/v3/ticker/bookTicker"),
                     Spot::Ticker24hr => String::from("/api/v3/ticker/24h"),
