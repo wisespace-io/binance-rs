@@ -21,10 +21,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
         self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
@@ -35,11 +33,9 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("limit".into(), depth.to_string());
         let request = build_request(&parameters);
-
         self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
@@ -54,10 +50,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
         self.client.get(API::Spot(Spot::Price), Some(request))
     }
 
@@ -67,10 +61,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
         self.client.get(API::Spot(Spot::AvgPrice), Some(request))
     }
 
@@ -86,10 +78,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
         self.client.get(API::Spot(Spot::BookTicker), Some(request))
     }
 
@@ -99,10 +89,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
-
         self.client.get(API::Spot(Spot::Ticker24hr), Some(request))
     }
 
@@ -143,21 +131,7 @@ impl Market {
         let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), Some(request))?;
 
         let klines = KlineSummaries::AllKlineSummaries(
-            data.iter()
-                .map(|row| KlineSummary {
-                    open_time: to_i64(&row[0]),
-                    open: to_f64(&row[1]),
-                    high: to_f64(&row[2]),
-                    low: to_f64(&row[3]),
-                    close: to_f64(&row[4]),
-                    volume: to_f64(&row[5]),
-                    close_time: to_i64(&row[6]),
-                    quote_asset_volume: to_f64(&row[7]),
-                    number_of_trades: to_i64(&row[8]),
-                    taker_buy_base_asset_volume: to_f64(&row[9]),
-                    taker_buy_quote_asset_volume: to_f64(&row[10]),
-                })
-                .collect(),
+            data.iter().map(|row| KlineSummary::from(row)).collect(),
         );
         Ok(klines)
     }

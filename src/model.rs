@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::util::*;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -667,6 +668,24 @@ pub struct KlineSummary {
     pub taker_buy_base_asset_volume: f64,
 
     pub taker_buy_quote_asset_volume: f64,
+}
+
+impl From<&Vec<serde_json::Value>> for KlineSummary {
+    fn from(row: &Vec<serde_json::Value>) -> Self {
+        KlineSummary {
+            open_time: to_i64(&row[0]),
+            open: to_f64(&row[1]),
+            high: to_f64(&row[2]),
+            low: to_f64(&row[3]),
+            close: to_f64(&row[4]),
+            volume: to_f64(&row[5]),
+            close_time: to_i64(&row[6]),
+            quote_asset_volume: to_f64(&row[7]),
+            number_of_trades: to_i64(&row[8]),
+            taker_buy_base_asset_volume: to_f64(&row[9]),
+            taker_buy_quote_asset_volume: to_f64(&row[10]),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

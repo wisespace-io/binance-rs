@@ -110,16 +110,13 @@ impl Account {
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client.get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
     // All current open orders
     pub fn get_all_open_orders(&self) -> Result<Vec<Order>> {
-        let parameters: BTreeMap<String, String> = BTreeMap::new();
-
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
         self.client.get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
@@ -142,7 +139,6 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
-
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client.get_signed(API::Spot(Spot::Order), Some(request))
     }
@@ -157,7 +153,6 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
-
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client.get_signed::<()>(API::Spot(Spot::OrderTest), Some(request))
     }
@@ -168,7 +163,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -177,8 +172,7 @@ impl Account {
             order_type: OrderType::Limit,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(buy);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -190,7 +184,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -199,8 +193,7 @@ impl Account {
             order_type: OrderType::Limit,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(buy);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -210,7 +203,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -219,8 +212,7 @@ impl Account {
             order_type: OrderType::Limit,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -232,7 +224,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -241,8 +233,7 @@ impl Account {
             order_type: OrderType::Limit,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -252,7 +243,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -261,8 +252,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(buy);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -274,7 +264,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -283,8 +273,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(buy);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -296,7 +285,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let request: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -304,7 +293,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_quote_quantity_order(buy);
+        let order = self.build_quote_quantity_order(request);
         let request = build_signed_request(order, self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
@@ -319,7 +308,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let request: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -327,7 +316,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_quote_quantity_order(buy);
+        let order = self.build_quote_quantity_order(request);
         let request = build_signed_request(order, self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
@@ -338,7 +327,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -347,8 +336,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -360,7 +348,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -369,8 +357,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -382,7 +369,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let request: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -390,7 +377,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_quote_quantity_order(sell);
+        let order = self.build_quote_quantity_order(request);
         let request = build_signed_request(order, self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
@@ -405,7 +392,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let request: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -413,7 +400,7 @@ impl Account {
             order_type: OrderType::Market,
             time_in_force: TimeInForce::GTC,
         };
-        let order = self.build_quote_quantity_order(sell);
+        let order = self.build_quote_quantity_order(request);
         let request = build_signed_request(order, self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
@@ -431,7 +418,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -440,8 +427,7 @@ impl Account {
             order_type: OrderType::StopLossLimit,
             time_in_force,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -460,7 +446,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -469,8 +455,7 @@ impl Account {
             order_type: OrderType::StopLossLimit,
             time_in_force,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -487,7 +472,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -496,8 +481,7 @@ impl Account {
             order_type: OrderType::StopLossLimit,
             time_in_force,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -516,7 +500,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -525,8 +509,7 @@ impl Account {
             order_type: OrderType::StopLossLimit,
             time_in_force,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -545,7 +528,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -554,8 +537,7 @@ impl Account {
             order_type,
             time_in_force,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
@@ -575,7 +557,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let request: OrderRequest = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -584,8 +566,7 @@ impl Account {
             order_type,
             time_in_force,
         };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
+        let request = build_signed_request(self.build_order(request), self.recv_window)?;
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
@@ -597,7 +578,6 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
-
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client.delete_signed(API::Spot(Spot::Order), Some(request))
     }
@@ -623,7 +603,6 @@ impl Account {
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client.get_signed(API::Spot(Spot::MyTrades), Some(request))
     }
