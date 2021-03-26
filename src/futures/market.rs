@@ -158,21 +158,7 @@ impl FuturesMarket {
             .get(API::Futures(Futures::Klines), Some(request))?;
 
         let klines = KlineSummaries::AllKlineSummaries(
-            data.iter()
-                .map(|row| KlineSummary {
-                    open_time: to_i64(&row[0]),
-                    open: to_f64(&row[1]),
-                    high: to_f64(&row[2]),
-                    low: to_f64(&row[3]),
-                    close: to_f64(&row[4]),
-                    volume: to_f64(&row[5]),
-                    close_time: to_i64(&row[6]),
-                    quote_asset_volume: to_f64(&row[7]),
-                    number_of_trades: to_i64(&row[8]),
-                    taker_buy_base_asset_volume: to_f64(&row[9]),
-                    taker_buy_quote_asset_volume: to_f64(&row[10]),
-                })
-                .collect(),
+            data.iter().map(|row| KlineSummary::from(row)).collect(),
         );
         Ok(klines)
     }
