@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 use crate::model::string_or_float;
+use crate::account::TimeInForce;
+use crate::account::OrderType;
+use crate::account::OrderSide;
 
 pub use crate::model::{
     Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
@@ -156,12 +159,12 @@ pub struct LiquidationOrder {
     pub orig_qty: f64,
     #[serde(with = "string_or_float")]
     pub price: f64,
-    pub side: String,
+    pub side: OrderSide,
     pub status: String,
     pub symbol: String,
     pub time: u64,
-    pub time_in_force: String,
-    pub r#type: String,
+    pub time_in_force: TimeInForce,
+    pub r#type: OrderType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
