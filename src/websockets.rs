@@ -156,7 +156,7 @@ impl<'a> WebSockets<'a> {
                         }
                     }
                     Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e));
+                    Message::Close(e) => bail!(format!("Disconnected {:?}", e))
                 }
             }
         }
