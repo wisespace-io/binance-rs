@@ -419,62 +419,6 @@ impl Account {
         self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
     }
 
-    /// Place a stop limit sell order
-    pub fn stop_limit_sell_order<S, F>(
-        &self,
-        symbol: S,
-        qty: F,
-        price: f64,
-        stop_price: f64,
-        time_in_force: TimeInForce,
-    ) -> Result<Transaction>
-    where
-        S: Into<String>,
-        F: Into<f64>,
-    {
-        let sell: OrderRequest = OrderRequest {
-            symbol: symbol.into(),
-            qty: qty.into(),
-            price,
-            stop_price: Some(stop_price),
-            order_side: OrderSide::Sell,
-            order_type: OrderType::StopLossLimit,
-            time_in_force,
-        };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed(API::Spot(Spot::Order), request)
-    }
-
-    /// Place a test stop limit sell order
-    ///
-    /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_stop_limit_sell_order<S, F>(
-        &self,
-        symbol: S,
-        qty: F,
-        price: f64,
-        stop_price: f64,
-        time_in_force: TimeInForce,
-    ) -> Result<()>
-    where
-        S: Into<String>,
-        F: Into<f64>,
-    {
-        let sell: OrderRequest = OrderRequest {
-            symbol: symbol.into(),
-            qty: qty.into(),
-            price,
-            stop_price: Some(stop_price),
-            order_side: OrderSide::Sell,
-            order_type: OrderType::StopLossLimit,
-            time_in_force,
-        };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
-    }
-
     /// Place a stop limit buy order
     pub fn stop_limit_buy_order<S, F>(
         &self,
@@ -582,68 +526,6 @@ impl Account {
             price,
             stop_price: Some(stop_price),
             order_side: OrderSide::Sell,
-            order_type: OrderType::StopLossLimit,
-            time_in_force,
-        };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API_V3_ORDER_TEST, &request)?;
-        let _: TestResponse = from_str(data.as_str())?;
-
-        Ok(())
-    }
-
-    /// Place a stop limit buy order
-    pub fn stop_limit_buy_order<S, F>(
-        &self,
-        symbol: S,
-        qty: F,
-        price: f64,
-        stop_price: f64,
-        time_in_force: TimeInForce,
-    ) -> Result<Transaction>
-    where
-        S: Into<String>,
-        F: Into<f64>,
-    {
-        let sell: OrderRequest = OrderRequest {
-            symbol: symbol.into(),
-            qty: qty.into(),
-            price,
-            stop_price: Some(stop_price),
-            order_side: OrderSide::Buy,
-            order_type: OrderType::StopLossLimit,
-            time_in_force,
-        };
-        let order = self.build_order(sell);
-        let request = build_signed_request(order, self.recv_window)?;
-        let data = self.client.post_signed(API_V3_ORDER, &request)?;
-        let transaction: Transaction = from_str(data.as_str())?;
-
-        Ok(transaction)
-    }
-
-    /// Place a test stop limit buy order
-    ///
-    /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_stop_limit_buy_order<S, F>(
-        &self,
-        symbol: S,
-        qty: F,
-        price: f64,
-        stop_price: f64,
-        time_in_force: TimeInForce,
-    ) -> Result<()>
-    where
-        S: Into<String>,
-        F: Into<f64>,
-    {
-        let sell: OrderRequest = OrderRequest {
-            symbol: symbol.into(),
-            qty: qty.into(),
-            price,
-            stop_price: Some(stop_price),
-            order_side: OrderSide::Buy,
             order_type: OrderType::StopLossLimit,
             time_in_force,
         };
@@ -656,13 +538,13 @@ impl Account {
     }
 
     /// Place a custom order
-    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::too_many_arguments)] 
     pub fn custom_order<S, F>(
         &self,
         symbol: S,
         qty: F,
         price: f64,
-        stop_price: f64,
+        stop_price: Option<f64>,
         order_side: OrderSide,
         order_type: OrderType,
         time_in_force: TimeInForce,
@@ -675,7 +557,7 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
-            stop_price: Some(stop_price),
+            stop_price,
             order_side,
             order_type,
             time_in_force,
