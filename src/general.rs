@@ -4,8 +4,6 @@ use crate::errors::*;
 use crate::api::API;
 use crate::api::Spot;
 
-use serde_json::from_str;
-
 #[derive(Clone)]
 pub struct General {
     pub client: Client,
