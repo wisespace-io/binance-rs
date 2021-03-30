@@ -28,7 +28,6 @@ pub enum Spot {
     Ticker24hr,
     Price,
     BookTicker,
-
     Order,
     OrderTest,
     OpenOrders,
@@ -37,7 +36,6 @@ pub enum Spot {
     OrderList,
     AllOrderList,
     OpenOrderList,
-
     Account,
     MyTrades,
     UserDataStream,
