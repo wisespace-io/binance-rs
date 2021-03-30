@@ -5,8 +5,6 @@ use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use sha2::Sha256;
-use serde::de::DeserializeOwned;
-use crate::api::API;
 
 #[derive(Clone)]
 pub struct Client {
@@ -17,7 +15,6 @@ pub struct Client {
 }
 
 impl Client {
-
     pub fn new(api_key: Option<String>, secret_key: Option<String>, host: String) -> Self {
         Client {
             api_key: api_key.unwrap_or_else(|| "".into()),
@@ -30,7 +27,7 @@ impl Client {
         }
     }
 
-    pub fn get_signed<T: DeserializeOwned>(&self, endpoint: API, request: Option<String>) -> Result<T> {
+    pub fn get_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
         let client = &self.inner_client;
         let response = client
@@ -41,8 +38,8 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post_signed<T: DeserializeOwned>(&self, endpoint: API, request: String) -> Result<T> {
-        let url = self.sign_request(endpoint, Some(request));
+    pub fn post_signed(&self, endpoint: &str, request: &str) -> Result<String> {
+        let url = self.sign_request(endpoint, request);
         let client = &self.inner_client;
         let response = client
             .post(url.as_str())
@@ -52,7 +49,7 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete_signed<T: DeserializeOwned>(&self, endpoint: API, request: Option<String>) -> Result<T> {
+    pub fn delete_signed(&self, endpoint: &str, request: &str) -> Result<String> {
         let url = self.sign_request(endpoint, request);
         let client = &self.inner_client;
         let response = client
@@ -63,12 +60,10 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn get<T: DeserializeOwned>(&self, endpoint: API, request: Option<String>) -> Result<T> {
-        let mut url: String = format!("{}{}", self.host, String::from(endpoint));
-        if let Some(request) = request {
-            if !request.is_empty() {
-                url.push_str(format!("?{}", request).as_str());
-            }
+    pub fn get(&self, endpoint: &str, request: &str) -> Result<String> {
+        let mut url: String = format!("{}{}", self.host, endpoint);
+        if !request.is_empty() {
+            url.push_str(format!("?{}", request).as_str());
         }
 
         let client = &self.inner_client;
@@ -77,8 +72,8 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn post<T: DeserializeOwned>(&self, endpoint: API) -> Result<T> {
-        let url: String = format!("{}{}", self.host, String::from(endpoint));
+    pub fn post(&self, endpoint: &str) -> Result<String> {
+        let url: String = format!("{}{}", self.host, endpoint);
 
         let client = &self.inner_client;
         let response = client
@@ -89,8 +84,8 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn put<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
-        let url: String = format!("{}{}", self.host, String::from(endpoint));
+    pub fn put(&self, endpoint: &str, listen_key: &str) -> Result<String> {
+        let url: String = format!("{}{}", self.host, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
         let client = &self.inner_client;
@@ -103,8 +98,8 @@ impl Client {
         self.handler(response)
     }
 
-    pub fn delete<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
-        let url: String = format!("{}{}", self.host, String::from(endpoint));
+    pub fn delete(&self, endpoint: &str, listen_key: &str) -> Result<String> {
+        let url: String = format!("{}{}", self.host, endpoint);
         let data: String = format!("listenKey={}", listen_key);
 
         let client = &self.inner_client;
@@ -118,22 +113,14 @@ impl Client {
     }
 
     // Request must be signed
-    fn sign_request(&self, endpoint: API, request: Option<String>) -> String {
-        match request {
-            Some(request) => {
-                let mut signed_key = Hmac::<Sha256>::new_varkey(self.secret_key.as_bytes()).unwrap();
-                signed_key.update(request.as_bytes());
-                let signature = hex_encode(signed_key.finalize().into_bytes());
-                let request_body: String = format!("{}&signature={}", request, signature);
-                format!("{}{}?{}", self.host, String::from(endpoint), request_body)
-            },
-            None => {
-                let signed_key = Hmac::<Sha256>::new_varkey(self.secret_key.as_bytes()).unwrap();
-                let signature = hex_encode(signed_key.finalize().into_bytes());
-                let request_body: String = format!("&signature={}", signature);
-                format!("{}{}?{}", self.host, String::from(endpoint), request_body)
-            }
-        }
+    fn sign_request(&self, endpoint: &str, request: &str) -> String {
+        let mut signed_key = Hmac::<Sha256>::new_varkey(self.secret_key.as_bytes()).unwrap();
+        signed_key.update(request.as_bytes());
+        let signature = hex_encode(signed_key.finalize().into_bytes());
+        let request_body: String = format!("{}&signature={}", request, signature);
+        let url: String = format!("{}{}?{}", self.host, endpoint, request_body);
+
+        url
     }
 
     fn build_headers(&self, content_type: bool) -> Result<HeaderMap> {
@@ -154,10 +141,10 @@ impl Client {
         Ok(custom_headers)
     }
 
-    fn handler<T: DeserializeOwned>(&self, response: Response) -> Result<T> {
+    fn handler(&self, response: Response) -> Result<String> {
         match response.status() {
             StatusCode::OK => {
-                Ok(response.json::<T>()?)
+                Ok(response.text()?)
             }
             StatusCode::INTERNAL_SERVER_ERROR => {
                 bail!("Internal Server Error");

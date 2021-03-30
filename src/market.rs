@@ -3,9 +3,7 @@ use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
 use std::collections::BTreeMap;
-use serde_json::Value;
-use crate::api::API;
-use crate::api::Spot;
+use serde_json::{Value, from_str};
 
 #[derive(Clone)]
 pub struct Market {
@@ -25,7 +23,10 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Depth), Some(request))
+        let data = self.client.get("/api/v3/depth", &request)?;
+        let order_book: OrderBook = from_str(data.as_str())?;
+
+        Ok(order_book)
     }
 
     // Order book at a custom depth. Currently supported values
@@ -40,12 +41,19 @@ impl Market {
         parameters.insert("limit".into(), depth.to_string());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Depth), Some(request))
+        let data = self.client.get("/api/v3/depth", &request)?;
+        let order_book: OrderBook = from_str(data.as_str())?;
+
+        Ok(order_book)
     }
 
     // Latest price for ALL symbols.
     pub fn get_all_prices(&self) -> Result<Prices> {
-        self.client.get(API::Spot(Spot::Price), None)
+        let data = self.client.get("/api/v3/ticker/price", "")?;
+
+        let prices: Prices = from_str(data.as_str())?;
+
+        Ok(prices)
     }
 
     // Latest price for ONE symbol.
@@ -58,7 +66,10 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Price), Some(request))
+        let data = self.client.get("/api/v3/ticker/price", &request)?;
+        let symbol_price: SymbolPrice = from_str(data.as_str())?;
+
+        Ok(symbol_price)
     }
 
     // Average price for ONE symbol.
@@ -71,13 +82,20 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::AvgPrice), Some(request))
+        let data = self.client.get("/api/v3/avgPrice", &request)?;
+        let average_price: AveragePrice = from_str(data.as_str())?;
+
+        Ok(average_price)
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
-        self.client.get(API::Spot(Spot::BookTicker), None)
+        let data = self.client.get("/api/v3/ticker/bookTicker", "")?;
+
+        let book_tickers: BookTickers = from_str(data.as_str())?;
+
+        Ok(book_tickers)
     }
 
     // -> Best price/qty on the order book for ONE symbol
@@ -90,7 +108,10 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::BookTicker), Some(request))
+        let data = self.client.get("/api/v3/ticker/bookTicker", &request)?;
+        let ticker: Tickers = from_str(data.as_str())?;
+
+        Ok(ticker)
     }
 
     // 24hr ticker price change statistics
@@ -103,12 +124,20 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        self.client.get(API::Spot(Spot::Ticker24hr), Some(request))
+        let data = self.client.get("/api/v3/ticker/24hr", &request)?;
+
+        let stats: PriceStats = from_str(data.as_str())?;
+
+        Ok(stats)
     }
 
     // 24hr ticker price change statistics for all symbols
     pub fn get_all_24h_price_stats(&self) -> Result<Vec<PriceStats>> {
-        self.client.get(API::Spot(Spot::Ticker24hr), None)
+        let data = self.client.get("/api/v3/ticker/24hr", "")?;
+
+        let stats: Vec<PriceStats> = from_str(data.as_str())?;
+
+        Ok(stats)
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
@@ -140,10 +169,13 @@ impl Market {
         }
 
         let request = build_request(&parameters);
-        let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), Some(request))?;
+
+        let data = self.client.get("/api/v3/klines", &request)?;
+        let parsed_data: Vec<Vec<Value>> = from_str(data.as_str())?;
 
         let klines = KlineSummaries::AllKlineSummaries(
-            data.iter()
+            parsed_data
+                .iter()
                 .map(|row| KlineSummary {
                     open_time: to_i64(&row[0]),
                     open: to_f64(&row[1]),
