@@ -7,6 +7,7 @@ use crate::futures::market::*;
 use crate::userstream::*;
 use crate::client::*;
 
+#[allow(clippy::all)]
 pub enum API {
     Spot(Spot),
     Futures(Futures),
