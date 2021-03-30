@@ -1,6 +1,6 @@
 [package]
 name = "binance"
-version = "0.12.4"
+version = "0.12.3"
 license = "MIT OR Apache-2.0"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 edition = "2018"
@@ -20,18 +20,18 @@ name = "binance"
 path = "src/lib.rs"
 
 [dependencies]
-hex = "0.4.3"
+hex = "0.4"
 hmac = "0.10.1"
-sha2 = "0.9.3"
-serde = { version = "1.0.125", features = ["derive"] }
-serde_json = "1.0.64"
+sha2 = "0.9"
+serde = { version = "1.0.118", features = ["derive"] }
+serde_json = "1.0"
 error-chain = { version = "0.12.4", default-features = false }
 reqwest = { version = "0.10.9", features = ["blocking", "json"] }
 tungstenite = "0.11.1"
-url = "2.2.1"
+url = "2.2.0"
 
 [features]
 vendored-tls = ["reqwest/native-tls-vendored", "tungstenite/tls-vendored"]
 
 [dev-dependencies]
-csv ="1.1.6"
+csv ="1.1.5"
