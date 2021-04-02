@@ -156,11 +156,11 @@ pub struct Transaction {
     pub transact_time: u64,
     #[serde(with = "string_or_float")]
     pub price: f64,
-    #[serde(with = "string_or_float")]    
+    #[serde(with = "string_or_float")]
     pub orig_qty: f64,
-    #[serde(with = "string_or_float")]    
+    #[serde(with = "string_or_float")]
     pub executed_qty: f64,
-    #[serde(with = "string_or_float")]    
+    #[serde(with = "string_or_float")]
     pub cummulative_quote_qty: f64,
     pub status: String,
     pub time_in_force: String,
@@ -173,9 +173,9 @@ pub struct Transaction {
 pub struct FillInfo {
     #[serde(with = "string_or_float")]
     pub price: f64,
-    #[serde(with = "string_or_float")]    
+    #[serde(with = "string_or_float")]
     pub qty: f64,
-    #[serde(with = "string_or_float")]    
+    #[serde(with = "string_or_float")]
     pub commission: f64,
     pub commission_asset: String,
     pub trade_id: Option<u64>,
@@ -295,6 +295,7 @@ pub struct TradeHistory {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PriceStats {
+    pub symbol: String,
     pub price_change: String,
     pub price_change_percent: String,
     pub weighted_avg_price: String,
@@ -316,8 +317,8 @@ pub struct PriceStats {
     pub volume: f64,
     pub open_time: u64,
     pub close_time: u64,
-    pub first_id: u64,
-    pub last_id: u64,
+    pub first_id: i64,
+    pub last_id: i64,
     pub count: u64,
 }
 
@@ -445,9 +446,16 @@ pub struct OrderTradeEvent {
     pub m_ignore: bool,
 }
 
+/// The Aggregate Trade Streams push trade information that is aggregated for a single taker order.
+///
+/// Stream Name: \<symbol\>@aggTrade
+///
+/// Update Speed: Real-time
+///
+/// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct TradesEvent {
+pub struct AggrTradesEvent {
     #[serde(rename = "e")]
     pub event_type: String,
 
@@ -471,6 +479,50 @@ pub struct TradesEvent {
 
     #[serde(rename = "l")]
     pub last_break_trade_id: u64,
+
+    #[serde(rename = "T")]
+    pub trade_order_time: u64,
+
+    #[serde(rename = "m")]
+    pub is_buyer_maker: bool,
+
+    #[serde(skip, rename = "M")]
+    pub m_ignore: bool,
+}
+
+/// The Trade Streams push raw trade information; each trade has a unique buyer and seller.
+///
+/// Stream Name: \<symbol\>@trade
+///
+/// Update Speed: Real-time
+///
+/// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#trade-streams
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TradeEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "t")]
+    pub trade_id: u64,
+
+    #[serde(rename = "p")]
+    pub price: String,
+
+    #[serde(rename = "q")]
+    pub qty: String,
+
+    #[serde(rename = "b")]
+    pub buyer_order_id: u64,
+
+    #[serde(rename = "a")]
+    pub seller_order_id: u64,
 
     #[serde(rename = "T")]
     pub trade_order_time: u64,

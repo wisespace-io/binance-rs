@@ -1,17 +1,31 @@
 use binance::api::*;
+use binance::config::*;
 use binance::general::*;
 use binance::account::*;
 use binance::market::*;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
-    general();
+    // The general spot API endpoints; shown with
+    // testnet=false and testnet=true
+    general(false);
+    general(true);
+
+    // The market data API endpoint
+    market_data();
+
+    // The account data API endpoint examples need an API key. Change those lines locally
+    // and uncomment the line below (and do not commit your api key :)).
     //account();
-    //market_data();
 }
 
-fn general() {
-    let general: General = Binance::new(None, None);
+fn general(use_testnet: bool) {
+    let general: General = if use_testnet {
+        let config = Config::default().set_rest_api_endpoint("https://testnet.binance.vision");
+        Binance::new_with_config(None, None, &config)
+    } else {
+        Binance::new(None, None)
+    };
 
     let ping = general.ping();
     match ping {
@@ -47,6 +61,7 @@ fn general() {
     }
 }
 
+#[allow(dead_code)]
 fn account() {
     let api_key = Some("YOUR_API_KEY".into());
     let secret_key = Some("YOUR_SECRET_KEY".into());
@@ -73,12 +88,22 @@ fn account() {
         Err(e) => println!("Error: {}", e),
     }
 
+    match account.market_buy_using_quote_quantity("WTCETH", 5) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
     match account.limit_sell("WTCETH", 10, 0.035000) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     match account.market_sell("WTCETH", 5) {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    match account.market_sell_using_quote_quantity("WTCETH", 5) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
@@ -105,11 +130,17 @@ fn account() {
     }
 }
 
+#[allow(dead_code)]
 fn market_data() {
     let market: Market = Binance::new(None, None);
 
-    // Order book
+    // Order book at default depth
     match market.get_depth("BNBETH") {
+        Ok(answer) => println!("{:?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+    // Order book at depth 500
+    match market.get_custom_depth("BNBETH", 500) {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }

@@ -1,8 +1,8 @@
 use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
-
-use serde_json::from_str;
+use crate::api::API;
+use crate::api::Spot;
 
 #[derive(Clone)]
 pub struct General {
@@ -12,28 +12,19 @@ pub struct General {
 impl General {
     // Test connectivity
     pub fn ping(&self) -> Result<String> {
-        self.client.get("/api/v3/ping", "")?;
-
+        self.client.get(API::Spot(Spot::Ping), None)?;
         Ok("pong".into())
     }
 
     // Check server time
     pub fn get_server_time(&self) -> Result<ServerTime> {
-        let data: String = self.client.get("/api/v3/time", "")?;
-
-        let server_time: ServerTime = from_str(data.as_str())?;
-
-        Ok(server_time)
+        self.client.get(API::Spot(Spot::Time), None)
     }
 
     // Obtain exchange information
     // - Current exchange trading rules and symbol information
     pub fn exchange_info(&self) -> Result<ExchangeInformation> {
-        let data: String = self.client.get("/api/v3/exchangeInfo", "")?;
-
-        let info: ExchangeInformation = from_str(data.as_str())?;
-
-        Ok(info)
+        self.client.get(API::Spot(Spot::ExchangeInfo), None)
     }
 
     // Get Symbol information

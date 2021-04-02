@@ -3,7 +3,9 @@ use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
 use std::collections::BTreeMap;
-use serde_json::{Value, from_str};
+use serde_json::Value;
+use crate::api::API;
+use crate::api::Spot;
 
 #[derive(Clone)]
 pub struct Market {
@@ -13,7 +15,7 @@ pub struct Market {
 
 // Market Data endpoints
 impl Market {
-    // Order book (Default 100; max 100)
+    // Order book at the default depth of 100
     pub fn get_depth<S>(&self, symbol: S) -> Result<OrderBook>
     where
         S: Into<String>,
@@ -23,20 +25,27 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v3/depth", &request)?;
+        self.client.get(API::Spot(Spot::Depth), Some(request))
+    }
 
-        let order_book: OrderBook = from_str(data.as_str())?;
+    // Order book at a custom depth. Currently supported values
+    // are 5, 10, 20, 50, 100, 500, 1000 and 5000
+    pub fn get_custom_depth<S>(&self, symbol: S, depth: u64) -> Result<OrderBook>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
-        Ok(order_book)
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("limit".into(), depth.to_string());
+        let request = build_request(&parameters);
+
+        self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
     // Latest price for ALL symbols.
     pub fn get_all_prices(&self) -> Result<Prices> {
-        let data = self.client.get("/api/v3/ticker/price", "")?;
-
-        let prices: Prices = from_str(data.as_str())?;
-
-        Ok(prices)
+        self.client.get(API::Spot(Spot::Price), None)
     }
 
     // Latest price for ONE symbol.
@@ -49,10 +58,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v3/ticker/price", &request)?;
-        let symbol_price: SymbolPrice = from_str(data.as_str())?;
-
-        Ok(symbol_price)
+        self.client.get(API::Spot(Spot::Price), Some(request))
     }
 
     // Average price for ONE symbol.
@@ -65,20 +71,13 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v3/avgPrice", &request)?;
-        let average_price: AveragePrice = from_str(data.as_str())?;
-
-        Ok(average_price)
+        self.client.get(API::Spot(Spot::AvgPrice), Some(request))
     }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.
     pub fn get_all_book_tickers(&self) -> Result<BookTickers> {
-        let data = self.client.get("/api/v3/ticker/bookTicker", "")?;
-
-        let book_tickers: BookTickers = from_str(data.as_str())?;
-
-        Ok(book_tickers)
+        self.client.get(API::Spot(Spot::BookTicker), None)
     }
 
     // -> Best price/qty on the order book for ONE symbol
@@ -91,10 +90,7 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v3/ticker/bookTicker", &request)?;
-        let ticker: Tickers = from_str(data.as_str())?;
-
-        Ok(ticker)
+        self.client.get(API::Spot(Spot::BookTicker), Some(request))
     }
 
     // 24hr ticker price change statistics
@@ -107,11 +103,12 @@ impl Market {
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(&parameters);
 
-        let data = self.client.get("/api/v3/ticker/24hr", &request)?;
+        self.client.get(API::Spot(Spot::Ticker24hr), Some(request))
+    }
 
-        let stats: PriceStats = from_str(data.as_str())?;
-
-        Ok(stats)
+    // 24hr ticker price change statistics for all symbols
+    pub fn get_all_24h_price_stats(&self) -> Result<Vec<PriceStats>> {
+        self.client.get(API::Spot(Spot::Ticker24hr), None)
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
@@ -143,13 +140,10 @@ impl Market {
         }
 
         let request = build_request(&parameters);
-
-        let data = self.client.get("/api/v3/klines", &request)?;
-        let parsed_data: Vec<Vec<Value>> = from_str(data.as_str())?;
+        let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), Some(request))?;
 
         let klines = KlineSummaries::AllKlineSummaries(
-            parsed_data
-                .iter()
+            data.iter()
                 .map(|row| KlineSummary {
                     open_time: to_i64(&row[0]),
                     open: to_f64(&row[1]),
