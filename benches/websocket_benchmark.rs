@@ -30,8 +30,8 @@ fn criterion_benchmark(c: &mut Criterion) {
 
     group.sample_size(200);
     group.measurement_time(Duration::new(35, 0));
-    group.bench_function("handle_msg all symbols", |b| b.iter(|| handle_msg(&mut web_socket_subscribed, &all_symbols_json)));
-    group.bench_function("handle_msg BTCUSDT symbol", |b| b.iter(|| handle_msg(&mut web_socket, &btc_symbol_json)));
+    group.bench_function("handle_msg all symbols", |b| b.iter(|| web_socket_subscribed.test_handle_msg(&all_symbols_json)));
+    group.bench_function("handle_msg BTCUSDT symbol", |b| b.iter(|| web_socket.test_handle_msg(&btc_symbol_json)));
     group.finish();
 }
 
