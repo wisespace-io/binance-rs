@@ -10,6 +10,7 @@ use tungstenite::protocol::WebSocket;
 use tungstenite::client::AutoStream;
 use tungstenite::handshake::client::Response;
 
+#[allow(clippy::all)]
 enum WebsocketAPI {
     Default,
     MultiStream,
