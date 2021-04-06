@@ -84,7 +84,7 @@ impl<'a> WebSockets<'a> {
         WebSockets {
             socket: None,
             handler: Box::new(handler),
-            subscription: subscription,
+            subscription,
         }
     }
 
@@ -109,9 +109,7 @@ impl<'a> WebSockets<'a> {
                 self.socket = Some(answer);
                 Ok(())
             }
-            Err(e) => {
-                bail!(format!("Error during handshake {}", e));
-            }
+            Err(e) => bail!(format!("Error during handshake {}", e))
         }
     }
 
