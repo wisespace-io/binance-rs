@@ -35,3 +35,8 @@ vendored-tls = ["reqwest/native-tls-vendored", "tungstenite/tls-vendored"]
 
 [dev-dependencies]
 csv ="1.1.5"
+criterion = "0.3"
+
+[[bench]]
+name = "websocket_benchmark"
+harness = false

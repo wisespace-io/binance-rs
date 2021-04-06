@@ -52,12 +52,13 @@ pub struct WebSockets<'a> {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 enum Events {
+    Vec(Vec<DayTickerEvent>),
+    DayTickerEvent(DayTickerEvent),
     BookTickerEvent(BookTickerEvent),
     AccountUpdateEvent(AccountUpdateEvent),
     OrderTradeEvent(OrderTradeEvent),
     AggrTradesEvent(AggrTradesEvent),
     TradeEvent(TradeEvent),
-    DayTickerEvent(DayTickerEvent),
     KlineEvent(KlineEvent),
     OrderBook(OrderBook),
     DepthOrderBookEvent(DepthOrderBookEvent),
@@ -73,6 +74,17 @@ impl<'a> WebSockets<'a> {
             socket: None,
             handler: Box::new(handler),
             subscription: "",
+        }
+    }
+
+    pub fn new_with_subscription<Callback>(subscription: &'a str, handler: Callback) -> WebSockets<'a>
+    where
+        Callback: FnMut(WebsocketEvent) -> Result<()> + 'a,
+    {
+        WebSockets {
+            socket: None,
+            handler: Box::new(handler),
+            subscription: subscription,
         }
     }
 
@@ -110,6 +122,10 @@ impl<'a> WebSockets<'a> {
         }
         bail!("Not able to close the connection");
     }
+    
+    pub fn test_handle_msg(&mut self, msg: &str) -> Result<()> {
+        self.handle_msg(msg)
+    }
 
     fn handle_msg(&mut self, msg: &str) -> Result<()> {
 
@@ -120,16 +136,9 @@ impl<'a> WebSockets<'a> {
             return Ok(());
         }
 
-        // Special case to handle Vec<DayTickerEvent>.
-        if self.subscription == "!ticker@arr" {
-            if let Ok(trades) = serde_json::from_value::<Vec<DayTickerEvent>>(value) {
-                (self.handler)(WebsocketEvent::DayTickerAll(trades))?;
-            }
-            return Ok(());
-        }
-
         if let Ok(events) = serde_json::from_value::<Events>(value) {
             let action = match events {
+                Events::Vec(v) => WebsocketEvent::DayTickerAll(v),
                 Events::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
                 Events::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
                 Events::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
@@ -162,4 +171,5 @@ impl<'a> WebSockets<'a> {
         }
         Ok(())
     }
+
 }
