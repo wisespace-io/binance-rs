@@ -1,0 +1,23 @@
+{
+		"symbol": "BNBBTC",
+		"orderId": 1,
+		"clientOrderId": "myOrder1",
+		"transactTime": 1499827319559,
+		"price": "0.00007456",
+		"origQty": "1.00",
+		"executedQty": "2.682403433476395",
+		"cummulativeQuoteQty": "0.0002",
+		"status": "FILLED",
+		"timeInForce": "GTC",
+		"type": "MARKET",
+		"side": "BUY",
+        "fills": [
+			{
+				"price":"0.00007456",
+				"qty":"2.682403433476395",
+				"commission":"0.00332384",
+				"commissionAsset":"BNB",
+				"tradeId":1566397
+			}
+        ]
+}

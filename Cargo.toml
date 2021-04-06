@@ -35,6 +35,8 @@ vendored-tls = ["reqwest/native-tls-vendored", "tungstenite/tls-vendored"]
 
 [dev-dependencies]
 csv ="1.1.5"
+mockito = "0.30.0"
+env_logger = "0.8.3"
 criterion = "0.3"
 
 [[bench]]
