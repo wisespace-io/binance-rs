@@ -67,6 +67,7 @@ pub enum Filters {
     #[serde(rename = "MIN_NOTIONAL")]
     #[serde(rename_all = "camelCase")]
     MinNotional {
+        notional: Option<String>,
         min_notional: Option<String>,
         apply_to_market: Option<bool>,
         avg_price_mins: Option<f64>,
