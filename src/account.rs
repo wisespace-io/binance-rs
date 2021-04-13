@@ -429,7 +429,7 @@ impl Account {
     ///     let api_key = Some("api_key".into());
     ///     let secret_key = Some("secret_key".into());
     ///     let account: Account = Binance::new(api_key, secret_key);
-    ///     let result: Result<Transaction> = account.stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    ///     let result = account.stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
     /// }
     /// ```
     pub fn stop_limit_buy_order<S, F>(
@@ -470,7 +470,7 @@ impl Account {
     ///     let api_key = Some("api_key".into());
     ///     let secret_key = Some("secret_key".into());
     ///     let account: Account = Binance::new(api_key, secret_key);
-    ///     let result: Result<Void> = account.test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    ///     let result = account.test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
     /// }
     /// ```
     pub fn test_stop_limit_buy_order<S, F>(
@@ -509,7 +509,7 @@ impl Account {
     ///     let api_key = Some("api_key".into());
     ///     let secret_key = Some("secret_key".into());
     ///     let account: Account = Binance::new(api_key, secret_key);
-    ///     let result: Result<Transaction> = account.stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    ///     let result = account.stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
     /// }
     /// ```
     pub fn stop_limit_sell_order<S, F>(
@@ -550,7 +550,7 @@ impl Account {
     ///     let api_key = Some("api_key".into());
     ///     let secret_key = Some("secret_key".into());
     ///     let account: Account = Binance::new(api_key, secret_key);
-    ///     let result: Result<Void> = account.test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    ///     let result = account.test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
     /// }
     /// ```
     pub fn test_stop_limit_sell_order<S, F>(
