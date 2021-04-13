@@ -427,7 +427,7 @@ impl Account {
     ///
     /// fn main() {
     ///     let account: Account = Binance::new(api_key, secret_key);
-    ///     let result: Result<Transaction> = account.test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    ///     let result: Result<Transaction> = account.stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
     /// }
     /// ```
     pub fn stop_limit_buy_order<S, F>(
@@ -456,7 +456,7 @@ impl Account {
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
-    /// Create a stop limit sell test order for the given symbol, price and stop price. 
+    /// Create a stop limit buy test order for the given symbol, price and stop price. 
     /// Returning a `Transaction` value with the same parameters sent on the order.
     /// 
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
