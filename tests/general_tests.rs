@@ -2,15 +2,12 @@ use binance::api::*;
 use binance::config::*;
 use binance::general::*;
 use binance::model::*;
-// use crate::account::*;
-// use crate::market::*;
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use mockito::mock;
-    // use binance::config::Config;
-    // use binance::general::General;
+    use float_cmp::*;
 
     #[test]
     fn ping() {
@@ -103,7 +100,7 @@ mod tests {
                 Filters::PercentPrice { multiplier_up, multiplier_down, avg_price_mins } => {
                     assert_eq!(multiplier_up, "5");
                     assert_eq!(multiplier_down, "0.2");
-                    assert_eq!(avg_price_mins.unwrap(), 5.0);
+                    assert!(approx_eq!(f64, avg_price_mins.unwrap(), 5.0, ulps = 2));
                 },
                 Filters::LotSize { min_qty, max_qty, step_size } => {
                     assert_eq!(min_qty, "0.01000000");
@@ -114,7 +111,7 @@ mod tests {
                     assert!(notional.is_none());
                     assert_eq!(min_notional.unwrap(), "0.00010000");
                     assert_eq!(apply_to_market.unwrap(), true);
-                    assert_eq!(avg_price_mins.unwrap(), 5.0);
+                    assert!(approx_eq!(f64, avg_price_mins.unwrap(), 5.0, ulps = 2));
                 },
                 Filters::IcebergParts { limit } => {
                     assert_eq!(limit.unwrap(), 10);

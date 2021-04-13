@@ -49,7 +49,7 @@ impl FuturesMarket {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
 
         self.client.get(API::Futures(Futures::Depth), Some(request))
     }
@@ -60,7 +60,7 @@ impl FuturesMarket {
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
         self.client.get(API::Futures(Futures::Trades), Some(request))
     }
 
@@ -118,7 +118,7 @@ impl FuturesMarket {
             parameters.insert("fromId".into(), format!("{}", fi));
         }
 
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
 
         self.client.get(API::Futures(Futures::AggTrades), Some(request))
     }
@@ -151,7 +151,7 @@ impl FuturesMarket {
             parameters.insert("endTime".into(), format!("{}", et));
         }
 
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
 
         let data: Vec<Vec<Value>> = self
             .client
@@ -185,7 +185,7 @@ impl FuturesMarket {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
 
         self.client.get(API::Futures(Futures::Ticker24hr), Some(request))
     }
@@ -198,7 +198,7 @@ impl FuturesMarket {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
 
         self.client.get(API::Futures(Futures::TickerPrice), Some(request))
     }
@@ -216,7 +216,7 @@ impl FuturesMarket {
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
         self.client.get(API::Futures(Futures::BookTicker), Some(request))
     }
 
@@ -234,7 +234,7 @@ impl FuturesMarket {
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
         self.client.get(API::Futures(Futures::OpenInterest), Some(request))
     }
 }

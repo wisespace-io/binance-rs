@@ -124,7 +124,7 @@ impl Account {
         self.client.get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
-    // Cancel all open orders for ONE symbol
+    // Cancel all open orders for a single symbol
     pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<Vec<OrderCanceled>>
     where
         S: Into<String>,
@@ -151,7 +151,7 @@ impl Account {
     /// Place a test status order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_order_status<S>(&self, symbol: S, order_id: u64) -> Result<()>
+    pub fn test_order_status<S>(&self, symbol: S, order_id: u64) -> Result<Void>
     where
         S: Into<String>,
     {
@@ -160,7 +160,7 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.get_signed::<()>(API::Spot(Spot::OrderTest), Some(request))
+        self.client.get_signed::<Void>(API::Spot(Spot::OrderTest), Some(request))
     }
 
     // Place a LIMIT order - BUY
@@ -186,7 +186,7 @@ impl Account {
     /// Place a test limit order - BUY
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<()>
+    pub fn test_limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -202,7 +202,7 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     // Place a LIMIT order - SELL
@@ -228,7 +228,7 @@ impl Account {
     /// Place a test LIMIT order - SELL
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_limit_sell<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<()>
+    pub fn test_limit_sell<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -244,7 +244,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     // Place a MARKET order - BUY
@@ -270,7 +270,7 @@ impl Account {
     /// Place a test MARKET order - BUY
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_market_buy<S, F>(&self, symbol: S, qty: F) -> Result<()>
+    pub fn test_market_buy<S, F>(&self, symbol: S, qty: F) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -286,7 +286,7 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     // Place a MARKET order with quote quantity - BUY
@@ -315,7 +315,7 @@ impl Account {
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     pub fn test_market_buy_using_quote_quantity<S, F>(
         &self, symbol: S, quote_order_qty: F,
-    ) -> Result<()>
+    ) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -330,7 +330,7 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     // Place a MARKET order - SELL
@@ -356,7 +356,7 @@ impl Account {
     /// Place a test MARKET order - SELL
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_market_sell<S, F>(&self, symbol: S, qty: F) -> Result<()>
+    pub fn test_market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -372,7 +372,7 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     // Place a MARKET order with quote quantity - SELL
@@ -401,7 +401,7 @@ impl Account {
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     pub fn test_market_sell_using_quote_quantity<S, F>(
         &self, symbol: S, quote_order_qty: F,
-    ) -> Result<()>
+    ) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -416,7 +416,7 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     /// Place a stop limit buy order
@@ -456,7 +456,7 @@ impl Account {
         price: f64,
         stop_price: f64,
         time_in_force: TimeInForce,
-    ) -> Result<()>
+    ) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -472,7 +472,63 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
+    }
+
+    /// Place a stop limit buy order
+    pub fn stop_limit_sell_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: Some(stop_price),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::StopLossLimit,
+            time_in_force,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed(API::Spot(Spot::Order), request)
+    }
+
+    /// Place a test stop limit buy order
+    ///
+    /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    pub fn test_stop_limit_sell_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Void>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: Some(stop_price),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::StopLossLimit,
+            time_in_force,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
     
     /// Place a custom order
@@ -508,15 +564,17 @@ impl Account {
     /// Place a test custom order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    #[allow(clippy::too_many_arguments)] 
     pub fn test_custom_order<S, F>(
         &self,
         symbol: S,
         qty: F,
         price: f64,
+        stop_price: Option<f64>,
         order_side: OrderSide,
         order_type: OrderType,
         time_in_force: TimeInForce,
-    ) -> Result<()>
+    ) -> Result<Void>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -525,14 +583,14 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
-            stop_price: None,
+            stop_price,
             order_side,
             order_type,
             time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client.post_signed::<Void>(API::Spot(Spot::OrderTest), request)
     }
 
     // Check an order's status
@@ -551,7 +609,7 @@ impl Account {
     /// Place a test cancel order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<()>
+    pub fn test_cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<Void>
     where
         S: Into<String>,
     {
@@ -559,7 +617,7 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.delete_signed::<()>(API::Spot(Spot::OrderTest), Some(request))
+        self.client.delete_signed::<Void>(API::Spot(Spot::OrderTest), Some(request))
     }
 
     // Trade history

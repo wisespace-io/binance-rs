@@ -11,7 +11,7 @@ extern crate error_chain;
 
 mod client;
 pub mod errors;
-mod util;
+pub mod util;
 
 pub mod model;
 

@@ -21,10 +21,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
-
+        let request = build_request(parameters);
         self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
@@ -35,11 +33,9 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("limit".into(), depth.to_string());
-        let request = build_request(&parameters);
-
+        let request = build_request(parameters);
         self.client.get(API::Spot(Spot::Depth), Some(request))
     }
 
@@ -54,10 +50,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
-
+        let request = build_request(parameters);
         self.client.get(API::Spot(Spot::Price), Some(request))
     }
 
@@ -67,10 +61,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
-
+        let request = build_request(parameters);
         self.client.get(API::Spot(Spot::AvgPrice), Some(request))
     }
 
@@ -86,10 +78,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
-
+        let request = build_request(parameters);
         self.client.get(API::Spot(Spot::BookTicker), Some(request))
     }
 
@@ -99,10 +89,8 @@ impl Market {
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_request(&parameters);
-
+        let request = build_request(parameters);
         self.client.get(API::Spot(Spot::Ticker24hr), Some(request))
     }
 
@@ -139,7 +127,7 @@ impl Market {
             parameters.insert("endTime".into(), format!("{}", et));
         }
 
-        let request = build_request(&parameters);
+        let request = build_request(parameters);
         let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), Some(request))?;
 
         let klines = KlineSummaries::AllKlineSummaries(
