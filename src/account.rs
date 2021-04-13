@@ -423,6 +423,7 @@ impl Account {
     /// Returning a `Transaction` value with the same parameters sent on the order.
     /// 
     ///```no_run
+    /// use binance::api::Binance;
     /// use binance::account::*;
     ///
     /// fn main() {
@@ -464,6 +465,7 @@ impl Account {
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     /// 
     ///```no_run
+    /// use binance::api::Binance;
     /// use binance::account::*;
     ///
     /// fn main() {
@@ -503,6 +505,7 @@ impl Account {
     /// Returning a `Transaction` value with the same parameters sent on the order.
     /// 
     ///```no_run
+    /// use binance::api::Binance;
     /// use binance::account::*;
     ///
     /// fn main() {
@@ -544,6 +547,7 @@ impl Account {
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     /// 
     ///```no_run
+    /// use binance::api::Binance;
     /// use binance::account::*;
     ///
     /// fn main() {
