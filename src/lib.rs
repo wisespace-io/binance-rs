@@ -6,6 +6,8 @@
     unused_import_braces
 )]
 
+#![allow(clippy::needless_doctest_main)]
+
 #[macro_use]
 extern crate error_chain;
 
