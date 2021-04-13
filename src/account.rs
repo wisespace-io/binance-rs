@@ -85,7 +85,7 @@ impl Account {
         self.client.get_signed(API::Spot(Spot::Account), Some(request))
     }
 
-    // Balance for ONE Asset
+    // Balance for a single Asset
     pub fn get_balance<S>(&self, asset: S) -> Result<Balance>
     where
         S: Into<String>,

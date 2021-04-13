@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Deserialize, Clone)]
+pub struct Pong { }
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ServerTime {
@@ -77,7 +80,7 @@ pub enum Filters {
     IcebergParts { limit: Option<u16> },
     #[serde(rename = "MAX_NUM_ORDERS")]
     #[serde(rename_all = "camelCase")]
-    MaxNumOrders { limit: Option<u16> },
+    MaxNumOrders { max_num_orders: Option<u16> },
     #[serde(rename = "MAX_NUM_ALGO_ORDERS")]
     #[serde(rename_all = "camelCase")]
     MaxNumAlgoOrders { max_num_algo_orders: Option<u16> },
