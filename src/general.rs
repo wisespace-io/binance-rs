@@ -12,7 +12,7 @@ pub struct General {
 impl General {
     // Test connectivity
     pub fn ping(&self) -> Result<String> {
-        self.client.get::<Void>(API::Spot(Spot::Ping), None)?;
+        self.client.get::<Empty>(API::Spot(Spot::Ping), None)?;
         Ok("pong".into())
     }
 
