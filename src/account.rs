@@ -85,7 +85,7 @@ impl Account {
         self.client.get_signed(API::Spot(Spot::Account), Some(request))
     }
 
-    // Balance for ONE Asset
+    // Balance for a single Asset
     pub fn get_balance<S>(&self, asset: S) -> Result<Balance>
     where
         S: Into<String>,
@@ -124,7 +124,7 @@ impl Account {
         self.client.get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
-    // Cancel all open orders for ONE symbol
+    // Cancel all open orders for a single symbol
     pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<Vec<OrderCanceled>>
     where
         S: Into<String>,
@@ -160,7 +160,9 @@ impl Account {
         parameters.insert("orderId".into(), order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.get_signed::<()>(API::Spot(Spot::OrderTest), Some(request))
+        self.client
+            .get_signed::<Empty>(API::Spot(Spot::OrderTest), Some(request))
+            .map(|_|())
     }
 
     // Place a LIMIT order - BUY
@@ -202,7 +204,9 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
     }
 
     // Place a LIMIT order - SELL
@@ -244,7 +248,9 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
     }
 
     // Place a MARKET order - BUY
@@ -286,7 +292,9 @@ impl Account {
         };
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
     }
 
     // Place a MARKET order with quote quantity - BUY
@@ -330,7 +338,9 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
     }
 
     // Place a MARKET order - SELL
@@ -372,7 +382,9 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+        .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+        .map(|_|())
     }
 
     // Place a MARKET order with quote quantity - SELL
@@ -416,10 +428,25 @@ impl Account {
         };
         let order = self.build_quote_quantity_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+        .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+        .map(|_|())
     }
 
-    /// Place a stop limit buy order
+    /// Create a stop limit buy order for the given symbol, price and stop price. 
+    /// Returning a `Transaction` value with the same parameters sent on the order.
+    /// 
+    ///```no_run
+    /// use binance::api::Binance;
+    /// use binance::account::*;
+    ///
+    /// fn main() {
+    ///     let api_key = Some("api_key".into());
+    ///     let secret_key = Some("secret_key".into());
+    ///     let account: Account = Binance::new(api_key, secret_key);
+    ///     let result = account.stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    /// }
+    /// ```
     pub fn stop_limit_buy_order<S, F>(
         &self,
         symbol: S,
@@ -446,9 +473,22 @@ impl Account {
         self.client.post_signed(API::Spot(Spot::Order), request)
     }
 
-    /// Place a test stop limit buy order
-    ///
+    /// Create a stop limit buy test order for the given symbol, price and stop price. 
+    /// Returning a `Transaction` value with the same parameters sent on the order.
+    /// 
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    /// 
+    ///```no_run
+    /// use binance::api::Binance;
+    /// use binance::account::*;
+    ///
+    /// fn main() {
+    ///     let api_key = Some("api_key".into());
+    ///     let secret_key = Some("secret_key".into());
+    ///     let account: Account = Binance::new(api_key, secret_key);
+    ///     let result = account.test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    /// }
+    /// ```
     pub fn test_stop_limit_buy_order<S, F>(
         &self,
         symbol: S,
@@ -472,7 +512,93 @@ impl Account {
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
+    }
+
+    /// Create a stop limit sell order for the given symbol, price and stop price. 
+    /// Returning a `Transaction` value with the same parameters sent on the order.
+    /// 
+    ///```no_run
+    /// use binance::api::Binance;
+    /// use binance::account::*;
+    ///
+    /// fn main() {
+    ///     let api_key = Some("api_key".into());
+    ///     let secret_key = Some("secret_key".into());
+    ///     let account: Account = Binance::new(api_key, secret_key);
+    ///     let result = account.stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    /// }
+    /// ```
+    pub fn stop_limit_sell_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: Some(stop_price),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::StopLossLimit,
+            time_in_force,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed(API::Spot(Spot::Order), request)
+    }
+
+    /// Create a stop limit sell order for the given symbol, price and stop price. 
+    /// Returning a `Transaction` value with the same parameters sent on the order.
+    /// 
+    /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    /// 
+    ///```no_run
+    /// use binance::api::Binance;
+    /// use binance::account::*;
+    ///
+    /// fn main() {
+    ///     let api_key = Some("api_key".into());
+    ///     let secret_key = Some("secret_key".into());
+    ///     let account: Account = Binance::new(api_key, secret_key);
+    ///     let result = account.test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC);
+    /// }
+    /// ```
+    pub fn test_stop_limit_sell_order<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<()>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: Some(stop_price),
+            order_side: OrderSide::Sell,
+            order_type: OrderType::StopLossLimit,
+            time_in_force,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
     }
     
     /// Place a custom order
@@ -508,11 +634,13 @@ impl Account {
     /// Place a test custom order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
+    #[allow(clippy::too_many_arguments)] 
     pub fn test_custom_order<S, F>(
         &self,
         symbol: S,
         qty: F,
         price: f64,
+        stop_price: Option<f64>,
         order_side: OrderSide,
         order_type: OrderType,
         time_in_force: TimeInForce,
@@ -525,14 +653,16 @@ impl Account {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
-            stop_price: None,
+            stop_price,
             order_side,
             order_type,
             time_in_force,
         };
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
-        self.client.post_signed::<()>(API::Spot(Spot::OrderTest), request)
+        self.client
+            .post_signed::<Empty>(API::Spot(Spot::OrderTest), request)
+            .map(|_|())
     }
 
     // Check an order's status
@@ -559,7 +689,9 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.delete_signed::<()>(API::Spot(Spot::OrderTest), Some(request))
+        self.client
+            .delete_signed::<Empty>(API::Spot(Spot::OrderTest), Some(request))
+            .map(|_|())
     }
 
     // Trade history

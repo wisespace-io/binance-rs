@@ -6,12 +6,14 @@
     unused_import_braces
 )]
 
+#![allow(clippy::needless_doctest_main)]
+
 #[macro_use]
 extern crate error_chain;
 
 mod client;
 pub mod errors;
-mod util;
+pub mod util;
 
 pub mod model;
 

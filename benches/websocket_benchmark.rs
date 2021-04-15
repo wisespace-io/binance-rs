@@ -1,14 +1,8 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
-use binance::api::*;
-use binance::userstream::*;
 use binance::websockets::*;
-use std::sync::atomic::{AtomicBool, Ordering};
-use core::time::Duration;
 
-fn handle_msg(web_socket: &mut WebSockets<'_>, body: &str) {
-    web_socket.test_handle_msg(&body);
-}
+use core::time::Duration;
 
 fn criterion_benchmark(c: &mut Criterion) {
 
@@ -20,11 +14,11 @@ fn criterion_benchmark(c: &mut Criterion) {
     let btc_symbol_json = reqwest::blocking::get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")
         .unwrap().text().unwrap();
 
-    let mut web_socket_subscribed: WebSockets<'_> = WebSockets::new_with_subscription("!ticker@arr", |event: WebsocketEvent| {
+    let mut web_socket_subscribed: WebSockets<'_> = WebSockets::new_with_subscription("!ticker@arr", |_event: WebsocketEvent| {
         Ok(())
     });
 
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+    let mut web_socket: WebSockets<'_> = WebSockets::new(|_event: WebsocketEvent| {
         Ok(())
     });
 

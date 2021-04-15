@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Deserialize, Clone)]
+pub struct Empty { }
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ServerTime {
@@ -77,7 +80,7 @@ pub enum Filters {
     IcebergParts { limit: Option<u16> },
     #[serde(rename = "MAX_NUM_ORDERS")]
     #[serde(rename_all = "camelCase")]
-    MaxNumOrders { limit: Option<u16> },
+    MaxNumOrders { max_num_orders: Option<u16> },
     #[serde(rename = "MAX_NUM_ALGO_ORDERS")]
     #[serde(rename_all = "camelCase")]
     MaxNumAlgoOrders { max_num_algo_orders: Option<u16> },
@@ -122,11 +125,13 @@ pub struct Balance {
 pub struct Order {
     pub symbol: String,
     pub order_id: u64,
+    pub order_list_id: i64,
     pub client_order_id: String,
     #[serde(with = "string_or_float")]
     pub price: f64,
     pub orig_qty: String,
     pub executed_qty: String,
+    pub cummulative_quote_qty: String,
     pub status: String,
     pub time_in_force: String,
     #[serde(rename = "type")]
@@ -136,15 +141,18 @@ pub struct Order {
     pub stop_price: f64,
     pub iceberg_qty: String,
     pub time: u64,
+    pub update_time: u64,
+    pub is_working: bool,
+    pub orig_quote_order_qty: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderCanceled {
     pub symbol: String,
-    pub orig_client_order_id: String,
-    pub order_id: u64,
-    pub client_order_id: String,
+    pub orig_client_order_id: Option<String>,
+    pub order_id: Option<u64>,
+    pub client_order_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -152,6 +160,7 @@ pub struct OrderCanceled {
 pub struct Transaction {
     pub symbol: String,
     pub order_id: u64,
+    pub order_list_id: Option<i64>,
     pub client_order_id: String,
     pub transact_time: u64,
     #[serde(with = "string_or_float")]
@@ -162,10 +171,18 @@ pub struct Transaction {
     pub executed_qty: f64,
     #[serde(with = "string_or_float")]
     pub cummulative_quote_qty: f64,
+    #[serde(with = "string_or_float", default = "default_stop_price")]
+    pub stop_price: f64,
     pub status: String,
     pub time_in_force: String,
+    #[serde(rename = "type")]
+    pub type_name: String,
     pub side: String,
-    pub fills: Vec<FillInfo>,
+    pub fills: Option<Vec<FillInfo>>,
+}
+
+fn default_stop_price() -> f64 {
+    0.0
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -196,7 +213,7 @@ pub struct OrderBook {
     pub asks: Vec<Asks>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Bids {
     #[serde(with = "string_or_float")]
     pub price: f64,
@@ -206,6 +223,16 @@ pub struct Bids {
     // Never serialized.
     #[serde(skip)]
     ignore: Vec<String>,
+}
+
+impl Bids {
+    pub fn new(price: f64, qty: f64) -> Bids {
+        Bids { 
+            price, 
+            qty, 
+            ignore: vec!(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
