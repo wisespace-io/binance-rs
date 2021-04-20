@@ -84,7 +84,7 @@ impl From<API> for String {
                     Spot::AggTrades => "/api/v3/aggTrades",
                     Spot::Klines => "/api/v3/klines",
                     Spot::AvgPrice => "/api/v3/avgPrice",
-                    Spot::Ticker24hr => "/api/v3/ticker/24h",
+                    Spot::Ticker24hr => "/api/v3/ticker/24hr",
                     Spot::Price => "/api/v3/ticker/price",
                     Spot::BookTicker => "/api/v3/ticker/bookTicker",
                     Spot::Order => "/api/v3/order",
