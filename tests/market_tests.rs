@@ -179,7 +179,7 @@ mod tests {
     #[test]
     fn get_24h_price_stats() {
 
-        let mock_get_24h_price_stats = mock("GET", "/api/v3/ticker/24h")
+        let mock_get_24h_price_stats = mock("GET", "/api/v3/ticker/24hr")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("symbol=BNBBTC".into()))
             .with_body_from_file("tests/mocks/market/get_24h_price_stats.json")
