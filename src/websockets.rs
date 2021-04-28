@@ -47,6 +47,7 @@ pub enum WebsocketEvent {
 pub struct WebSockets<'a> {
     pub socket: Option<(WebSocket<AutoStream>, Response)>,
     handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
+    #[allow(dead_code)]
     subscription: &'a str,
 }
 
