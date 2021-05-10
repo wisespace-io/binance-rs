@@ -1,9 +1,11 @@
 use crate::account::*;
+use crate::client::*;
 use crate::config::*;
-use crate::market::*;
-use crate::general::*;
+use crate::futures::account::FuturesAccount;
 use crate::futures::general::*;
 use crate::futures::market::*;
+use crate::general::*;
+use crate::market::*;
 use crate::userstream::*;
 use crate::client::*;
 
