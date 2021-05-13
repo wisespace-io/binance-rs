@@ -4,8 +4,9 @@ use crate::util::*;
 use crate::errors::*;
 use crate::client::Client;
 use crate::api::{API, Futures};
-use crate::model::{Empty, Order};
+use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
+use super::model::Transaction;
 
 
 #[derive(Clone)]
@@ -113,7 +114,7 @@ impl FuturesAccount {
                      qty: impl Into<f64>,
                      price: f64,
                      time_in_force: TimeInForce,
-    ) -> Result<Order> {
+    ) -> Result<Transaction> {
         let buy = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Buy,
@@ -140,7 +141,7 @@ impl FuturesAccount {
                       qty: impl Into<f64>,
                       price: f64,
                       time_in_force: TimeInForce,
-    ) -> Result<Order> {
+    ) -> Result<Transaction> {
         let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Sell,
@@ -226,7 +227,7 @@ impl FuturesAccount {
     }
 }
 
-
+#[cfg(test)]
 mod tests {
     use crate::api::Binance;
     use crate::errors::Result;
