@@ -292,28 +292,3 @@ impl FuturesAccount {
             .map(|_| ())
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::api::Binance;
-    use crate::errors::Result;
-    use crate::futures::account::FuturesAccount;
-
-    #[test]
-    fn cancel_all_open_orders_test() -> Result<()> {
-        let api_key = Some(String::from(""));
-        let secret_key = Some(String::from(""));
-
-        let account: FuturesAccount = Binance::new(api_key, secret_key);
-        account.cancel_all_open_orders("btcusdt")
-    }
-
-    #[test]
-    fn change_position_mode_test() -> Result<()> {
-        let api_key = Some(String::from(""));
-        let secret_key = Some(String::from(""));
-
-        let account: FuturesAccount = Binance::new(api_key, secret_key);
-        account.change_position_mode(true)
-    }
-}
