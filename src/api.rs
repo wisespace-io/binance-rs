@@ -7,7 +7,6 @@ use crate::futures::market::*;
 use crate::general::*;
 use crate::market::*;
 use crate::userstream::*;
-use crate::client::*;
 
 #[allow(clippy::all)]
 pub enum API {
