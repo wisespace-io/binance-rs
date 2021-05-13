@@ -72,6 +72,7 @@ pub enum Futures {
     TakerlongshortRatio,
     LvtKlines,
     IndexInfo,
+    ChangeInitialLeverage,
 }
 
 impl From<API> for String {
@@ -134,6 +135,7 @@ impl From<API> for String {
                     Futures::TakerlongshortRatio => "/futures/data/takerlongshortRatio",
                     Futures::LvtKlines => "/fapi/v1/lvtKlines",
                     Futures::IndexInfo => "/fapi/v1/indexInfo",
+                    Futures::ChangeInitialLeverage => "/fapi/v1/leverage",
                 }
             }
         })

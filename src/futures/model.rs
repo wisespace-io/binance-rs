@@ -248,6 +248,15 @@ pub struct Transaction {
     price_protect: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ChangeLeverageResponse {
+    pub leverage: u8,
+    #[serde(with = "string_or_float")]
+    pub max_notional_value: f64,
+    pub symbol: String,
+}
+
 fn default_stop_price() -> f64 { 0.0 }
 fn default_activation_price() -> f64 { 0.0 }
 fn default_price_rate() -> f64 { 0.0 }

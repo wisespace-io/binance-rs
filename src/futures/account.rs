@@ -6,7 +6,7 @@ use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
-use super::model::Transaction;
+use super::model::{ChangeLeverageResponse, Transaction};
 
 
 #[derive(Clone)]
@@ -204,6 +204,18 @@ impl FuturesAccount {
         }
 
         parameters
+    }
+
+    pub fn change_initial_leverage<S>(&self, symbol: S, leverage: u8) -> Result<ChangeLeverageResponse>
+    where
+        S: Into<String>
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("leverage".into(), leverage.to_string());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client.post_signed(API::Futures(Futures::ChangeInitialLeverage), request)
     }
 
     pub fn change_position_mode(&self, dual_side_position: bool) -> Result<()> {
