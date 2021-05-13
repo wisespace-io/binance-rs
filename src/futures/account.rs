@@ -163,6 +163,60 @@ impl FuturesAccount {
         self.client.post_signed(API::Futures(Futures::Order), request)
     }
 
+    // Place a MARKET order - BUY
+    pub fn market_buy<S, F>(&self, symbol: S, qty: F, time_in_force: TimeInForce) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let buy = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::Market,
+            time_in_force: Some(time_in_force),
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: None,
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(buy);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed(API::Futures(Futures::Order), request)
+    }
+
+    // Place a MARKET order - SELL
+    pub fn market_sell<S, F>(&self, symbol: S, qty: F, time_in_force: TimeInForce) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::Market,
+            time_in_force: Some(time_in_force),
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: None,
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed(API::Futures(Futures::Order), request)
+    }
+
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), order.symbol);
