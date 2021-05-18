@@ -47,8 +47,6 @@ pub enum WebsocketEvent {
 pub struct WebSockets<'a> {
     pub socket: Option<(WebSocket<AutoStream>, Response)>,
     handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
-    #[allow(dead_code)]
-    subscription: &'a str,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -75,28 +73,14 @@ impl<'a> WebSockets<'a> {
         WebSockets {
             socket: None,
             handler: Box::new(handler),
-            subscription: "",
         }
     }
 
-    pub fn new_with_subscription<Callback>(subscription: &'a str, handler: Callback) -> WebSockets<'a>
-    where
-        Callback: FnMut(WebsocketEvent) -> Result<()> + 'a,
-    {
-        WebSockets {
-            socket: None,
-            handler: Box::new(handler),
-            subscription,
-        }
-    }
-
-    pub fn connect(&mut self, subscription: &'a str) -> Result<()> {
-        self.subscription = subscription;
+    pub fn connect(&mut self, subscription: &str) -> Result<()> {
         self.connect_wss(WebsocketAPI::Default.params(subscription))
     }
 
-    pub fn connect_with_config(&mut self, subscription: &'a str, config: &'a Config) -> Result<()> {
-        self.subscription = subscription;
+    pub fn connect_with_config(&mut self, subscription: &str, config: &Config) -> Result<()> {
         self.connect_wss(WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
     }
 
