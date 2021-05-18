@@ -801,3 +801,34 @@ pub(crate) mod string_or_float {
         }
     }
 }
+
+pub(crate) mod string_or_float_opt {
+    use std::fmt;
+
+    use serde::{Serializer, Deserialize, Deserializer};
+
+    pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: fmt::Display,
+        S: Serializer,
+    {
+        match value {
+            Some(v) => crate::model::string_or_float::serialize(v, serializer),
+            None => serializer.serialize_none()
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<f64>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum StringOrFloat {
+            String(String),
+            Float(f64),
+        }
+
+        Ok(Some(crate::model::string_or_float::deserialize(deserializer)?))
+    }
+}

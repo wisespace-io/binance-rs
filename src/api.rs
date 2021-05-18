@@ -1,11 +1,12 @@
 use crate::account::*;
+use crate::client::*;
 use crate::config::*;
-use crate::market::*;
-use crate::general::*;
+use crate::futures::account::FuturesAccount;
 use crate::futures::general::*;
 use crate::futures::market::*;
+use crate::general::*;
+use crate::market::*;
 use crate::userstream::*;
-use crate::client::*;
 
 #[allow(clippy::all)]
 pub enum API {
@@ -60,6 +61,9 @@ pub enum Futures {
     TickerPrice,
     BookTicker,
     AllForceOrders,
+    AllOpenOrders,
+    Order,
+    PositionSide,
     OpenInterest,
     OpenInterestHist,
     TopLongShortAccountRatio,
@@ -68,6 +72,7 @@ pub enum Futures {
     TakerlongshortRatio,
     LvtKlines,
     IndexInfo,
+    ChangeInitialLeverage,
 }
 
 impl From<API> for String {
@@ -119,6 +124,9 @@ impl From<API> for String {
                     Futures::TickerPrice => "/fapi/v1/ticker/price",
                     Futures::BookTicker => "/fapi/v1/ticker/bookTicker",
                     Futures::AllForceOrders => "/fapi/v1/allForceOrders",
+                    Futures::AllOpenOrders => "/fapi/v1/allOpenOrders",
+                    Futures::PositionSide => "/fapi/v1/positionSide/dual",
+                    Futures::Order => "/fapi/v1/order",
                     Futures::OpenInterest => "/fapi/v1/openInterest",
                     Futures::OpenInterestHist => "/futures/data/openInterestHist",
                     Futures::TopLongShortAccountRatio => "/futures/data/topLongShortAccountRatio",
@@ -127,6 +135,7 @@ impl From<API> for String {
                     Futures::TakerlongshortRatio => "/futures/data/takerlongshortRatio",
                     Futures::LvtKlines => "/fapi/v1/lvtKlines",
                     Futures::IndexInfo => "/fapi/v1/indexInfo",
+                    Futures::ChangeInitialLeverage => "/fapi/v1/leverage",
                 }
             }
         })
@@ -226,6 +235,19 @@ impl Binance for FuturesMarket {
         api_key: Option<String>, secret_key: Option<String>, config: &Config,
     ) -> FuturesMarket {
         FuturesMarket {
+            client: Client::new(api_key, secret_key, config.futures_rest_api_endpoint.clone()),
+            recv_window: config.recv_window,
+        }
+    }
+}
+
+impl Binance for FuturesAccount {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> Self {
+        Self::new_with_config(api_key, secret_key, &Config::default())
+    }
+
+    fn new_with_config(api_key: Option<String>, secret_key: Option<String>, config: &Config) -> Self {
+        Self {
             client: Client::new(api_key, secret_key, config.futures_rest_api_endpoint.clone()),
             recv_window: config.recv_window,
         }
