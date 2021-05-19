@@ -275,7 +275,7 @@ pub enum BookTickers {
     AllBookTickers(Vec<Tickers>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum KlineSummaries {
     AllKlineSummaries(Vec<KlineSummary>),
 }
@@ -663,7 +663,7 @@ pub struct KlineEvent {
     pub kline: Kline,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct KlineSummary {
     pub open_time: i64,
 
