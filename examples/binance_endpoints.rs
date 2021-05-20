@@ -193,7 +193,7 @@ fn market_data() {
         Ok(klines) => {   
             match klines {
                 binance::model::KlineSummaries::AllKlineSummaries(klines) => {
-                    let kline: KlineSummary = klines[0].clone();
+                    let kline: KlineSummary = klines[0].clone(); // You need to iterate over the klines
                     println!(
                         "Open: {}, High: {}, Low: {}",
                         kline.open, kline.high, kline.low
