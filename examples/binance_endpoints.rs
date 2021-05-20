@@ -3,6 +3,7 @@ use binance::config::*;
 use binance::general::*;
 use binance::account::*;
 use binance::market::*;
+use binance::model::KlineSummary;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
@@ -189,7 +190,17 @@ fn market_data() {
 
     // last 10 5min klines (candlesticks) for a symbol:
     match market.get_klines("BNBETH", "5m", 10, None, None) {
-        Ok(answer) => println!("{:?}", answer),
+        Ok(klines) => {   
+            match klines {
+                binance::model::KlineSummaries::AllKlineSummaries(klines) => {
+                    let kline: KlineSummary = klines[0].clone();
+                    println!(
+                        "Open: {}, High: {}, Low: {}",
+                        kline.open, kline.high, kline.low
+                    )
+                }
+            }
+        },
         Err(e) => println!("Error: {}", e),
     }
 }
