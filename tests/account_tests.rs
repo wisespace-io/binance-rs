@@ -671,7 +671,7 @@ mod tests {
 
         let mock_custom_order = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=MARKET".into()))
+            .match_query(Matcher::Regex("newClientOrderId=6gCrw2kRUAF9CvJDGP16IP&price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=MARKET".into()))
             .with_body_from_file("tests/mocks/account/stop_limit_sell.json")
             .create();
 
@@ -681,7 +681,7 @@ mod tests {
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
         let transaction: Transaction = account.custom_order(
-            "LTCBTC", 1, 0.1, None, OrderSide::Buy, OrderType::Market, TimeInForce::GTC).unwrap();
+            "LTCBTC", 1, 0.1, None, OrderSide::Buy, OrderType::Market, TimeInForce::GTC, Some("6gCrw2kRUAF9CvJDGP16IP".into())).unwrap();
 
         mock_custom_order.assert();
 
@@ -717,7 +717,7 @@ mod tests {
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
         let _ = account.test_custom_order(
-            "LTCBTC", 1, 0.1, None, OrderSide::Buy, OrderType::Market, TimeInForce::GTC).unwrap();
+            "LTCBTC", 1, 0.1, None, OrderSide::Buy, OrderType::Market, TimeInForce::GTC, None).unwrap();
 
         mock_test_custom_order.assert();
 
