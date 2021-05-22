@@ -24,9 +24,9 @@ impl Config {
 
     pub fn testnet() -> Config {
         Config::default()
-            .set_rest_api_endpoint("https://testnet.binance.vision/api")
+            .set_rest_api_endpoint("https://testnet.binance.vision")
             .set_ws_endpoint("wss://testnet.binance.vision/ws")
-            .set_futures_rest_api_endpoint("https://testnet.binancefuture.com/api")
+            .set_futures_rest_api_endpoint("https://testnet.binancefuture.com")
             .set_futures_ws_endpoint("https://testnet.binancefuture.com/ws")
     }
 
