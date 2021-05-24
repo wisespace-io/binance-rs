@@ -762,7 +762,8 @@ pub struct DepthOrderBookEvent {
     pub final_update_id: u64,
 
     #[serde(rename = "pu")]
-    pub previous_final_update_id: u64,
+    #[serde(default)]
+    pub previous_final_update_id: Option<u64>,
 
     #[serde(rename = "b")]
     pub bids: Vec<Bids>,
