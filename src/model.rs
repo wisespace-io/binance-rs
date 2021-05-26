@@ -772,6 +772,52 @@ pub struct DepthOrderBookEvent {
     pub asks: Vec<Asks>,
 }
 
+/// Response to the Savings API get all coins request
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CoinInfo {
+    pub coin: String,
+    pub deposit_all_enable: bool,
+    pub free: String,
+    pub freeze: String,
+    pub ipoable: String,
+    pub ipoing: String,
+    pub is_legal_money: bool,
+    pub locked: String,
+    pub name: String,
+    pub network_list: Vec<Network>,
+    pub storage: String,
+    pub trading: bool,
+    pub withdraw_all_enable: bool,
+    pub withdrawing: String,
+}
+
+/// Part of the Savings API get all coins response
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Network {
+    pub address_regex: String,
+    pub coin: String,
+    pub deposit_desc: Option<String>,
+    pub deposit_enable: bool,
+    pub is_default: bool,
+    pub memo_regex: String,
+    pub min_confirm: i64,
+    pub name: String,
+    pub network: String,
+    pub reset_address_status: bool,
+    pub special_tips: Option<String>,
+    pub un_lock_confirm: i64,
+    pub withdraw_desc: Option<String>,
+    pub withdraw_enable: bool,
+    pub withdraw_fee: String,
+    pub withdraw_min: String,
+    // pub insert_time: Option<u64>, //commented out for now, because they are not inside the actual response (only the api doc example)
+    // pub update_time: Option<u64>,
+    pub withdraw_integer_multiple: Option<String>,
+}
+
+
 pub(crate) mod string_or_float {
     use std::fmt;
 

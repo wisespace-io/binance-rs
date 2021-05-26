@@ -7,10 +7,12 @@ use crate::futures::market::*;
 use crate::general::*;
 use crate::market::*;
 use crate::userstream::*;
+use crate::savings::*;
 
 #[allow(clippy::all)]
 pub enum API {
     Spot(Spot),
+    Savings(Sapi),
     Futures(Futures),
 }
 
@@ -41,6 +43,10 @@ pub enum Spot {
     Account,
     MyTrades,
     UserDataStream,
+}
+
+pub enum Sapi {
+    AllCoins,
 }
 
 pub enum Futures {
@@ -105,6 +111,11 @@ impl From<API> for String {
                     Spot::Account => "/api/v3/account",
                     Spot::MyTrades => "/api/v3/myTrades",
                     Spot::UserDataStream => "/api/v3/userDataStream",
+                }
+            },
+            API::Savings(route) => {
+                match route {
+                    Sapi::AllCoins => "/sapi/v1/capital/config/getall",
                 }
             },
             API::Futures(route) => {
@@ -176,6 +187,21 @@ impl Binance for Account {
         api_key: Option<String>, secret_key: Option<String>, config: &Config,
     ) -> Account {
         Account {
+            client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
+            recv_window: config.recv_window,
+        }
+    }
+}
+
+impl Binance for Savings {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> Self {
+        Self::new_with_config(api_key, secret_key, &Config::default())
+    }
+
+    fn new_with_config(
+        api_key: Option<String>, secret_key: Option<String>, config: &Config,
+    ) -> Self {
+        Self {
             client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
             recv_window: config.recv_window,
         }
