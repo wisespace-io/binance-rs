@@ -141,7 +141,12 @@ fn savings() {
     let savings: Savings = Binance::new(api_key, api_secret);
 
     match savings.get_all_coins() {
-        Ok(answer) => println!("{:?}", answer),
+        Ok(answer) => println!("{:#?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }
+
+    match savings.asset_detail(None) {
+        Ok(answer) => println!("{:#?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 }

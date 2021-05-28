@@ -778,18 +778,25 @@ pub struct DepthOrderBookEvent {
 pub struct CoinInfo {
     pub coin: String,
     pub deposit_all_enable: bool,
-    pub free: String,
-    pub freeze: String,
-    pub ipoable: String,
-    pub ipoing: String,
+    #[serde(with = "string_or_float")]
+    pub free: f64,
+    #[serde(with = "string_or_float")]
+    pub freeze: f64,
+    #[serde(with = "string_or_float")]
+    pub ipoable: f64,
+    #[serde(with = "string_or_float")]
+    pub ipoing: f64,
     pub is_legal_money: bool,
-    pub locked: String,
+    #[serde(with = "string_or_float")]
+    pub locked: f64,
     pub name: String,
     pub network_list: Vec<Network>,
-    pub storage: String,
+    #[serde(with = "string_or_float")]
+    pub storage: f64,
     pub trading: bool,
     pub withdraw_all_enable: bool,
-    pub withdrawing: String,
+    #[serde(with = "string_or_float")]
+    pub withdrawing: f64,
 }
 
 /// Part of the Savings API get all coins response
@@ -798,25 +805,45 @@ pub struct CoinInfo {
 pub struct Network {
     pub address_regex: String,
     pub coin: String,
+    /// shown only when "depositEnable" is false.
     pub deposit_desc: Option<String>,
     pub deposit_enable: bool,
     pub is_default: bool,
     pub memo_regex: String,
-    pub min_confirm: i64,
+    /// min number for balance confirmation
+    pub min_confirm: u32,
     pub name: String,
     pub network: String,
     pub reset_address_status: bool,
     pub special_tips: Option<String>,
-    pub un_lock_confirm: i64,
+    /// confirmation number for balance unlock
+    pub un_lock_confirm: u32,
+    /// shown only when "withdrawEnable" is false.
     pub withdraw_desc: Option<String>,
     pub withdraw_enable: bool,
-    pub withdraw_fee: String,
-    pub withdraw_min: String,
+    #[serde(with = "string_or_float")]
+    pub withdraw_fee: f64,
+    #[serde(with = "string_or_float")]
+    pub withdraw_min: f64,
     // pub insert_time: Option<u64>, //commented out for now, because they are not inside the actual response (only the api doc example)
     // pub update_time: Option<u64>,
     pub withdraw_integer_multiple: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetDetail {
+    #[serde(with = "string_or_float")]
+    pub min_withdraw_amount: f64,
+    /// false if ALL of networks' are false
+    pub deposit_status: bool,
+    #[serde(with = "string_or_float")]
+    pub withdraw_fee: f64,
+    /// false if ALL of networks' are false
+    pub withdraw_status: bool,
+    /// reason
+    pub deposit_tip: Option<String>,
+}
 
 pub(crate) mod string_or_float {
     use std::fmt;

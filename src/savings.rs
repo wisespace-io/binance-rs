@@ -18,4 +18,14 @@ impl Savings {
         let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
         self.client.get_signed(API::Savings(Sapi::AllCoins), Some(request))
     }
+
+    /// Fetch details of assets supported on Binance.
+    pub fn asset_detail(&self, asset: Option<String>) -> Result<BTreeMap<String, AssetDetail>> {
+        let mut parameters = BTreeMap::new();
+        if let Some(asset) = asset {
+            parameters.insert("asset", asset);
+        }
+        let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
+        self.client.get_signed(API::Savings(Sapi::AssetDetail), Some(request))
+    }
 }
