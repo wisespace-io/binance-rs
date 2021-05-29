@@ -288,6 +288,50 @@ pub struct CanceledOrder {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct Position {
+    #[serde(with = "string_or_float")]
+    pub entry_price: f64,
+    pub margin_type: String,
+    pub is_auto_add_margin: bool,
+    #[serde(with = "string_or_float")]
+    pub isolated_margin: f64,
+    pub leverage: u16,
+    #[serde(with = "string_or_float")]
+    pub liquidation_price: f64,
+    #[serde(with = "string_or_float")]
+    pub mark_price: f64,
+    #[serde(with = "string_or_float")]
+    pub max_notional_value: f64,
+    #[serde(with = "string_or_float", rename = "positionAmt")]
+    pub position_amount: f64,
+    pub symbol: String,
+    #[serde(with = "string_or_float", rename = "unRealisedProfit")]
+    pub unrealised_profit: f64,
+    pub position_side: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountBalance {
+    pub account_alias: String,
+    pub asset: String,
+    #[serde(with = "string_or_float")]
+    pub balance: f64,
+    #[serde(with = "string_or_float")]
+    pub cross_wallet_balance: f64,
+    #[serde(with = "string_or_float", rename = "crossUnPnl")]
+    pub cross_unrealized_pnl: f64,
+    #[serde(with = "string_or_float")]
+    pub available_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub max_withdraw_amount: f64,
+    pub margin_available: bool,
+    pub update_time: u64,
+
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ChangeLeverageResponse {
     pub leverage: u8,
     #[serde(with = "string_or_float")]
@@ -295,6 +339,12 @@ pub struct ChangeLeverageResponse {
     pub symbol: String,
 }
 
-fn default_stop_price() -> f64 { 0.0 }
-fn default_activation_price() -> f64 { 0.0 }
-fn default_price_rate() -> f64 { 0.0 }
+fn default_stop_price() -> f64 {
+    0.0
+}
+fn default_activation_price() -> f64 {
+    0.0
+}
+fn default_price_rate() -> f64 {
+    0.0
+}
