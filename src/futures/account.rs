@@ -6,7 +6,7 @@ use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
-use super::model::{ChangeLeverageResponse, Transaction};
+use super::model::{ChangeLeverageResponse, Transaction, CanceledOrder};
 
 
 #[derive(Clone)]
@@ -215,6 +215,18 @@ impl FuturesAccount {
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
         self.client.post_signed(API::Futures(Futures::Order), request)
+    }
+
+    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<CanceledOrder> 
+    where 
+        S: Into<String>
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("orderId".into(), order_id.to_string());
+        
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client.delete_signed(API::Futures(Futures::Order), Some(request))
     }
 
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
