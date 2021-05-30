@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::model::{string_or_float, string_or_float_opt};
+use crate::model::{string_or_float, string_or_float_opt, string_or_bool};
 
 pub use crate::model::{
     Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
@@ -292,6 +292,7 @@ pub struct Position {
     #[serde(with = "string_or_float")]
     pub entry_price: f64,
     pub margin_type: String,
+    #[serde(with = "string_or_bool")]
     pub is_auto_add_margin: bool,
     #[serde(with = "string_or_float")]
     pub isolated_margin: f64,
