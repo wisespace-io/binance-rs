@@ -191,7 +191,7 @@ impl FuturesAccount {
     }
 
     // Place a MARKET order - SELL
-    pub fn market_sell<S, F>(&self, symbol: S, qty: F, time_in_force: TimeInForce) -> Result<Transaction>
+    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -201,7 +201,7 @@ impl FuturesAccount {
             side: OrderSide::Sell,
             position_side: None,
             order_type: OrderType::Market,
-            time_in_force: Some(time_in_force),
+            time_in_force: None,
             qty: Some(qty.into()),
             reduce_only: None,
             price: None,
