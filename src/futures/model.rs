@@ -306,8 +306,8 @@ pub struct Position {
     #[serde(with = "string_or_float", rename = "positionAmt")]
     pub position_amount: f64,
     pub symbol: String,
-    #[serde(with = "string_or_float", rename = "unRealisedProfit")]
-    pub unrealised_profit: f64,
+    #[serde(with = "string_or_float", rename = "unRealizedProfit")]
+    pub unrealized_profit: f64,
     pub position_side: String,
 }
 
