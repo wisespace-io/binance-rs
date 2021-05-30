@@ -295,7 +295,7 @@ pub struct Position {
     pub is_auto_add_margin: bool,
     #[serde(with = "string_or_float")]
     pub isolated_margin: f64,
-    pub leverage: u16,
+    pub leverage: String,
     #[serde(with = "string_or_float")]
     pub liquidation_price: f64,
     #[serde(with = "string_or_float")]
