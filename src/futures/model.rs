@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::model::{string_or_float, string_or_float_opt};
+use crate::model::{string_or_float, string_or_float_opt, string_or_bool};
 
 pub use crate::model::{
     Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
@@ -250,6 +250,89 @@ pub struct Transaction {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct CanceledOrder {
+    pub client_order_id: String,
+    #[serde(with = "string_or_float")]
+    pub cum_qty: f64,
+    #[serde(with = "string_or_float")]
+    pub cum_quote: f64,
+    #[serde(with = "string_or_float")]
+    pub executed_qty: f64,
+    pub order_id: u64,
+    #[serde(with = "string_or_float")]
+    pub orig_qty: f64,
+    pub orig_type: String,
+    #[serde(with = "string_or_float")]
+    pub price: f64,
+    pub reduce_only: bool,
+    pub side: String,
+    pub position_side: String,
+    pub status: String,
+    #[serde(with = "string_or_float")]
+    pub stop_price: f64,
+    pub close_position: bool,
+    pub symbol: String,
+    pub time_in_force: String,
+    #[serde(rename = "type")]
+    pub type_name: String,
+    #[serde(default)]
+    #[serde(with = "string_or_float_opt")]
+    pub activate_price: Option<f64>,
+    #[serde(default)]
+    #[serde(with = "string_or_float_opt")]
+    pub price_rate: Option<f64>,
+    pub update_time: u64,
+    pub working_type: String,
+    price_protect: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Position {
+    #[serde(with = "string_or_float")]
+    pub entry_price: f64,
+    pub margin_type: String,
+    #[serde(with = "string_or_bool")]
+    pub is_auto_add_margin: bool,
+    #[serde(with = "string_or_float")]
+    pub isolated_margin: f64,
+    pub leverage: String,
+    #[serde(with = "string_or_float")]
+    pub liquidation_price: f64,
+    #[serde(with = "string_or_float")]
+    pub mark_price: f64,
+    #[serde(with = "string_or_float")]
+    pub max_notional_value: f64,
+    #[serde(with = "string_or_float", rename = "positionAmt")]
+    pub position_amount: f64,
+    pub symbol: String,
+    #[serde(with = "string_or_float", rename = "unRealizedProfit")]
+    pub unrealized_profit: f64,
+    pub position_side: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountBalance {
+    pub account_alias: String,
+    pub asset: String,
+    #[serde(with = "string_or_float")]
+    pub balance: f64,
+    #[serde(with = "string_or_float")]
+    pub cross_wallet_balance: f64,
+    #[serde(with = "string_or_float", rename = "crossUnPnl")]
+    pub cross_unrealized_pnl: f64,
+    #[serde(with = "string_or_float")]
+    pub available_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub max_withdraw_amount: f64,
+    pub margin_available: bool,
+    pub update_time: u64,
+
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ChangeLeverageResponse {
     pub leverage: u8,
     #[serde(with = "string_or_float")]
@@ -257,6 +340,12 @@ pub struct ChangeLeverageResponse {
     pub symbol: String,
 }
 
-fn default_stop_price() -> f64 { 0.0 }
-fn default_activation_price() -> f64 { 0.0 }
-fn default_price_rate() -> f64 { 0.0 }
+fn default_stop_price() -> f64 {
+    0.0
+}
+fn default_activation_price() -> f64 {
+    0.0
+}
+fn default_price_rate() -> f64 {
+    0.0
+}

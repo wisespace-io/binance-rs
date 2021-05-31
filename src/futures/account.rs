@@ -6,7 +6,7 @@ use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
-use super::model::{ChangeLeverageResponse, Transaction};
+use super::model::{ChangeLeverageResponse, Transaction, CanceledOrder, Position, AccountBalance};
 
 
 #[derive(Clone)]
@@ -217,6 +217,18 @@ impl FuturesAccount {
         self.client.post_signed(API::Futures(Futures::Order), request)
     }
 
+    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<CanceledOrder> 
+    where 
+        S: Into<String>
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("orderId".into(), order_id.to_string());
+        
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client.delete_signed(API::Futures(Futures::Order), Some(request))
+    }
+
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), order.symbol);
@@ -258,6 +270,23 @@ impl FuturesAccount {
         }
 
         parameters
+    }
+
+    pub fn position_information<S>(&self, symbol: S) -> Result<Vec<Position>>
+        where S: Into<String>
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client.get_signed(API::Futures(Futures::PositionRisk), Some(request))
+    }
+
+    pub fn account_balance(&self) -> Result<Vec<AccountBalance>> {
+        let parameters = BTreeMap::new();
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client.get_signed(API::Futures(Futures::Balance), Some(request))
     }
 
     pub fn change_initial_leverage<S>(&self, symbol: S, leverage: u8) -> Result<ChangeLeverageResponse>
