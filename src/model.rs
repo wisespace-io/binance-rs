@@ -845,6 +845,14 @@ pub struct AssetDetail {
     pub deposit_tip: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DepositAddress {
+    pub address: String,
+    pub coin: String,
+    pub tag: String,
+    pub url: String,
+}
+
 pub(crate) mod string_or_float {
     use std::fmt;
 

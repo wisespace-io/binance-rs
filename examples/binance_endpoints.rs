@@ -149,6 +149,11 @@ fn savings() {
         Ok(answer) => println!("{:#?}", answer),
         Err(e) => println!("Error: {}", e),
     }
+
+    match savings.deposit_address("BTC", None) {
+        Ok(answer) => println!("{:#?}", answer),
+        Err(e) => println!("Error: {:?}", e),
+    }
 }
 
 #[allow(dead_code)]

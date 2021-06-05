@@ -47,7 +47,8 @@ pub enum Spot {
 
 pub enum Sapi {
     AllCoins,
-    AssetDetail
+    AssetDetail,
+    DepositAddress,
 }
 
 pub enum Futures {
@@ -118,6 +119,7 @@ impl From<API> for String {
                 match route {
                     Sapi::AllCoins => "/sapi/v1/capital/config/getall",
                     Sapi::AssetDetail => "/sapi/v1/asset/assetDetail",
+                    Sapi::DepositAddress => "/sapi/v1/capital/deposit/address",
                 }
             },
             API::Futures(route) => {
