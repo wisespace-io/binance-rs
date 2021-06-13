@@ -700,6 +700,18 @@ impl Account {
         self.client.delete_signed(API::Spot(Spot::Order), Some(request))
     }
 
+    pub fn cancel_order_with_client_id<S>(&self, symbol: S, orig_client_order_id: String) -> Result<OrderCanceled>
+    where
+        S: Into<String>
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("origClientOrderId".into(), orig_client_order_id);
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client.delete_signed(API::Spot(Spot::Order), Some(request))
+        
+    }
     /// Place a test cancel order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
