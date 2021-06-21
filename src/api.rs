@@ -75,6 +75,8 @@ pub enum Futures {
     LvtKlines,
     IndexInfo,
     ChangeInitialLeverage,
+    Account,
+    OpenOrders,
 }
 
 impl From<API> for String {
@@ -140,6 +142,8 @@ impl From<API> for String {
                     Futures::LvtKlines => "/fapi/v1/lvtKlines",
                     Futures::IndexInfo => "/fapi/v1/indexInfo",
                     Futures::ChangeInitialLeverage => "/fapi/v1/leverage",
+                    Futures::Account => "/fapi/v2/account",
+                    Futures::OpenOrders => "/fapi/v1/openOrders"
                 }
             }
         })
