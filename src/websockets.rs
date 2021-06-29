@@ -23,7 +23,7 @@ impl WebsocketAPI {
         match self {
             WebsocketAPI::Default => format!("wss://stream.binance.com:9443/ws/{}", subscription),
             WebsocketAPI::MultiStream => format!("wss://stream.binance.com:9443/stream?streams={}", subscription),
-            WebsocketAPI::Custom(url) => url,
+            WebsocketAPI::Custom(url) => format!("{}/{}", url, subscription),
         }
     }
 

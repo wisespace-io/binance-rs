@@ -208,6 +208,12 @@ impl FuturesMarket {
 
         self.client.get(API::Futures(Futures::TickerPrice), Some(request))
     }
+    
+    // Latest price for all symbols.
+    pub fn get_all_prices(&self) -> Result<crate::model::Prices>
+    {
+        self.client.get(API::Futures(Futures::TickerPrice), None)
+    }
 
     // Symbols order book ticker
     // -> Best price/qty on the order book for ALL symbols.

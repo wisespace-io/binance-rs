@@ -174,9 +174,9 @@ pub struct OpenInterest {
 
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-struct Order {
+pub struct Order {
     pub client_order_id: String,
-    #[serde(with = "string_or_float")]
+    #[serde(with = "string_or_float", default="default_stop_price")]
     pub cum_qty: f64,
     #[serde(with = "string_or_float")]
     pub cum_quote: f64,
