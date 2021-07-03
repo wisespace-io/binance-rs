@@ -250,8 +250,8 @@ pub struct Success {}
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
-pub enum Prices {
-    AllPrices(Vec<SymbolPrice>),
+pub struct Prices {
+    pub all_prices: Vec<SymbolPrice>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -271,13 +271,13 @@ pub struct AveragePrice {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
-pub enum BookTickers {
-    AllBookTickers(Vec<Tickers>),
+pub struct BookTickers {
+    pub all_book_tickers: Vec<Tickers>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum KlineSummaries {
-    AllKlineSummaries(Vec<KlineSummary>),
+pub struct KlineSummaries {
+    pub all_kline_summaries: Vec<KlineSummary>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

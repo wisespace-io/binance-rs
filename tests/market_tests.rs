@@ -62,19 +62,17 @@ mod tests {
 
         let prices: Prices = market.get_all_prices().unwrap();
         mock_get_all_prices.assert();
-        
-        match prices {
-            binance::model::Prices::AllPrices(symbols) => {
-                assert!(!symbols.is_empty());
-                let first_symbol = symbols[0].clone();
-                assert_eq!(first_symbol.symbol, "LTCBTC");
-                assert!(approx_eq!(f64, first_symbol.price, 4.00000200, ulps = 2));
-                let second_symbol = symbols[1].clone();
-                assert_eq!(second_symbol.symbol, "ETHBTC");
-                assert!(approx_eq!(f64, second_symbol.price, 0.07946600, ulps = 2));
-            }
-        }
 
+        let symbols = prices.all_prices;
+        assert!(!symbols.is_empty());
+
+        let first_symbol = symbols[0].clone();
+        assert_eq!(first_symbol.symbol, "LTCBTC");
+        assert!(approx_eq!(f64, first_symbol.price, 4.00000200, ulps = 2));
+
+        let second_symbol = symbols[1].clone();
+        assert_eq!(second_symbol.symbol, "ETHBTC");
+        assert!(approx_eq!(f64, second_symbol.price, 0.07946600, ulps = 2));
     }
 
     #[test]
@@ -131,26 +129,23 @@ mod tests {
         let book_tickers = market.get_all_book_tickers().unwrap();
         mock_get_all_book_tickers.assert();
 
-        match book_tickers {
-            binance::model::BookTickers::AllBookTickers(tickers) => {
+        let tickers = book_tickers.all_book_tickers;
+        assert!(!tickers.is_empty());
 
-                assert!(!tickers.is_empty());
-                let first_ticker = tickers[0].clone();
-                assert_eq!(first_ticker.symbol, "LTCBTC");
-                assert!(approx_eq!(f64, first_ticker.bid_price, 4.00000000, ulps = 2));
-                assert!(approx_eq!(f64, first_ticker.bid_qty, 431.00000000, ulps = 2));
-                assert!(approx_eq!(f64, first_ticker.ask_price, 4.00000200, ulps = 2));
-                assert!(approx_eq!(f64, first_ticker.ask_qty, 9.00000000, ulps = 2));
-                let second_ticker = tickers[1].clone();
-                assert_eq!(second_ticker.symbol, "ETHBTC");
-                assert!(approx_eq!(f64, second_ticker.bid_price, 0.07946700, ulps = 2));
-                assert!(approx_eq!(f64, second_ticker.bid_qty, 9.00000000, ulps = 2));
-                assert!(approx_eq!(f64, second_ticker.ask_price, 100000.00000000, ulps = 2));
-                assert!(approx_eq!(f64, second_ticker.ask_qty, 1000.00000000, ulps = 2));
-                
-            }
-        }
-        
+        let first_ticker = tickers[0].clone();
+        assert_eq!(first_ticker.symbol, "LTCBTC");
+        assert!(approx_eq!(f64, first_ticker.bid_price, 4.00000000, ulps = 2));
+        assert!(approx_eq!(f64, first_ticker.bid_qty, 431.00000000, ulps = 2));
+        assert!(approx_eq!(f64, first_ticker.ask_price, 4.00000200, ulps = 2));
+        assert!(approx_eq!(f64, first_ticker.ask_qty, 9.00000000, ulps = 2));
+
+        let second_ticker = tickers[1].clone();
+        assert_eq!(second_ticker.symbol, "ETHBTC");
+        assert!(approx_eq!(f64, second_ticker.bid_price, 0.07946700, ulps = 2));
+        assert!(approx_eq!(f64, second_ticker.bid_qty, 9.00000000, ulps = 2));
+        assert!(approx_eq!(f64, second_ticker.ask_price, 100000.00000000, ulps = 2));
+        assert!(approx_eq!(f64, second_ticker.ask_qty, 1000.00000000, ulps = 2));
+
     }
 
     #[test]
@@ -264,28 +259,23 @@ mod tests {
         let klines = market.get_klines("LTCBTC", "5m", 10, None, None).unwrap();
         mock_get_klines.assert();
 
-        match klines {
-            
-            binance::model::KlineSummaries::AllKlineSummaries(klines) => {
+        klines = klines.all_kline_summaries;
 
-                assert!(!klines.is_empty());
-                let kline: KlineSummary = klines[0].clone();
+        assert!(!klines.is_empty());
+        let kline: KlineSummary = klines[0].clone();
 
-                assert_eq!(kline.open_time, 1499040000000);
-                assert!(approx_eq!(f64, kline.open, 0.01634790, ulps = 2));
-                assert!(approx_eq!(f64, kline.high, 0.80000000, ulps = 2));
-                assert!(approx_eq!(f64, kline.low, 0.01575800, ulps = 2));
-                assert!(approx_eq!(f64, kline.close, 0.01577100, ulps = 2));
-                assert!(approx_eq!(f64, kline.volume, 148976.11427815, ulps = 2));
-                assert_eq!(kline.close_time, 1499644799999);
-                assert!(approx_eq!(f64, kline.quote_asset_volume, 2434.19055334, ulps = 2));
-                assert_eq!(kline.number_of_trades, 308);
-                assert!(approx_eq!(f64, kline.taker_buy_base_asset_volume, 1756.87402397, ulps = 2));
-                assert!(approx_eq!(f64, kline.taker_buy_quote_asset_volume, 28.46694368, ulps = 2));
+        assert_eq!(kline.open_time, 1499040000000);
+        assert!(approx_eq!(f64, kline.open, 0.01634790, ulps = 2));
+        assert!(approx_eq!(f64, kline.high, 0.80000000, ulps = 2));
+        assert!(approx_eq!(f64, kline.low, 0.01575800, ulps = 2));
+        assert!(approx_eq!(f64, kline.close, 0.01577100, ulps = 2));
+        assert!(approx_eq!(f64, kline.volume, 148976.11427815, ulps = 2));
+        assert_eq!(kline.close_time, 1499644799999);
+        assert!(approx_eq!(f64, kline.quote_asset_volume, 2434.19055334, ulps = 2));
+        assert_eq!(kline.number_of_trades, 308);
+        assert!(approx_eq!(f64, kline.taker_buy_base_asset_volume, 1756.87402397, ulps = 2));
+        assert!(approx_eq!(f64, kline.taker_buy_quote_asset_volume, 28.46694368, ulps = 2));
 
-            }
-
-        }
 
     }
 
