@@ -17,6 +17,7 @@ fn main() {
 
 fn market_websocket() {
     let keep_running = AtomicBool::new(true);
+
     let agg_trade: String = String::from("btcusd_210924@bookTicker");
     // let agg_trade: String = String::from("btcusd_200925@aggTrade");
 
@@ -28,18 +29,21 @@ fn market_websocket() {
                     "Symbol: {}, price: {}, qty: {}",
                     trade.symbol, trade.price, trade.qty
                 );
+                keep_running.swap(false, Ordering::Relaxed);
             }
             WebsocketEvent::DepthOrderBook(depth_order_book) => {
                 println!(
                     "Symbol: {}, Bids: {:?}, Ask: {:?}",
                     depth_order_book.symbol, depth_order_book.bids, depth_order_book.asks
                 );
+                keep_running.swap(false, Ordering::Relaxed);
             }
             WebsocketEvent::OrderBook(order_book) => {
                 println!(
                     "last_update_id: {}, Bids: {:?}, Ask: {:?}",
                     order_book.last_update_id, order_book.bids, order_book.asks
                 );
+                keep_running.swap(false, Ordering::Relaxed);
             }
             _ => (),
         };
@@ -47,13 +51,12 @@ fn market_websocket() {
         Ok(())
     });
 
-    let streams = vec![String::from("btcusd_210924@bookTicker")];
-
-    web_socket.connect(&agg_trade).unwrap(); // check error
-    // web_socket.connect_multiple_streams(&streams).unwrap(); // check error
+    web_socket.connect(FuturesMarket::COINM, &agg_trade).unwrap(); // check error
     if let Err(e) = web_socket.event_loop(&keep_running) {
         println!("Error: {}", e);
     }
     web_socket.disconnect().unwrap();
     println!("disconnected");
 }
+
+
