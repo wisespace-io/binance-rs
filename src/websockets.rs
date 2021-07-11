@@ -37,6 +37,8 @@ pub enum WebsocketEvent {
     AggrTrades(AggrTradesEvent),
     Trade(TradeEvent),
     OrderBook(OrderBook),
+    IndexPrice(IndexPriceEvent),
+    MarkPrice(MarkPriceEvent),
     DayTicker(DayTickerEvent),
     DayTickerAll(Vec<DayTickerEvent>),
     Kline(KlineEvent),

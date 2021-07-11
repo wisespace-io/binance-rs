@@ -554,6 +554,57 @@ pub struct TradeEvent {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct IndexPriceEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "i")]
+    pub pair: String,
+
+    #[serde(rename = "p")]
+    pub price: f64,
+
+}
+// https://binance-docs.github.io/apidocs/futures/en/#mark-price-stream
+// https://binance-docs.github.io/apidocs/delivery/en/#mark-price-stream
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkPriceEvent {
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(with = "string_or_float")]
+    #[serde(rename = "P")]
+    pub estimate_settle_price: f64,
+
+    #[serde(rename = "T")]
+    pub next_funding_time: u64,
+
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(with = "string_or_float")]
+    #[serde(rename = "i")]
+    pub index_price: f64,
+
+    #[serde(with = "string_or_float")]
+    #[serde(rename = "p")]
+    pub mark_price: f64,
+
+    #[serde(with = "string_or_float")]
+    #[serde(rename = "r")]
+    pub funding_rate: f64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+}
+
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct BookTickerEvent {
     #[serde(rename = "u")]
     pub update_id: u64,

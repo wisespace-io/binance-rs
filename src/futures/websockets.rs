@@ -75,6 +75,8 @@ enum FuturesEvents {
     AccountUpdateEvent(AccountUpdateEvent),
     OrderTradeEvent(OrderTradeEvent),
     AggrTradesEvent(AggrTradesEvent),
+    IndexPriceEvent(IndexPriceEvent),
+    MarkPriceEvent(MarkPriceEvent),
     TradeEvent(TradeEvent),
     KlineEvent(KlineEvent),
     OrderBook(OrderBook),
@@ -132,18 +134,25 @@ impl<'a> FuturesWebSockets<'a> {
 
     fn handle_msg(&mut self, msg: &str) -> Result<()> {
         let value: serde_json::Value = serde_json::from_str(msg)?;
+        println!("{:?}", value);
 
         if let Some(data) = value.get("data") {
             self.handle_msg(&data.to_string())?;
             return Ok(());
         }
 
-        if let Ok(events) = serde_json::from_value::<FuturesEvents>(value) {
+        let dummy = serde_json::from_value::<FuturesEvents>(value);
+        println!("{:?}", dummy);
+
+        if let Ok(events) = dummy{
+            println!("{:?}", events);
             let action = match events {
                 FuturesEvents::Vec(v) => WebsocketEvent::DayTickerAll(v),
                 FuturesEvents::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
                 FuturesEvents::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
                 FuturesEvents::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
+                FuturesEvents::IndexPriceEvent(v) => WebsocketEvent::IndexPrice(v),
+                FuturesEvents::MarkPriceEvent(v) => WebsocketEvent::MarkPrice(v),
                 FuturesEvents::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
                 FuturesEvents::TradeEvent(v) => WebsocketEvent::Trade(v),
                 FuturesEvents::DayTickerEvent(v) => WebsocketEvent::DayTicker(v),
