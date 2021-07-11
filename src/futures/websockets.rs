@@ -1,6 +1,7 @@
 use crate::errors::*;
 use crate::config::*;
 use crate::model::*;
+use crate::websockets::WebsocketEvent;
 use url::Url;
 use serde::{Deserialize, Serialize};
 
@@ -11,27 +12,30 @@ use tungstenite::client::AutoStream;
 use tungstenite::handshake::client::Response;
 
 #[allow(clippy::all)]
-enum WebsocketAPI {
+enum FuturesWebsocketAPI {
     Default,
     MultiStream,
     Custom(String),
 }
 
-impl WebsocketAPI {
-
+impl FuturesWebsocketAPI {
     fn params(self, subscription: &str) -> String {
         match self {
-            WebsocketAPI::Default => format!("wss://stream.binance.com:9443/ws/{}", subscription),
-            WebsocketAPI::MultiStream => format!("wss://stream.binance.com:9443/stream?streams={}", subscription),
-            WebsocketAPI::Custom(url) => format!("{}/{}", url, subscription),
+            FuturesWebsocketAPI::Default => {
+                format!("wss://dstream.binance.com/ws/{}", subscription)
+            }
+            FuturesWebsocketAPI::MultiStream => format!(
+                "wss://dstream.binance.com/stream?streams={}",
+                subscription
+            ),
+            FuturesWebsocketAPI::Custom(url) => url,
         }
     }
-
 }
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum WebsocketEvent {
+pub enum FuturesWebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
     OrderTrade(OrderTradeEvent),
     AggrTrades(AggrTradesEvent),
@@ -44,14 +48,14 @@ pub enum WebsocketEvent {
     BookTicker(BookTickerEvent),
 }
 
-pub struct WebSockets<'a> {
+pub struct FuturesWebSockets<'a> {
     pub socket: Option<(WebSocket<AutoStream>, Response)>,
     handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
-enum Events {
+enum FuturesEvents {
     Vec(Vec<DayTickerEvent>),
     DayTickerEvent(DayTickerEvent),
     BookTickerEvent(BookTickerEvent),
@@ -64,38 +68,40 @@ enum Events {
     DepthOrderBookEvent(DepthOrderBookEvent),
 }
 
-impl<'a> WebSockets<'a> {
-
-    pub fn new<Callback>(handler: Callback) -> WebSockets<'a>
+impl<'a> FuturesWebSockets<'a> {
+    pub fn new<Callback>(handler: Callback) -> FuturesWebSockets<'a>
     where
         Callback: FnMut(WebsocketEvent) -> Result<()> + 'a,
     {
-        WebSockets {
+        FuturesWebSockets {
             socket: None,
             handler: Box::new(handler),
         }
     }
 
-    pub fn connect(&mut self, subscription: &str) -> Result<()> {
-        self.connect_wss(WebsocketAPI::Default.params(subscription))
+    pub fn connect(&mut self, subscription: &'a str) -> Result<()> {
+        self.connect_wss(FuturesWebsocketAPI::Default.params(subscription))
     }
 
-    pub fn connect_with_config(&mut self, subscription: &str, config: &Config) -> Result<()> {
-        self.connect_wss(WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
+    pub fn connect_with_config(&mut self, subscription: &'a str, config: &'a Config) -> Result<()> {
+        self.connect_wss(
+            FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription),
+        )
     }
 
     pub fn connect_multiple_streams(&mut self, endpoints: &[String]) -> Result<()> {
-        self.connect_wss(WebsocketAPI::MultiStream.params(&endpoints.join("/")))
+        self.connect_wss(FuturesWebsocketAPI::MultiStream.params(&endpoints.join("/")))
     }
-    
+
     fn connect_wss(&mut self, wss: String) -> Result<()> {
         let url = Url::parse(&wss)?;
+        println!("{}",url);
         match connect(url) {
             Ok(answer) => {
                 self.socket = Some(answer);
                 Ok(())
             }
-            Err(e) => bail!(format!("Error during handshake {}", e))
+            Err(e) => bail!(format!("Error during handshake {}", e)),
         }
     }
 
@@ -106,13 +112,12 @@ impl<'a> WebSockets<'a> {
         }
         bail!("Not able to close the connection");
     }
-    
+
     pub fn test_handle_msg(&mut self, msg: &str) -> Result<()> {
         self.handle_msg(msg)
     }
 
     fn handle_msg(&mut self, msg: &str) -> Result<()> {
-
         let value: serde_json::Value = serde_json::from_str(msg)?;
 
         if let Some(data) = value.get("data") {
@@ -120,18 +125,18 @@ impl<'a> WebSockets<'a> {
             return Ok(());
         }
 
-        if let Ok(events) = serde_json::from_value::<Events>(value) {
+        if let Ok(events) = serde_json::from_value::<FuturesEvents>(value) {
             let action = match events {
-                Events::Vec(v) => WebsocketEvent::DayTickerAll(v),
-                Events::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
-                Events::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
-                Events::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
-                Events::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
-                Events::TradeEvent(v) => WebsocketEvent::Trade(v),
-                Events::DayTickerEvent(v) => WebsocketEvent::DayTicker(v),
-                Events::KlineEvent(v) => WebsocketEvent::Kline(v),
-                Events::OrderBook(v) => WebsocketEvent::OrderBook(v),
-                Events::DepthOrderBookEvent(v) => WebsocketEvent::DepthOrderBook(v),
+                FuturesEvents::Vec(v) => WebsocketEvent::DayTickerAll(v),
+                FuturesEvents::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
+                FuturesEvents::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
+                FuturesEvents::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
+                FuturesEvents::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
+                FuturesEvents::TradeEvent(v) => WebsocketEvent::Trade(v),
+                FuturesEvents::DayTickerEvent(v) => WebsocketEvent::DayTicker(v),
+                FuturesEvents::KlineEvent(v) => WebsocketEvent::Kline(v),
+                FuturesEvents::OrderBook(v) => WebsocketEvent::OrderBook(v),
+                FuturesEvents::DepthOrderBookEvent(v) => WebsocketEvent::DepthOrderBook(v),
             };
             (self.handler)(action)?;
         }
@@ -149,11 +154,10 @@ impl<'a> WebSockets<'a> {
                         }
                     }
                     Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e))
+                    Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
                 }
             }
         }
         Ok(())
     }
-
 }
