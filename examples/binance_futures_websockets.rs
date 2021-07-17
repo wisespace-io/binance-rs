@@ -72,6 +72,7 @@ fn market_websocket() {
 
     // USD-M futures examples
     for stream_example in stream_examples_usd_m {
+        println!("Starting with USD_M {:?}", stream_example);
         keep_running.swap(true, Ordering::Relaxed);
 
         let mut web_socket: FuturesWebSockets<'_> = FuturesWebSockets::new(callback_fn);
@@ -84,6 +85,7 @@ fn market_websocket() {
 
     // COIN-M futures examples
     for stream_example in stream_examples_coin_m {
+        println!("Starting with COIN_M {:?}", stream_example);
         keep_running.swap(true, Ordering::Relaxed);
 
         let mut web_socket: FuturesWebSockets<'_> = FuturesWebSockets::new(callback_fn);

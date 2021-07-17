@@ -20,13 +20,12 @@ enum FuturesWebsocketAPI {
 pub enum FuturesMarket {
     USDM,
     COINM,
-    Vanilla
+    Vanilla,
 }
 
 impl FuturesWebsocketAPI {
     fn params(self, market: FuturesMarket, subscription: &str) -> String {
-        let baseurl = match market
-        {
+        let baseurl = match market {
             FuturesMarket::USDM => "wss://fstream.binance.com",
             FuturesMarket::COINM => "wss://dstream.binance.com",
             FuturesMarket::Vanilla => "wss://vstream.binance.com",
@@ -36,10 +35,9 @@ impl FuturesWebsocketAPI {
             FuturesWebsocketAPI::Default => {
                 format!("{}/ws/{}", baseurl, subscription)
             }
-            FuturesWebsocketAPI::MultiStream => format!(
-                "{}/stream?streams={}", baseurl,
-                subscription
-            ),
+            FuturesWebsocketAPI::MultiStream => {
+                format!("{}/stream?streams={}", baseurl, subscription)
+            }
             FuturesWebsocketAPI::Custom(url) => url,
         }
     }
@@ -111,19 +109,22 @@ impl<'a> FuturesWebSockets<'a> {
         self.connect_wss(FuturesWebsocketAPI::Default.params(market, subscription))
     }
 
-    pub fn connect_with_config(&mut self, market: FuturesMarket, subscription: &'a str, config: &'a Config) -> Result<()> {
+    pub fn connect_with_config(
+        &mut self, market: FuturesMarket, subscription: &'a str, config: &'a Config,
+    ) -> Result<()> {
         self.connect_wss(
             FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(market, subscription),
         )
     }
 
-    pub fn connect_multiple_streams(&mut self, market: FuturesMarket, endpoints: &[String]) -> Result<()> {
+    pub fn connect_multiple_streams(
+        &mut self, market: FuturesMarket, endpoints: &[String],
+    ) -> Result<()> {
         self.connect_wss(FuturesWebsocketAPI::MultiStream.params(market, &endpoints.join("/")))
     }
 
     fn connect_wss(&mut self, wss: String) -> Result<()> {
         let url = Url::parse(&wss)?;
-        println!("{}",url);
         match connect(url) {
             Ok(answer) => {
                 self.socket = Some(answer);
@@ -147,18 +148,13 @@ impl<'a> FuturesWebSockets<'a> {
 
     fn handle_msg(&mut self, msg: &str) -> Result<()> {
         let value: serde_json::Value = serde_json::from_str(msg)?;
-        println!("{:?}", value);
 
         if let Some(data) = value.get("data") {
             self.handle_msg(&data.to_string())?;
             return Ok(());
         }
 
-        let dummy = serde_json::from_value::<FuturesEvents>(value);
-        println!("{:?}", dummy);
-
-        if let Ok(events) = dummy{
-            println!("{:?}", events);
+        if let Ok(events) = serde_json::from_value::<FuturesEvents>(value) {
             let action = match events {
                 FuturesEvents::Vec(v) => FuturesWebsocketEvent::DayTickerAll(v),
                 FuturesEvents::DayTickerEvent(v) => FuturesWebsocketEvent::DayTicker(v),
@@ -177,7 +173,7 @@ impl<'a> FuturesWebSockets<'a> {
                 FuturesEvents::KlineEvent(v) => FuturesWebsocketEvent::Kline(v),
                 FuturesEvents::OrderBook(v) => FuturesWebsocketEvent::OrderBook(v),
                 FuturesEvents::DepthOrderBookEvent(v) => FuturesWebsocketEvent::DepthOrderBook(v),
-                FuturesEvents::AggrTradesEvent(v) =>  FuturesWebsocketEvent::AggrTrades(v),
+                FuturesEvents::AggrTradesEvent(v) => FuturesWebsocketEvent::AggrTrades(v),
             };
             (self.handler)(action)?;
         }
