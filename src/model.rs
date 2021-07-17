@@ -565,7 +565,7 @@ pub struct IndexPriceEvent {
     pub pair: String,
 
     #[serde(rename = "p")]
-    pub price: f64,
+    pub price: String,
 
 }
 // https://binance-docs.github.io/apidocs/futures/en/#mark-price-stream
@@ -576,9 +576,8 @@ pub struct MarkPriceEvent {
     #[serde(rename = "E")]
     pub event_time: u64,
 
-    #[serde(with = "string_or_float")]
     #[serde(rename = "P")]
-    pub estimate_settle_price: f64,
+    pub estimate_settle_price: String,
 
     #[serde(rename = "T")]
     pub next_funding_time: u64,
@@ -586,22 +585,73 @@ pub struct MarkPriceEvent {
     #[serde(rename = "e")]
     pub event_type: String,
 
-    #[serde(with = "string_or_float")]
     #[serde(rename = "i")]
-    pub index_price: f64,
+    pub index_price: String,
 
-    #[serde(with = "string_or_float")]
     #[serde(rename = "p")]
-    pub mark_price: f64,
+    pub mark_price: String,
 
-    #[serde(with = "string_or_float")]
     #[serde(rename = "r")]
-    pub funding_rate: f64,
+    pub funding_rate: String,
 
     #[serde(rename = "s")]
     pub symbol: String,
 }
 
+
+// Object({"E": Number(1626118018407), "e": String("forceOrder"), "o": Object({"S": String("SELL"), "T": Number(1626118018404), "X": String("FILLED"), "ap": String("33028.07"), "f": String("IOC"), "l": String("0.010"), "o": String("LIMIT"), "p": String("32896.00"), "q": String("0.010"), "s": String("BTCUSDT"), "z": String("0.010")})})
+// https://binance-docs.github.io/apidocs/futures/en/#liquidation-order-streams
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LiquidationEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "o")]
+    pub liquidation_order: LiquidationOrder,
+
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LiquidationOrder {
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "S")]
+    pub side: String,
+
+    #[serde(rename = "o")]
+    pub order_type: String,
+
+    #[serde(rename = "f")]
+    pub time_in_force: String,
+
+    #[serde(rename = "q")]
+    pub original_quantity: String,
+
+    #[serde(rename = "p")]
+    pub price: String,
+
+    #[serde(rename = "ap")]
+    pub average_price: String,
+
+    #[serde(rename = "X")]
+    pub order_status: String,
+
+    #[serde(rename = "l")]
+    pub order_last_filled_quantity: String,
+
+    #[serde(rename = "z")]
+    pub order_filled_accumulated_quantity: String,
+
+    #[serde(rename = "T")]
+    pub order_trade_time: u64,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -700,6 +750,38 @@ pub struct DayTickerEvent {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct MiniTickerEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "c")]
+    pub close: String,
+
+    #[serde(rename = "o")]
+    pub open: String,
+
+    #[serde(rename = "h")]
+    pub high: String,
+
+    #[serde(rename = "l")]
+    pub low: String,
+
+    #[serde(rename = "v")]
+    pub volume: String,
+
+    #[serde(rename = "q")]
+    pub quote_volume: String,
+}
+
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct KlineEvent {
     #[serde(rename = "e")]
     pub event_type: String,
@@ -713,6 +795,28 @@ pub struct KlineEvent {
     #[serde(rename = "k")]
     pub kline: Kline,
 }
+
+// https://binance-docs.github.io/apidocs/futures/en/#continuous-contract-kline-candlestick-streams
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ContinuousKlineEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "ps")]
+    pub pair: String,
+
+    #[serde(rename = "ct")]
+    pub contract_type: String,
+
+    #[serde(rename = "k")]
+    pub kline: ContinuousKline,
+}
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct KlineSummary {
@@ -747,7 +851,7 @@ pub struct Kline {
 
     #[serde(rename = "T")]
     pub end_time: i64,
-
+    
     #[serde(rename = "s")]
     pub symbol: String,
 
@@ -777,6 +881,58 @@ pub struct Kline {
 
     #[serde(rename = "n")]
     pub number_of_trades: i32,
+
+    #[serde(rename = "x")]
+    pub is_final_bar: bool,
+
+    #[serde(rename = "q")]
+    pub quote_volume: String,
+
+    #[serde(rename = "V")]
+    pub active_buy_volume: String,
+
+    #[serde(rename = "Q")]
+    pub active_volume_buy_quote: String,
+
+    #[serde(skip, rename = "B")]
+    pub ignore_me: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ContinuousKline {
+    #[serde(rename = "t")]
+    pub start_time: i64,
+
+    #[serde(rename = "T")]
+    pub end_time: i64,
+
+    #[serde(rename = "i")]
+    pub interval: String,
+
+    #[serde(rename = "f")]
+    pub first_trade_id: i64,
+
+    #[serde(rename = "L")]
+    pub last_trade_id: i64,
+
+    #[serde(rename = "o")]
+    pub open: String,
+
+    #[serde(rename = "c")]
+    pub close: String,
+
+    #[serde(rename = "h")]
+    pub high: String,
+
+    #[serde(rename = "l")]
+    pub low: String,
+
+    #[serde(rename = "v")]
+    pub volume: String,
+
+    #[serde(rename = "n")]
+    pub number_of_trades: i64,
 
     #[serde(rename = "x")]
     pub is_final_bar: bool,
