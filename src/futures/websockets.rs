@@ -18,7 +18,7 @@ enum FuturesWebsocketAPI {
 }
 
 pub enum FuturesMarket {
-    USD,
+    USDM,
     COINM,
     Vanilla
 }
@@ -27,7 +27,7 @@ impl FuturesWebsocketAPI {
     fn params(self, market: FuturesMarket, subscription: &str) -> String {
         let baseurl = match market
         {
-            FuturesMarket::USD => "wss://fstream.binance.com",
+            FuturesMarket::USDM => "wss://fstream.binance.com",
             FuturesMarket::COINM => "wss://dstream.binance.com",
             FuturesMarket::Vanilla => "wss://vstream.binance.com",
         };
@@ -58,9 +58,11 @@ pub enum FuturesWebsocketEvent {
     MiniTickerAll(Vec<MiniTickerEvent>),
     IndexPrice(IndexPriceEvent),
     MarkPrice(MarkPriceEvent),
+    MarkPriceAll(Vec<MarkPriceEvent>),
     DayTickerAll(Vec<DayTickerEvent>),
     Kline(KlineEvent),
     ContinuousKline(ContinuousKlineEvent),
+    IndexKline(IndexKlineEvent),
     Liquidation(LiquidationEvent),
     DepthOrderBook(DepthOrderBookEvent),
     BookTicker(BookTickerEvent),
@@ -84,9 +86,11 @@ enum FuturesEvents {
     AggrTradesEvent(AggrTradesEvent),
     IndexPriceEvent(IndexPriceEvent),
     MarkPriceEvent(MarkPriceEvent),
+    VecMarkPriceEvent(Vec<MarkPriceEvent>),
     TradeEvent(TradeEvent),
     KlineEvent(KlineEvent),
     ContinuousKlineEvent(ContinuousKlineEvent),
+    IndexKlineEvent(IndexKlineEvent),
     LiquidationEvent(LiquidationEvent),
     OrderBook(OrderBook),
     DepthOrderBookEvent(DepthOrderBookEvent),
@@ -165,8 +169,10 @@ impl<'a> FuturesWebSockets<'a> {
                 FuturesEvents::OrderTradeEvent(v) => FuturesWebsocketEvent::OrderTrade(v),
                 FuturesEvents::IndexPriceEvent(v) => FuturesWebsocketEvent::IndexPrice(v),
                 FuturesEvents::MarkPriceEvent(v) => FuturesWebsocketEvent::MarkPrice(v),
+                FuturesEvents::VecMarkPriceEvent(v) => FuturesWebsocketEvent::MarkPriceAll(v),
                 FuturesEvents::TradeEvent(v) => FuturesWebsocketEvent::Trade(v),
                 FuturesEvents::ContinuousKlineEvent(v) => FuturesWebsocketEvent::ContinuousKline(v),
+                FuturesEvents::IndexKlineEvent(v) => FuturesWebsocketEvent::IndexKline(v),
                 FuturesEvents::LiquidationEvent(v) => FuturesWebsocketEvent::Liquidation(v),
                 FuturesEvents::KlineEvent(v) => FuturesWebsocketEvent::Kline(v),
                 FuturesEvents::OrderBook(v) => FuturesWebsocketEvent::OrderBook(v),

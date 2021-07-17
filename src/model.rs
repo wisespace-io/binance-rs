@@ -586,7 +586,7 @@ pub struct MarkPriceEvent {
     pub event_type: String,
 
     #[serde(rename = "i")]
-    pub index_price: String,
+    pub index_price: Option<String>,
 
     #[serde(rename = "p")]
     pub mark_price: String,
@@ -818,6 +818,24 @@ pub struct ContinuousKlineEvent {
 }
 
 
+// https://binance-docs.github.io/apidocs/delivery/en/#index-kline-candlestick-streams
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct IndexKlineEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "ps")]
+    pub pair: String,
+
+    #[serde(rename = "k")]
+    pub kline: IndexKline,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct KlineSummary {
     pub open_time: i64,
@@ -948,6 +966,62 @@ pub struct ContinuousKline {
 
     #[serde(skip, rename = "B")]
     pub ignore_me: String,
+}
+
+// https://binance-docs.github.io/apidocs/delivery/en/#index-kline-candlestick-streams
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct IndexKline {
+    #[serde(rename = "t")]
+    pub start_time: i64,
+
+    #[serde(rename = "T")]
+    pub end_time: i64,
+
+    #[serde(skip, rename = "s")]
+    pub ignore_me: String,
+
+    #[serde(rename = "i")]
+    pub interval: String,
+
+    #[serde(rename = "f")]
+    pub first_trade_id: i64,
+
+    #[serde(rename = "L")]
+    pub last_trade_id: i64,
+
+    #[serde(rename = "o")]
+    pub open: String,
+
+    #[serde(rename = "c")]
+    pub close: String,
+
+    #[serde(rename = "h")]
+    pub high: String,
+
+    #[serde(rename = "l")]
+    pub low: String,
+
+    #[serde(rename = "v")]
+    pub volume: String,
+
+    #[serde(rename = "n")]
+    pub number_of_trades: i64,
+
+    #[serde(rename = "x")]
+    pub is_final_bar: bool,
+
+    #[serde(skip, rename = "q")]
+    pub ignore_me2: String,
+
+    #[serde(skip, rename = "V")]
+    pub ignore_me3: String,
+
+    #[serde(skip, rename = "Q")]
+    pub ignore_me4: String,
+
+    #[serde(skip, rename = "B")]
+    pub ignore_me5: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
