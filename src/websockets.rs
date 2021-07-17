@@ -40,8 +40,10 @@ pub enum WebsocketEvent {
     IndexPrice(IndexPriceEvent),
     MarkPrice(MarkPriceEvent),
     DayTicker(DayTickerEvent),
+    MiniTickerAll(Vec<MiniTickerEvent>),
     DayTickerAll(Vec<DayTickerEvent>),
     Kline(KlineEvent),
+    ContinuousKline(ContinuousKlineEvent),
     DepthOrderBook(DepthOrderBookEvent),
     BookTicker(BookTickerEvent),
 }

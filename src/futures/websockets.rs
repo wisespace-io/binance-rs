@@ -1,7 +1,6 @@
 use crate::errors::*;
 use crate::config::*;
 use crate::model::*;
-use crate::websockets::WebsocketEvent;
 use url::Url;
 use serde::{Deserialize, Serialize};
 
@@ -55,15 +54,21 @@ pub enum FuturesWebsocketEvent {
     Trade(TradeEvent),
     OrderBook(OrderBook),
     DayTicker(DayTickerEvent),
+    MiniTicker(MiniTickerEvent),
+    MiniTickerAll(Vec<MiniTickerEvent>),
+    IndexPrice(IndexPriceEvent),
+    MarkPrice(MarkPriceEvent),
     DayTickerAll(Vec<DayTickerEvent>),
     Kline(KlineEvent),
+    ContinuousKline(ContinuousKlineEvent),
+    Liquidation(LiquidationEvent),
     DepthOrderBook(DepthOrderBookEvent),
     BookTicker(BookTickerEvent),
 }
 
 pub struct FuturesWebSockets<'a> {
     pub socket: Option<(WebSocket<AutoStream>, Response)>,
-    handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
+    handler: Box<dyn FnMut(FuturesWebsocketEvent) -> Result<()> + 'a>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -72,6 +77,8 @@ enum FuturesEvents {
     Vec(Vec<DayTickerEvent>),
     DayTickerEvent(DayTickerEvent),
     BookTickerEvent(BookTickerEvent),
+    MiniTickerEvent(MiniTickerEvent),
+    VecMiniTickerEvent(Vec<MiniTickerEvent>),
     AccountUpdateEvent(AccountUpdateEvent),
     OrderTradeEvent(OrderTradeEvent),
     AggrTradesEvent(AggrTradesEvent),
@@ -79,6 +86,8 @@ enum FuturesEvents {
     MarkPriceEvent(MarkPriceEvent),
     TradeEvent(TradeEvent),
     KlineEvent(KlineEvent),
+    ContinuousKlineEvent(ContinuousKlineEvent),
+    LiquidationEvent(LiquidationEvent),
     OrderBook(OrderBook),
     DepthOrderBookEvent(DepthOrderBookEvent),
 }
@@ -86,7 +95,7 @@ enum FuturesEvents {
 impl<'a> FuturesWebSockets<'a> {
     pub fn new<Callback>(handler: Callback) -> FuturesWebSockets<'a>
     where
-        Callback: FnMut(WebsocketEvent) -> Result<()> + 'a,
+        Callback: FnMut(FuturesWebsocketEvent) -> Result<()> + 'a,
     {
         FuturesWebSockets {
             socket: None,
@@ -147,18 +156,22 @@ impl<'a> FuturesWebSockets<'a> {
         if let Ok(events) = dummy{
             println!("{:?}", events);
             let action = match events {
-                FuturesEvents::Vec(v) => WebsocketEvent::DayTickerAll(v),
-                FuturesEvents::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
-                FuturesEvents::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
-                FuturesEvents::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
-                FuturesEvents::IndexPriceEvent(v) => WebsocketEvent::IndexPrice(v),
-                FuturesEvents::MarkPriceEvent(v) => WebsocketEvent::MarkPrice(v),
-                FuturesEvents::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
-                FuturesEvents::TradeEvent(v) => WebsocketEvent::Trade(v),
-                FuturesEvents::DayTickerEvent(v) => WebsocketEvent::DayTicker(v),
-                FuturesEvents::KlineEvent(v) => WebsocketEvent::Kline(v),
-                FuturesEvents::OrderBook(v) => WebsocketEvent::OrderBook(v),
-                FuturesEvents::DepthOrderBookEvent(v) => WebsocketEvent::DepthOrderBook(v),
+                FuturesEvents::Vec(v) => FuturesWebsocketEvent::DayTickerAll(v),
+                FuturesEvents::DayTickerEvent(v) => FuturesWebsocketEvent::DayTicker(v),
+                FuturesEvents::BookTickerEvent(v) => FuturesWebsocketEvent::BookTicker(v),
+                FuturesEvents::MiniTickerEvent(v) => FuturesWebsocketEvent::MiniTicker(v),
+                FuturesEvents::VecMiniTickerEvent(v) => FuturesWebsocketEvent::MiniTickerAll(v),
+                FuturesEvents::AccountUpdateEvent(v) => FuturesWebsocketEvent::AccountUpdate(v),
+                FuturesEvents::OrderTradeEvent(v) => FuturesWebsocketEvent::OrderTrade(v),
+                FuturesEvents::IndexPriceEvent(v) => FuturesWebsocketEvent::IndexPrice(v),
+                FuturesEvents::MarkPriceEvent(v) => FuturesWebsocketEvent::MarkPrice(v),
+                FuturesEvents::TradeEvent(v) => FuturesWebsocketEvent::Trade(v),
+                FuturesEvents::ContinuousKlineEvent(v) => FuturesWebsocketEvent::ContinuousKline(v),
+                FuturesEvents::LiquidationEvent(v) => FuturesWebsocketEvent::Liquidation(v),
+                FuturesEvents::KlineEvent(v) => FuturesWebsocketEvent::Kline(v),
+                FuturesEvents::OrderBook(v) => FuturesWebsocketEvent::OrderBook(v),
+                FuturesEvents::DepthOrderBookEvent(v) => FuturesWebsocketEvent::DepthOrderBook(v),
+                FuturesEvents::AggrTradesEvent(v) =>  FuturesWebsocketEvent::AggrTrades(v),
             };
             (self.handler)(action)?;
         }
