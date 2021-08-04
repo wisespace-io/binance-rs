@@ -1,6 +1,6 @@
 # binance-rs
 
-Unofficial Rust Library for the [Binance API](https://github.com/binance/binance-spot-api-docs) and [Binance Futures API](https://binance-docs.github.io/apidocs/futures/en/#general-info)
+Unofficial Rust Library for the [Binance API](https://github.com/binance/binance-spot-api-docs) and [Binance Futures API (Under development with upcoming breaking changes)](https://binance-docs.github.io/apidocs/futures/en/#general-info)
 
 [![Crates.io](https://img.shields.io/crates/v/binance.svg)](https://crates.io/crates/binance)
 [![Build Status](https://travis-ci.org/wisespace-io/binance-rs.png?branch=master)](https://travis-ci.org/wisespace-io/binance-rs)
