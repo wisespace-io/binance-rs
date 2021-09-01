@@ -397,11 +397,11 @@ pub struct OrderTradeEvent {
     #[serde(rename = "f")]
     pub time_in_force: String,
 
-    #[serde(rename = "q")]
-    pub qty: String,
+    #[serde(rename = "q", with = "string_or_float")]
+    pub qty: f64,
 
-    #[serde(rename = "p")]
-    pub price: String,
+    #[serde(rename = "p", with = "string_or_float")]
+    pub price: f64,
 
     #[serde(skip, rename = "P")]
     pub p_ignore: String,
@@ -427,17 +427,20 @@ pub struct OrderTradeEvent {
     #[serde(rename = "i")]
     pub order_id: u64,
 
-    #[serde(rename = "l")]
-    pub qty_last_filled_trade: String,
+    #[serde(rename = "l", with = "string_or_float")]
+    pub qty_last_filled_trade: f64,
+
+    #[serde(rename = "z", with = "string_or_float")]
+    pub cumulative_filled_qty: f64,
 
     #[serde(rename = "Z", with = "string_or_float")]
     pub cumulative_quote_transacted_qty: f64,
 
-    #[serde(rename = "L")]
-    pub price_last_filled_trade: String,
+    #[serde(rename = "L", with = "string_or_float")]
+    pub price_last_filled_trade: f64,
 
-    #[serde(rename = "n")]
-    pub commission: String,
+    #[serde(rename = "n", with = "string_or_float")]
+    pub commission: f64,
 
     #[serde(rename = "N")]
     pub commission_asset: Option<String>,
