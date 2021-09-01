@@ -439,8 +439,8 @@ pub struct OrderTradeEvent {
     #[serde(rename = "n")]
     pub commission: String,
 
-    #[serde(skip, rename = "N")]
-    pub asset_commissioned: Option<String>,
+    #[serde(rename = "N")]
+    pub commission_asset: Option<String>,
 
     #[serde(rename = "T")]
     pub trade_order_time: u64,
