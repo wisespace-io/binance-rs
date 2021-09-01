@@ -386,7 +386,7 @@ pub struct OrderTradeEvent {
     pub symbol: String,
 
     #[serde(rename = "c")]
-    pub new_client_order_id: String,
+    pub client_order_id: String,
 
     #[serde(rename = "S")]
     pub side: String,
