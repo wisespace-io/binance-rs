@@ -5,9 +5,10 @@ use url::Url;
 use serde::{Deserialize, Serialize};
 
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::net::TcpStream;
 use tungstenite::{connect, Message};
 use tungstenite::protocol::WebSocket;
-use tungstenite::client::AutoStream;
+use tungstenite::stream::MaybeTlsStream;
 use tungstenite::handshake::client::Response;
 
 #[allow(clippy::all)]
@@ -67,7 +68,7 @@ pub enum FuturesWebsocketEvent {
 }
 
 pub struct FuturesWebSockets<'a> {
-    pub socket: Option<(WebSocket<AutoStream>, Response)>,
+    pub socket: Option<(WebSocket<MaybeTlsStream<TcpStream>>, Response)>,
     handler: Box<dyn FnMut(FuturesWebsocketEvent) -> Result<()> + 'a>,
 }
 
