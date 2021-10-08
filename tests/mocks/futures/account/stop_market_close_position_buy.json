@@ -1,0 +1,23 @@
+{
+  "orderId": 1,
+  "symbol": "SRMUSDT",
+  "status": "NEW",
+  "clientOrderId": "6gCrw2kRUAF9CvJDGP16IP",
+  "price": "0",
+  "avgPrice": "0.0000",
+  "origQty": "0",
+  "executedQty": "0",
+  "cumQty": "0",
+  "cumQuote": "0",
+  "timeInForce": "GTC",
+  "type": "STOP_MARKET",
+  "reduceOnly": true,
+  "closePosition": true,
+  "side": "BUY",
+  "positionSide": "BOTH",
+  "stopPrice": "10.5000",
+  "workingType": "CONTRACT_PRICE",
+  "priceProtect": false,
+  "origType": "STOP_MARKET",
+  "updateTime": 1633711183300
+}
