@@ -7,7 +7,8 @@ mod tests {
     use super::*;
     use mockito::{mock, Matcher};
     use float_cmp::*;
-    
+    use binance::futures::model::Transaction;
+
     #[test]
     fn change_initial_leverage() {
         let mock_change_leverage = mock("POST", "/fapi/v1/leverage")
@@ -65,4 +66,55 @@ mod tests {
 
         mock.assert();
     }
+
+    #[test]
+    fn stop_market_close_buy() {
+        let mock_stop_market_close_sell = mock("POST", "/fapi/v1/order")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex("closePosition=TRUE&recvWindow=1234&side=BUY&stopPrice=10.5&symbol=SRMUSDT&timestamp=\\d+&type=STOP_MARKET".into()))
+            .with_body_from_file("tests/mocks/futures/account/stop_market_close_position_buy.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        let transaction: Transaction = account.stop_market_close_buy("SRMUSDT", 10.5).unwrap();
+
+        mock_stop_market_close_sell.assert();
+
+        assert_eq!(transaction.symbol, "SRMUSDT");
+        assert_eq!(transaction.side, "BUY");
+        assert_eq!(transaction.orig_type, "STOP_MARKET");
+        assert_eq!(transaction.close_position, true);
+        assert!(approx_eq!(f64, transaction.stop_price, 10.5, ulps = 2));
+
+    }
+
+    #[test]
+    fn stop_market_close_sell() {
+        let mock_stop_market_close_sell = mock("POST", "/fapi/v1/order")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex("closePosition=TRUE&recvWindow=1234&side=SELL&stopPrice=7.4&symbol=SRMUSDT&timestamp=\\d+&type=STOP_MARKET".into()))
+            .with_body_from_file("tests/mocks/futures/account/stop_market_close_position_sell.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        let transaction: Transaction = account.stop_market_close_sell("SRMUSDT", 7.4).unwrap();
+
+        mock_stop_market_close_sell.assert();
+
+        assert_eq!(transaction.symbol, "SRMUSDT");
+        assert_eq!(transaction.side, "SELL");
+        assert_eq!(transaction.orig_type, "STOP_MARKET");
+        assert_eq!(transaction.close_position, true);
+        assert!(approx_eq!(f64, transaction.stop_price, 7.4, ulps = 2));
+
+    }
+
 }
