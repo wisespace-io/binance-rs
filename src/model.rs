@@ -341,6 +341,26 @@ pub struct PriceStats {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AggTrade {
+    #[serde(rename = "T")]
+    pub time: u64,
+    #[serde(rename = "a")]
+    pub agg_id: u64,
+    #[serde(rename = "f")]
+    pub first_id: u64,
+    #[serde(rename = "l")]
+    pub last_id: u64,
+    #[serde(rename = "m")]
+    pub maker: bool,
+    #[serde(rename = "M")]
+    pub best_match: bool,
+    #[serde(rename = "p", with = "string_or_float")]
+    pub price: f64,
+    #[serde(rename = "q", with = "string_or_float")]
+    pub qty: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountUpdateEvent {
     #[serde(rename = "e")]

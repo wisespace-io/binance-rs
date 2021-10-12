@@ -213,6 +213,20 @@ fn market_data() {
         Err(e) => println!("Error: {}", e),
     }
 
+    // 10 latest (aggregated) trades
+    match market.get_agg_trades("BNBETH", None, None, None, Some(10)) {
+        Ok(trades) => {
+            let trade = &trades[0]; // You need to iterate over them
+            println!(
+                "{} BNB Qty: {}, Price: {}",
+                if trade.maker { "SELL" } else { "BUY" },
+                trade.qty,
+                trade.price
+            )
+        }
+        Err(e) => println!("Error: {}", e),
+    }
+
     // last 10 5min klines (candlesticks) for a symbol:
     match market.get_klines("BNBETH", "5m", 10, None, None) {
         Ok(klines) => {   

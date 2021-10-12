@@ -99,6 +99,43 @@ impl Market {
         self.client.get(API::Spot(Spot::Ticker24hr), None)
     }
 
+    /// Get aggregated historical trades.
+    ///
+    /// If you provide start_time, you also need to provide end_time.
+    /// If from_id, start_time and end_time are omitted, the most recent trades are fetched.
+    pub fn get_agg_trades<S1, S2, S3, S4, S5>(
+        &self, symbol: S1, from_id: S2, start_time: S3, end_time: S4, limit: S5,
+    ) -> Result<Vec<AggTrade>>
+    where
+        S1: Into<String>,
+        S2: Into<Option<u64>>,
+        S3: Into<Option<u64>>,
+        S4: Into<Option<u64>>,
+        S5: Into<Option<u16>>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("symbol".into(), symbol.into());
+
+        // Add three optional parameters
+        if let Some(lt) = limit.into() {
+            parameters.insert("limit".into(), format!("{}", lt));
+        }
+        if let Some(st) = start_time.into() {
+            parameters.insert("startTime".into(), format!("{}", st));
+        }
+        if let Some(et) = end_time.into() {
+            parameters.insert("endTime".into(), format!("{}", et));
+        }
+        if let Some(fi) = from_id.into() {
+            parameters.insert("fromId".into(), format!("{}", fi));
+        }
+
+        let request = build_request(parameters);
+
+        self.client.get(API::Spot(Spot::AggTrades), Some(request))
+    }
+
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
     // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
     pub fn get_klines<S1, S2, S3, S4, S5>(
