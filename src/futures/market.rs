@@ -54,6 +54,19 @@ impl FuturesMarket {
         self.client.get(API::Futures(Futures::Depth), Some(request))
     }
 
+    // Order book at a custom depth. Currently supported values
+    // are 5, 10, 20, 50, 100, 500, 1000
+    pub fn get_custom_depth<S>(&self, symbol: S, depth: u64) -> Result<OrderBook>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("limit".into(), depth.to_string());
+        let request = build_request(parameters);
+        self.client.get(API::Futures(Futures::Depth), Some(request))
+    }
+
     pub fn get_trades<S>(&self, symbol: S) -> Result<Trades>
     where
         S: Into<String>,
