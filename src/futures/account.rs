@@ -107,6 +107,23 @@ struct OrderRequest {
     pub price_protect: Option<f64>,
 }
 
+pub struct CustomOrderRequest {
+    pub symbol: String,
+    pub side: OrderSide,
+    pub position_side: Option<PositionSide>,
+    pub order_type: OrderType,
+    pub time_in_force: Option<TimeInForce>,
+    pub qty: Option<f64>,
+    pub reduce_only: Option<bool>,
+    pub price: Option<f64>,
+    pub stop_price: Option<f64>,
+    pub close_position: Option<bool>,
+    pub activation_price: Option<f64>,
+    pub callback_rate: Option<f64>,
+    pub working_type: Option<WorkingType>,
+    pub price_protect: Option<f64>,
+}
+
 
 impl FuturesAccount {
     pub fn limit_buy(&self,
@@ -279,6 +296,30 @@ impl FuturesAccount {
             price_protect: None,
         };
         let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed(API::Futures(Futures::Order), request)
+    }
+
+    // Custom order for for professional traders
+    pub fn custom_order(&self, order_request: CustomOrderRequest) -> Result<Transaction>
+    {
+        let order: OrderRequest = OrderRequest {
+            symbol: order_request.symbol,
+            side: order_request.side,
+            position_side: order_request.position_side,
+            order_type: order_request.order_type,
+            time_in_force: order_request.time_in_force,
+            qty: order_request.qty,
+            reduce_only: order_request.reduce_only,
+            price: order_request.price,
+            stop_price: order_request.stop_price,
+            close_position: order_request.close_position,
+            activation_price: order_request.activation_price,
+            callback_rate: order_request.callback_rate,
+            working_type: order_request.working_type,
+            price_protect: order_request.price_protect,
+        };
+        let order = self.build_order(order);
         let request = build_signed_request(order, self.recv_window)?;
         self.client.post_signed(API::Futures(Futures::Order), request)
     }
