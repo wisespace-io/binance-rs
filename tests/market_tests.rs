@@ -272,16 +272,16 @@ mod tests {
                 let kline: KlineSummary = klines[0].clone();
 
                 assert_eq!(kline.open_time, 1499040000000);
-                assert!(approx_eq!(f64, kline.open, 0.01634790, ulps = 2));
-                assert!(approx_eq!(f64, kline.high, 0.80000000, ulps = 2));
-                assert!(approx_eq!(f64, kline.low, 0.01575800, ulps = 2));
-                assert!(approx_eq!(f64, kline.close, 0.01577100, ulps = 2));
-                assert!(approx_eq!(f64, kline.volume, 148976.11427815, ulps = 2));
+                assert_eq!(kline.open, "0.01634790");
+                assert_eq!(kline.high, "0.80000000");
+                assert_eq!(kline.low, "0.01575800");
+                assert_eq!(kline.close, "0.01577100");
+                assert_eq!(kline.volume, "148976.11427815");
                 assert_eq!(kline.close_time, 1499644799999);
-                assert!(approx_eq!(f64, kline.quote_asset_volume, 2434.19055334, ulps = 2));
+                assert_eq!(kline.quote_asset_volume, "2434.19055334");
                 assert_eq!(kline.number_of_trades, 308);
-                assert!(approx_eq!(f64, kline.taker_buy_base_asset_volume, 1756.87402397, ulps = 2));
-                assert!(approx_eq!(f64, kline.taker_buy_quote_asset_volume, 28.46694368, ulps = 2));
+                assert_eq!(kline.taker_buy_base_asset_volume, "1756.87402397");
+                assert_eq!(kline.taker_buy_quote_asset_volume, "28.46694368");
 
             }
 

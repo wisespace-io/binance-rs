@@ -1,4 +1,10 @@
 use serde::{Deserialize, Serialize};
+use serde_json::{
+    from_value,
+    Value
+};
+use std::convert::TryFrom;
+use crate::errors::*;
 
 #[derive(Deserialize, Clone)]
 pub struct Empty { }
@@ -860,25 +866,54 @@ pub struct IndexKlineEvent {
 pub struct KlineSummary {
     pub open_time: i64,
 
-    pub open: f64,
+    pub open: String,
 
-    pub high: f64,
+    pub high: String,
 
-    pub low: f64,
+    pub low: String,
 
-    pub close: f64,
+    pub close: String,
 
-    pub volume: f64,
+    pub volume: String,
 
     pub close_time: i64,
 
-    pub quote_asset_volume: f64,
+    pub quote_asset_volume: String,
 
     pub number_of_trades: i64,
 
-    pub taker_buy_base_asset_volume: f64,
+    pub taker_buy_base_asset_volume: String,
 
-    pub taker_buy_quote_asset_volume: f64,
+    pub taker_buy_quote_asset_volume: String,
+}
+
+fn get_value(row: &Vec<Value>, index: usize, name: &'static str) -> Result<Value> {
+    Ok(
+        row
+            .get(index)
+            .ok_or(ErrorKind::KlineValueMissingError(index, name))?
+            .to_owned()
+    )
+}
+
+impl TryFrom<&Vec<Value>> for KlineSummary {
+    type Error = Error;
+
+    fn try_from(row: &Vec<Value>) -> Result<Self> {
+        Ok(Self {
+            open_time: from_value(get_value(row, 0, "open_time")?)?,
+            open: from_value(get_value(row, 1, "open")?)?,
+            high: from_value(get_value(row, 2, "high")?)?,
+            low: from_value(get_value(row, 3, "low")?)?,
+            close: from_value(get_value(row, 4, "close")?)?,
+            volume: from_value(get_value(row, 5, "volume")?)?,
+            close_time: from_value(get_value(row, 6, "close_time")?)?,
+            quote_asset_volume: from_value(get_value(row, 7, "quote_asset_volume")?)?,
+            number_of_trades: from_value(get_value(row, 8, "number_of_trades")?)?,
+            taker_buy_base_asset_volume: from_value(get_value(row, 9, "taker_buy_base_asset_volume")?)?,
+            taker_buy_quote_asset_volume: from_value(get_value(row, 10, "taker_buy_quote_asset_volume")?)?,
+        })
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
