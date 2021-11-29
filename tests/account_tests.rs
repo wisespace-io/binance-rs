@@ -11,10 +11,11 @@ mod tests {
 
     #[test]
     fn get_account() {
-
         let mock_get_account = mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("recvWindow=1234&timestamp=\\d+&signature=.*".into()))
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
+            ))
             .with_body_from_file("tests/mocks/account/get_account.json")
             .create();
 
@@ -46,15 +47,15 @@ mod tests {
         assert_eq!(second_balance.asset, "LTC");
         assert_eq!(second_balance.free, "4763368.68006011");
         assert_eq!(second_balance.locked, "0.00000000");
-
     }
 
     #[test]
     fn get_balance() {
-
         let mock_get_account = mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("recvWindow=1234&timestamp=\\d+&signature=.*".into()))
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
+            ))
             .with_body_from_file("tests/mocks/account/get_account.json")
             .create();
 
@@ -70,15 +71,15 @@ mod tests {
         assert_eq!(balance.asset, "BTC");
         assert_eq!(balance.free, "4723846.89208129");
         assert_eq!(balance.locked, "0.00000000");
-
     }
 
     #[test]
     fn get_open_orders() {
-
         let mock_open_orders = mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
+            ))
             .with_body_from_file("tests/mocks/account/get_open_orders.json")
             .create();
 
@@ -112,12 +113,10 @@ mod tests {
         assert_eq!(open_order.update_time, 1499827319559);
         assert_eq!(open_order.is_working, true);
         assert_eq!(open_order.orig_quote_order_qty, "0.000000");
-
     }
 
     #[test]
     fn get_all_open_orders() {
-
         let mock_open_orders = mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("recvWindow=1234&timestamp=\\d+".into()))
@@ -154,15 +153,15 @@ mod tests {
         assert_eq!(open_order.update_time, 1499827319559);
         assert_eq!(open_order.is_working, true);
         assert_eq!(open_order.orig_quote_order_qty, "0.000000");
-
     }
 
     #[test]
     fn cancel_all_open_orders() {
-
         let mock_cancel_all_open_orders = mock("DELETE", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
+            ))
             .with_body_from_file("tests/mocks/account/cancel_all_open_orders.json")
             .create();
 
@@ -179,24 +178,36 @@ mod tests {
 
         let first_order_cancelled: OrderCanceled = cancel_all_open_orders[0].clone();
         assert_eq!(first_order_cancelled.symbol, "BTCUSDT");
-        assert_eq!(first_order_cancelled.orig_client_order_id.unwrap(), "E6APeyTJvkMvLMYMqu1KQ4");
+        assert_eq!(
+            first_order_cancelled.orig_client_order_id.unwrap(),
+            "E6APeyTJvkMvLMYMqu1KQ4"
+        );
         assert_eq!(first_order_cancelled.order_id.unwrap(), 11);
-        assert_eq!(first_order_cancelled.client_order_id.unwrap(), "pXLV6Hz6mprAcVYpVMTGgx");
+        assert_eq!(
+            first_order_cancelled.client_order_id.unwrap(),
+            "pXLV6Hz6mprAcVYpVMTGgx"
+        );
 
         let second_order_cancelled: OrderCanceled = cancel_all_open_orders[1].clone();
         assert_eq!(second_order_cancelled.symbol, "BTCUSDT");
-        assert_eq!(second_order_cancelled.orig_client_order_id.unwrap(), "A3EF2HCwxgZPFMrfwbgrhv");
+        assert_eq!(
+            second_order_cancelled.orig_client_order_id.unwrap(),
+            "A3EF2HCwxgZPFMrfwbgrhv"
+        );
         assert_eq!(second_order_cancelled.order_id.unwrap(), 13);
-        assert_eq!(second_order_cancelled.client_order_id.unwrap(), "pXLV6Hz6mprAcVYpVMTGgx");
-
+        assert_eq!(
+            second_order_cancelled.client_order_id.unwrap(),
+            "pXLV6Hz6mprAcVYpVMTGgx"
+        );
     }
 
     #[test]
     fn order_status() {
-
         let mock_order_status = mock("GET", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("orderId=1&recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "orderId=1&recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
+            ))
             .with_body_from_file("tests/mocks/account/order_status.json")
             .create();
 
@@ -227,15 +238,15 @@ mod tests {
         assert_eq!(order_status.update_time, 1499827319559);
         assert_eq!(order_status.is_working, true);
         assert_eq!(order_status.orig_quote_order_qty, "0.000000");
-
     }
 
     #[test]
     fn test_order_status() {
-
         let mock_test_order_status = mock("GET", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("orderId=1&recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "orderId=1&recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
+            ))
             .with_body("{}")
             .create();
 
@@ -247,12 +258,10 @@ mod tests {
         account.test_order_status("LTCBTC", 1).unwrap();
 
         mock_test_order_status.assert();
-
     }
 
     #[test]
     fn limit_buy() {
-
         let mock_limit_buy = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
@@ -276,17 +285,20 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "LIMIT");
         assert_eq!(transaction.side, "BUY");
-
     }
 
     #[test]
     fn test_limit_buy() {
-
         let mock_test_limit_buy = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
@@ -301,12 +313,10 @@ mod tests {
         account.test_limit_buy("LTCBTC", 1, 0.1).unwrap();
 
         mock_test_limit_buy.assert();
-
     }
 
     #[test]
     fn limit_sell() {
-
         let mock_limit_sell = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
@@ -330,17 +340,20 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "LIMIT");
         assert_eq!(transaction.side, "SELL");
-
     }
 
     #[test]
     fn test_limit_sell() {
-
         let mock_test_limit_sell = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
@@ -355,15 +368,16 @@ mod tests {
         account.test_limit_sell("LTCBTC", 1, 0.1).unwrap();
 
         mock_test_limit_sell.assert();
-
     }
 
     #[test]
     fn market_buy() {
-
         let mock_market_buy = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timestamp=\\d+&type=MARKET".into()))
+            .match_query(Matcher::Regex(
+                "quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
+                    .into(),
+            ))
             .with_body_from_file("tests/mocks/account/market_buy.json")
             .create();
 
@@ -384,20 +398,26 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "MARKET");
         assert_eq!(transaction.side, "BUY");
-
     }
 
     #[test]
     fn test_market_buy() {
-
         let mock_test_market_buy = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timestamp=\\d+&type=MARKET".into()))
+            .match_query(Matcher::Regex(
+                "quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
+                    .into(),
+            ))
             .with_body("{}")
             .create();
 
@@ -409,12 +429,10 @@ mod tests {
         account.test_market_buy("LTCBTC", 1).unwrap();
 
         mock_test_market_buy.assert();
-
     }
 
     #[test]
     fn market_buy_using_quote_quantity() {
-
         let mock_market_buy_using_quote_quantity = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=BUY&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
@@ -434,12 +452,10 @@ mod tests {
         }
 
         mock_market_buy_using_quote_quantity.assert();
-
     }
 
     #[test]
     fn test_market_buy_using_quote_quantity() {
-
         let mock_test_market_buy_using_quote_quantity = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=BUY&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
@@ -451,18 +467,21 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        account.test_market_buy_using_quote_quantity("BNBBTC", 0.002).unwrap();
+        account
+            .test_market_buy_using_quote_quantity("BNBBTC", 0.002)
+            .unwrap();
 
         mock_test_market_buy_using_quote_quantity.assert();
-
     }
 
     #[test]
     fn market_sell() {
-
         let mock_market_sell = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET".into()))
+            .match_query(Matcher::Regex(
+                "quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
+                    .into(),
+            ))
             .with_body_from_file("tests/mocks/account/market_sell.json")
             .create();
 
@@ -483,20 +502,26 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "MARKET");
         assert_eq!(transaction.side, "SELL");
-
     }
 
     #[test]
     fn test_market_sell() {
-
         let mock_test_market_sell = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET".into()))
+            .match_query(Matcher::Regex(
+                "quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
+                    .into(),
+            ))
             .with_body("{}")
             .create();
 
@@ -508,12 +533,10 @@ mod tests {
         let _ = account.test_market_sell("LTCBTC", 1).unwrap();
 
         mock_test_market_sell.assert();
-
     }
 
     #[test]
     fn market_sell_using_quote_quantity() {
-
         let mock_market_sell_using_quote_quantity = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=SELL&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
@@ -533,12 +556,10 @@ mod tests {
         }
 
         mock_market_sell_using_quote_quantity.assert();
-
     }
 
     #[test]
     fn test_market_sell_using_quote_quantity() {
-
         let mock_test_market_sell_using_quote_quantity = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=SELL&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
@@ -550,15 +571,15 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        account.test_market_sell_using_quote_quantity("BNBBTC", 0.002).unwrap();
+        account
+            .test_market_sell_using_quote_quantity("BNBBTC", 0.002)
+            .unwrap();
 
         mock_test_market_sell_using_quote_quantity.assert();
-
     }
 
     #[test]
     fn stop_limit_buy_order() {
-
         let mock_stop_limit_buy_order = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&stopPrice=0.09&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=STOP_LOSS_LIMIT".into()))
@@ -570,7 +591,9 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC).unwrap();
+        let transaction: Transaction = account
+            .stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
+            .unwrap();
 
         mock_stop_limit_buy_order.assert();
 
@@ -582,18 +605,21 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert!(approx_eq!(f64, transaction.stop_price, 0.09, ulps = 2));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "STOP_LOSS_LIMIT");
         assert_eq!(transaction.side, "BUY");
-
     }
 
     #[test]
     fn test_stop_limit_buy_order() {
-
         let mock_test_stop_limit_buy_order = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&stopPrice=0.09&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=STOP_LOSS_LIMIT".into()))
@@ -605,15 +631,15 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account.test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC).unwrap();
+        let _ = account
+            .test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
+            .unwrap();
 
         mock_test_stop_limit_buy_order.assert();
-
     }
 
     #[test]
     fn stop_limit_sell_order() {
-
         let mock_stop_limit_sell_order = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=SELL&stopPrice=0.09&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=STOP_LOSS_LIMIT".into()))
@@ -625,7 +651,9 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC).unwrap();
+        let transaction: Transaction = account
+            .stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
+            .unwrap();
 
         mock_stop_limit_sell_order.assert();
 
@@ -637,18 +665,21 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert!(approx_eq!(f64, transaction.stop_price, 0.09, ulps = 2));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "STOP_LOSS_LIMIT");
         assert_eq!(transaction.side, "SELL");
-
     }
 
     #[test]
     fn test_stop_limit_sell_order() {
-
         let mock_test_stop_limit_sell_order = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=SELL&stopPrice=0.09&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=STOP_LOSS_LIMIT".into()))
@@ -660,15 +691,15 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account.test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC).unwrap();
+        let _ = account
+            .test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
+            .unwrap();
 
         mock_test_stop_limit_sell_order.assert();
-
     }
 
     #[test]
     fn custom_order() {
-
         let mock_custom_order = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("newClientOrderId=6gCrw2kRUAF9CvJDGP16IP&price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=MARKET".into()))
@@ -680,8 +711,18 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.custom_order(
-            "LTCBTC", 1, 0.1, None, OrderSide::Buy, OrderType::Market, TimeInForce::GTC, Some("6gCrw2kRUAF9CvJDGP16IP".into())).unwrap();
+        let transaction: Transaction = account
+            .custom_order(
+                "LTCBTC",
+                1,
+                0.1,
+                None,
+                OrderSide::Buy,
+                OrderType::Market,
+                TimeInForce::GTC,
+                Some("6gCrw2kRUAF9CvJDGP16IP".into()),
+            )
+            .unwrap();
 
         mock_custom_order.assert();
 
@@ -693,18 +734,21 @@ mod tests {
         assert!(approx_eq!(f64, transaction.price, 0.1, ulps = 2));
         assert!(approx_eq!(f64, transaction.orig_qty, 1.0, ulps = 2));
         assert!(approx_eq!(f64, transaction.executed_qty, 1.0, ulps = 2));
-        assert!(approx_eq!(f64, transaction.cummulative_quote_qty, 0.0, ulps = 2));
+        assert!(approx_eq!(
+            f64,
+            transaction.cummulative_quote_qty,
+            0.0,
+            ulps = 2
+        ));
         assert!(approx_eq!(f64, transaction.stop_price, 0.09, ulps = 2));
         assert_eq!(transaction.status, "NEW");
         assert_eq!(transaction.time_in_force, "GTC"); //Migrate to TimeInForce enum
         assert_eq!(transaction.type_name, "STOP_LOSS_LIMIT");
         assert_eq!(transaction.side, "SELL");
-
     }
 
     #[test]
     fn test_custom_order() {
-
         let mock_test_custom_order = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=MARKET".into()))
@@ -716,19 +760,29 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account.test_custom_order(
-            "LTCBTC", 1, 0.1, None, OrderSide::Buy, OrderType::Market, TimeInForce::GTC, None).unwrap();
+        let _ = account
+            .test_custom_order(
+                "LTCBTC",
+                1,
+                0.1,
+                None,
+                OrderSide::Buy,
+                OrderType::Market,
+                TimeInForce::GTC,
+                None,
+            )
+            .unwrap();
 
         mock_test_custom_order.assert();
-
     }
 
     #[test]
     fn cancel_order() {
-
         let mock_cancel_order = mock("DELETE", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("orderId=1&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "orderId=1&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
+            ))
             .with_body_from_file("tests/mocks/account/cancel_order.json")
             .create();
 
@@ -745,15 +799,15 @@ mod tests {
         assert_eq!(cancelled_order.orig_client_order_id.unwrap(), "myOrder1");
         assert_eq!(cancelled_order.order_id.unwrap(), 4);
         assert_eq!(cancelled_order.client_order_id.unwrap(), "cancelMyOrder1");
-
     }
 
     #[test]
     fn test_cancel_order() {
-
         let mock_test_cancel_order = mock("DELETE", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("orderId=1&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "orderId=1&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
+            ))
             .with_body_from_file("tests/mocks/account/cancel_order.json")
             .create();
 
@@ -765,15 +819,15 @@ mod tests {
         account.test_cancel_order("BTCUSDT", 1).unwrap();
 
         mock_test_cancel_order.assert();
-
     }
 
     #[test]
     fn trade_history() {
-
         let mock_trade_history = mock("GET", "/api/v3/myTrades")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
+            ))
             .with_body_from_file("tests/mocks/account/trade_history.json")
             .create();
 
@@ -799,7 +853,5 @@ mod tests {
         assert_eq!(history.is_buyer, true);
         assert_eq!(history.is_maker, false);
         assert_eq!(history.is_best_match, true);
-
     }
-
 }

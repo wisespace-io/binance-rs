@@ -16,7 +16,8 @@ impl Savings {
     /// Get all coins available for deposit and withdrawal
     pub fn get_all_coins(&self) -> Result<Vec<CoinInfo>> {
         let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
-        self.client.get_signed(API::Savings(Sapi::AllCoins), Some(request))
+        self.client
+            .get_signed(API::Savings(Sapi::AllCoins), Some(request))
     }
 
     /// Fetch details of assets supported on Binance.
@@ -26,7 +27,8 @@ impl Savings {
             parameters.insert("asset".into(), asset);
         }
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.get_signed(API::Savings(Sapi::AssetDetail), Some(request))
+        self.client
+            .get_signed(API::Savings(Sapi::AssetDetail), Some(request))
     }
 
     /// Fetch deposit address with network.
@@ -43,6 +45,7 @@ impl Savings {
             parameters.insert("network".into(), network);
         }
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.get_signed(API::Savings(Sapi::DepositAddress), Some(request))
+        self.client
+            .get_signed(API::Savings(Sapi::DepositAddress), Some(request))
     }
 }

@@ -171,7 +171,7 @@ impl Market {
         let klines = KlineSummaries::AllKlineSummaries(
             data.iter()
                 .map(|row| row.try_into())
-                .collect::<Result<Vec<KlineSummary>>>()?
+                .collect::<Result<Vec<KlineSummary>>>()?,
         );
 
         Ok(klines)

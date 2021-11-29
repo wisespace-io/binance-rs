@@ -176,7 +176,7 @@ pub struct OpenInterest {
 #[serde(rename_all = "camelCase")]
 pub struct Order {
     pub client_order_id: String,
-    #[serde(with = "string_or_float", default="default_stop_price")]
+    #[serde(with = "string_or_float", default = "default_stop_price")]
     pub cum_qty: f64,
     #[serde(with = "string_or_float")]
     pub cum_quote: f64,
@@ -328,7 +328,6 @@ pub struct AccountBalance {
     pub max_withdraw_amount: f64,
     pub margin_available: bool,
     pub update_time: u64,
-
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

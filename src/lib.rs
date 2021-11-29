@@ -5,7 +5,6 @@
     unused_imports,
     unused_import_braces
 )]
-
 #![allow(clippy::needless_doctest_main)]
 
 #[macro_use]
