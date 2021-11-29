@@ -39,7 +39,9 @@ impl Config {
         self.ws_endpoint = ws_endpoint.into();
         self
     }
-    pub fn set_futures_rest_api_endpoint<T: Into<String>>(mut self, futures_rest_api_endpoint: T) -> Self {
+    pub fn set_futures_rest_api_endpoint<T: Into<String>>(
+        mut self, futures_rest_api_endpoint: T,
+    ) -> Self {
         self.futures_rest_api_endpoint = futures_rest_api_endpoint.into();
         self
     }

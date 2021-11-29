@@ -22,6 +22,7 @@ impl UserStream {
     }
 
     pub fn close(&self, listen_key: &str) -> Result<Success> {
-        self.client.delete(API::Spot(Spot::UserDataStream), listen_key)
+        self.client
+            .delete(API::Spot(Spot::UserDataStream), listen_key)
     }
 }

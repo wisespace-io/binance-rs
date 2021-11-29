@@ -229,7 +229,7 @@ fn market_data() {
 
     // last 10 5min klines (candlesticks) for a symbol:
     match market.get_klines("BNBETH", "5m", 10, None, None) {
-        Ok(klines) => {   
+        Ok(klines) => {
             match klines {
                 binance::model::KlineSummaries::AllKlineSummaries(klines) => {
                     let kline: KlineSummary = klines[0].clone(); // You need to iterate over the klines
@@ -239,7 +239,7 @@ fn market_data() {
                     )
                 }
             }
-        },
+        }
         Err(e) => println!("Error: {}", e),
     }
 }
