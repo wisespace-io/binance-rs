@@ -14,6 +14,11 @@ pub struct BinanceContentError {
 error_chain! {
     errors {
         BinanceError(response: BinanceContentError)
+
+        KlineValueMissingError(index: usize, name: &'static str) {
+            description("invalid Vec for Kline"),
+            display("{} at {} is missing", name, index),
+        }
      }
 
     foreign_links {
