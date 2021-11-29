@@ -887,7 +887,7 @@ pub struct KlineSummary {
     pub taker_buy_quote_asset_volume: String,
 }
 
-fn get_value(row: &Vec<Value>, index: usize, name: &'static str) -> Result<Value> {
+fn get_value(row: &[Value], index: usize, name: &'static str) -> Result<Value> {
     Ok(
         row
             .get(index)
