@@ -927,10 +927,10 @@ pub struct Kline {
     pub interval: String,
 
     #[serde(rename = "f")]
-    pub first_trade_id: i32,
+    pub first_trade_id: i64,
 
     #[serde(rename = "L")]
-    pub last_trade_id: i32,
+    pub last_trade_id: i64,
 
     #[serde(rename = "o")]
     pub open: String,
@@ -948,7 +948,7 @@ pub struct Kline {
     pub volume: String,
 
     #[serde(rename = "n")]
-    pub number_of_trades: i32,
+    pub number_of_trades: i64,
 
     #[serde(rename = "x")]
     pub is_final_bar: bool,
