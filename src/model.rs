@@ -915,10 +915,10 @@ impl TryFrom<&Vec<Value>> for KlineSummary {
 #[serde(rename_all = "camelCase")]
 pub struct Kline {
     #[serde(rename = "t")]
-    pub start_time: i64,
+    pub open_time: i64,
 
     #[serde(rename = "T")]
-    pub end_time: i64,
+    pub close_time: i64,
 
     #[serde(rename = "s")]
     pub symbol: String,
@@ -954,13 +954,13 @@ pub struct Kline {
     pub is_final_bar: bool,
 
     #[serde(rename = "q")]
-    pub quote_volume: String,
+    pub quote_asset_volume: String,
 
     #[serde(rename = "V")]
-    pub active_buy_volume: String,
+    pub taker_buy_base_asset_volume: String,
 
     #[serde(rename = "Q")]
-    pub active_volume_buy_quote: String,
+    pub taker_buy_quote_asset_volume: String,
 
     #[serde(skip, rename = "B")]
     pub ignore_me: String,
