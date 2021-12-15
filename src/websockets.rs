@@ -35,6 +35,7 @@ impl WebsocketAPI {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum WebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
+    BalanceUpdate(BalanceUpdateEvent),
     OrderTrade(OrderTradeEvent),
     AggrTrades(AggrTradesEvent),
     Trade(TradeEvent),
@@ -55,6 +56,7 @@ pub struct WebSockets<'a> {
 #[serde(untagged)]
 enum Events {
     Vec(Vec<DayTickerEvent>),
+    BalanceUpdateEvent(BalanceUpdateEvent),
     DayTickerEvent(DayTickerEvent),
     BookTickerEvent(BookTickerEvent),
     AccountUpdateEvent(AccountUpdateEvent),
@@ -124,6 +126,7 @@ impl<'a> WebSockets<'a> {
             let action = match events {
                 Events::Vec(v) => WebsocketEvent::DayTickerAll(v),
                 Events::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
+                Events::BalanceUpdateEvent(v) => WebsocketEvent::BalanceUpdate(v),
                 Events::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
                 Events::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
                 Events::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
