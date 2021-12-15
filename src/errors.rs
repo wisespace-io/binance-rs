@@ -1,14 +1,9 @@
 use serde::Deserialize;
-use serde_json::Value;
-use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
 pub struct BinanceContentError {
     pub code: i16,
     pub msg: String,
-
-    #[serde(flatten)]
-    extra: HashMap<String, Value>,
 }
 
 error_chain! {
