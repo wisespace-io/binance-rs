@@ -178,7 +178,7 @@ pub struct OpenInterestHist {
     pub symbol: String,
     pub sum_open_interest: String,
     pub sum_open_interest_value: String,
-    pub timestamp: String,
+    pub timestamp: u64,
 }
 
 #[derive(Debug, Deserialize, Clone)]
