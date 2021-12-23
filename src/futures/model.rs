@@ -172,6 +172,15 @@ pub struct OpenInterest {
     pub symbol: String,
 }
 
+#[derive(Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OpenInterestHist {
+    pub symbol: String,
+    pub sum_open_interest: String,
+    pub sum_open_interest_value: String,
+    pub timestamp: u64,
+}
+
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Order {

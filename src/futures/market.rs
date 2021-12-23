@@ -257,4 +257,33 @@ impl FuturesMarket {
         self.client
             .get(API::Futures(Futures::OpenInterest), Some(request))
     }
+
+    pub fn open_interest_statistics<S1, S2, S3, S4, S5>(
+        &self, symbol: S1, period: S2, limit: S3, start_time: S4, end_time: S5,
+    ) -> Result<Vec<OpenInterestHist>>
+    where
+        S1: Into<String>,
+        S2: Into<String>,
+        S3: Into<Option<u16>>,
+        S4: Into<Option<u64>>,
+        S5: Into<Option<u64>>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("period".into(), period.into());
+
+        if let Some(lt) = limit.into() {
+            parameters.insert("limit".into(), format!("{}", lt));
+        }
+        if let Some(st) = start_time.into() {
+            parameters.insert("startTime".into(), format!("{}", st));
+        }
+        if let Some(et) = end_time.into() {
+            parameters.insert("endTime".into(), format!("{}", et));
+        }
+
+        let request = build_request(parameters);
+        self.client
+            .get(API::Futures(Futures::OpenInterestHist), Some(request))
+    }
 }
