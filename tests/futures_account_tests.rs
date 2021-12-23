@@ -166,4 +166,44 @@ mod tests {
         assert_eq!(transaction.close_position, true);
         assert!(approx_eq!(f64, transaction.stop_price, 7.4, ulps = 2));
     }
+
+    #[test]
+    fn custom_order_coin_m() {
+        let mock_custom_order = mock("POST", "/dapi/v1/order")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex("closePosition=FALSE&recvWindow=1234&side=SELL&stopPrice=9300&symbol=BTCUSD_200925&timestamp=\\d+&type=STOP_MARKET".into()))
+            .with_body_from_file("tests/mocks/futures/account/custom_order_coin_m.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_coin_m_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(1234);
+        let account: FuturesCoinMAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        let custom_order = CustomOrderRequest {
+            symbol: "BTCUSD_200925".into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::StopMarket,
+            time_in_force: None,
+            qty: None,
+            reduce_only: None,
+            price: None,
+            stop_price: Some(9300.into()),
+            close_position: Some(false),
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let transaction: Transaction = account.custom_order(custom_order).unwrap();
+
+        mock_custom_order.assert();
+
+        assert_eq!(transaction.symbol, "BTCUSD_200925");
+        assert_eq!(transaction.side, "BUY");
+        assert_eq!(transaction.orig_type, "STOP_MARKET");
+        assert_eq!(transaction.close_position, false);
+        assert!(approx_eq!(f64, transaction.stop_price, 9300.0, ulps = 2));
+    }
 }

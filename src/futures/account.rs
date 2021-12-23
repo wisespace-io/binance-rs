@@ -3,13 +3,19 @@ use std::collections::BTreeMap;
 use crate::util::*;
 use crate::errors::*;
 use crate::client::Client;
-use crate::api::{API, Futures};
+use crate::api::{API, Futures, FuturesCoin};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
 use super::model::{ChangeLeverageResponse, Transaction, CanceledOrder, Position, AccountBalance};
 
 #[derive(Clone)]
 pub struct FuturesAccount {
+    pub client: Client,
+    pub recv_window: u64,
+}
+
+#[derive(Clone)]
+pub struct FuturesCoinMAccount {
     pub client: Client,
     pub recv_window: u64,
 }
@@ -440,5 +446,325 @@ impl FuturesAccount {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Futures(Futures::OpenOrders), Some(request))
+    }
+}
+
+impl FuturesCoinMAccount {
+    pub fn limit_buy(
+        &self, symbol: impl Into<String>, qty: impl Into<f64>, price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Transaction> {
+        let buy = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::Limit,
+            time_in_force: Some(time_in_force),
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: Some(price),
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(buy);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    pub fn limit_sell(
+        &self, symbol: impl Into<String>, qty: impl Into<f64>, price: f64,
+        time_in_force: TimeInForce,
+    ) -> Result<Transaction> {
+        let sell = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::Limit,
+            time_in_force: Some(time_in_force),
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: Some(price),
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    // Place a MARKET order - BUY
+    pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
+        where
+            S: Into<String>,
+            F: Into<f64>,
+    {
+        let buy = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::Market,
+            time_in_force: None,
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: None,
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(buy);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    // Place a MARKET order - SELL
+    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
+        where
+            S: Into<String>,
+            F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::Market,
+            time_in_force: None,
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: None,
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<CanceledOrder>
+        where
+            S: Into<String>,
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("orderId".into(), order_id.to_string());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .delete_signed(API::FuturesCoin(FuturesCoin::Order), Some(request))
+    }
+
+    // Place a STOP_MARKET close - BUY
+    pub fn stop_market_close_buy<S, F>(&self, symbol: S, stop_price: F) -> Result<Transaction>
+        where
+            S: Into<String>,
+            F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::StopMarket,
+            time_in_force: None,
+            qty: None,
+            reduce_only: None,
+            price: None,
+            stop_price: Some(stop_price.into()),
+            close_position: Some(true),
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    // Place a STOP_MARKET close - SELL
+    pub fn stop_market_close_sell<S, F>(&self, symbol: S, stop_price: F) -> Result<Transaction>
+        where
+            S: Into<String>,
+            F: Into<f64>,
+    {
+        let sell: OrderRequest = OrderRequest {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::StopMarket,
+            time_in_force: None,
+            qty: None,
+            reduce_only: None,
+            price: None,
+            stop_price: Some(stop_price.into()),
+            close_position: Some(true),
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        };
+        let order = self.build_order(sell);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    // Custom order for for professional traders
+    pub fn custom_order(&self, order_request: CustomOrderRequest) -> Result<Transaction> {
+        let order: OrderRequest = OrderRequest {
+            symbol: order_request.symbol,
+            side: order_request.side,
+            position_side: order_request.position_side,
+            order_type: order_request.order_type,
+            time_in_force: order_request.time_in_force,
+            qty: order_request.qty,
+            reduce_only: order_request.reduce_only,
+            price: order_request.price,
+            stop_price: order_request.stop_price,
+            close_position: order_request.close_position,
+            activation_price: order_request.activation_price,
+            callback_rate: order_request.callback_rate,
+            working_type: order_request.working_type,
+            price_protect: order_request.price_protect,
+        };
+        let order = self.build_order(order);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client.post_signed(API::FuturesCoin(FuturesCoin::Order), request)
+    }
+
+    fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), order.symbol);
+        parameters.insert("side".into(), order.side.into());
+        parameters.insert("type".into(), order.order_type.into());
+
+        if let Some(position_side) = order.position_side {
+            parameters.insert("positionSide".into(), position_side.into());
+        }
+        if let Some(time_in_force) = order.time_in_force {
+            parameters.insert("timeInForce".into(), time_in_force.into());
+        }
+        if let Some(qty) = order.qty {
+            parameters.insert("quantity".into(), qty.to_string());
+        }
+        if let Some(reduce_only) = order.reduce_only {
+            parameters.insert("reduceOnly".into(), reduce_only.to_string().to_uppercase());
+        }
+        if let Some(price) = order.price {
+            parameters.insert("price".into(), price.to_string());
+        }
+        if let Some(stop_price) = order.stop_price {
+            parameters.insert("stopPrice".into(), stop_price.to_string());
+        }
+        if let Some(close_position) = order.close_position {
+            parameters.insert(
+                "closePosition".into(),
+                close_position.to_string().to_uppercase(),
+            );
+        }
+        if let Some(activation_price) = order.activation_price {
+            parameters.insert("activationPrice".into(), activation_price.to_string());
+        }
+        if let Some(callback_rate) = order.callback_rate {
+            parameters.insert("callbackRate".into(), callback_rate.to_string());
+        }
+        if let Some(working_type) = order.working_type {
+            parameters.insert("workingType".into(), working_type.into());
+        }
+        if let Some(price_protect) = order.price_protect {
+            parameters.insert(
+                "priceProtect".into(),
+                price_protect.to_string().to_uppercase(),
+            );
+        }
+
+        parameters
+    }
+
+    pub fn position_information<S>(&self, symbol: S) -> Result<Vec<Position>>
+        where
+            S: Into<String>,
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::FuturesCoin(FuturesCoin::PositionRisk), Some(request))
+    }
+
+    pub fn account_balance(&self) -> Result<Vec<AccountBalance>> {
+        let parameters = BTreeMap::new();
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::FuturesCoin(FuturesCoin::Balance), Some(request))
+    }
+
+    pub fn change_initial_leverage<S>(
+        &self, symbol: S, leverage: u8,
+    ) -> Result<ChangeLeverageResponse>
+        where
+            S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("leverage".into(), leverage.to_string());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .post_signed(API::FuturesCoin(FuturesCoin::ChangeInitialLeverage), request)
+    }
+
+    pub fn change_position_mode(&self, dual_side_position: bool) -> Result<()> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let dual_side = if dual_side_position { "true" } else { "false" };
+        parameters.insert("dualSidePosition".into(), dual_side.into());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .post_signed::<Empty>(API::FuturesCoin(FuturesCoin::PositionSide), request)
+            .map(|_| ())
+    }
+
+    pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<()>
+        where
+            S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .delete_signed::<Empty>(API::FuturesCoin(FuturesCoin::AllOpenOrders), Some(request))
+            .map(|_| ())
+    }
+
+    pub fn get_all_open_orders<S>(&self, symbol: S) -> Result<Vec<crate::futures::model::Order>>
+        where
+            S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::FuturesCoin(FuturesCoin::OpenOrders), Some(request))
     }
 }

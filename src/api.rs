@@ -1,7 +1,7 @@
 use crate::account::*;
 use crate::client::*;
 use crate::config::*;
-use crate::futures::account::FuturesAccount;
+use crate::futures::account::{FuturesAccount, FuturesCoinMAccount};
 use crate::futures::general::*;
 use crate::futures::market::*;
 use crate::general::*;
@@ -14,6 +14,7 @@ pub enum API {
     Spot(Spot),
     Savings(Sapi),
     Futures(Futures),
+    FuturesCoin(FuturesCoin),
 }
 
 /// Endpoint for production and test orders.
@@ -80,6 +81,37 @@ pub enum Futures {
     TopLongShortPositionRatio,
     GlobalLongShortAccountRatio,
     TakerlongshortRatio,
+    LvtKlines,
+    IndexInfo,
+    ChangeInitialLeverage,
+    Account,
+    OpenOrders,
+}
+
+pub enum FuturesCoin {
+    Ping,
+    Time,
+    ExchangeInfo,
+    Depth,
+    Trades,
+    HistoricalTrades,
+    AggTrades,
+    Klines,
+    ContinuousKlines,
+    IndexPriceKlines,
+    MarkPriceKlines,
+    PremiumIndex,
+    FundingRate,
+    Ticker24hr,
+    TickerPrice,
+    BookTicker,
+    AllForceOrders,
+    AllOpenOrders,
+    Order,
+    PositionRisk,
+    Balance,
+    PositionSide,
+    OpenInterest,
     LvtKlines,
     IndexInfo,
     ChangeInitialLeverage,
@@ -154,6 +186,36 @@ impl From<API> for String {
                 Futures::ChangeInitialLeverage => "/fapi/v1/leverage",
                 Futures::Account => "/fapi/v2/account",
                 Futures::OpenOrders => "/fapi/v1/openOrders",
+            },
+            API::FuturesCoin(route) => match route {
+                FuturesCoin::Ping => "/dapi/v1/ping",
+                FuturesCoin::Time => "/dapi/v1/time",
+                FuturesCoin::ExchangeInfo => "/dapi/v1/exchangeInfo",
+                FuturesCoin::Depth => "/dapi/v1/depth",
+                FuturesCoin::Trades => "/dapi/v1/trades",
+                FuturesCoin::HistoricalTrades => "/dapi/v1/historicalTrades",
+                FuturesCoin::AggTrades => "/dapi/v1/aggTrades",
+                FuturesCoin::Klines => "/dapi/v1/klines",
+                FuturesCoin::ContinuousKlines => "/dapi/v1/continuousKlines",
+                FuturesCoin::IndexPriceKlines => "/dapi/v1/indexPriceKlines",
+                FuturesCoin::MarkPriceKlines => "/dapi/v1/markPriceKlines",
+                FuturesCoin::PremiumIndex => "/dapi/v1/premiumIndex",
+                FuturesCoin::FundingRate => "/dapi/v1/fundingRate",
+                FuturesCoin::Ticker24hr => "/dapi/v1/ticker/24hr",
+                FuturesCoin::TickerPrice => "/dapi/v1/ticker/price",
+                FuturesCoin::BookTicker => "/dapi/v1/ticker/bookTicker",
+                FuturesCoin::AllForceOrders => "/dapi/v1/allForceOrders",
+                FuturesCoin::AllOpenOrders => "/dapi/v1/allOpenOrders",
+                FuturesCoin::PositionSide => "/dapi/v1/positionSide/dual",
+                FuturesCoin::Order => "/dapi/v1/order",
+                FuturesCoin::PositionRisk => "/dapi/v2/positionRisk",
+                FuturesCoin::Balance => "/dapi/v2/balance",
+                FuturesCoin::OpenInterest => "/dapi/v1/openInterest",
+                FuturesCoin::LvtKlines => "/dapi/v1/lvtKlines",
+                FuturesCoin::IndexInfo => "/dapi/v1/indexInfo",
+                FuturesCoin::ChangeInitialLeverage => "/dapi/v1/leverage",
+                FuturesCoin::Account => "/dapi/v2/account",
+                FuturesCoin::OpenOrders => "/dapi/v1/openOrders",
             },
         })
     }
@@ -294,6 +356,25 @@ impl Binance for FuturesAccount {
                 api_key,
                 secret_key,
                 config.futures_rest_api_endpoint.clone(),
+            ),
+            recv_window: config.recv_window,
+        }
+    }
+}
+
+impl Binance for FuturesCoinMAccount {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> Self {
+        Self::new_with_config(api_key, secret_key, &Config::default())
+    }
+
+    fn new_with_config(
+        api_key: Option<String>, secret_key: Option<String>, config: &Config,
+    ) -> Self {
+        Self {
+            client: Client::new(
+                api_key,
+                secret_key,
+                config.futures_coin_m_rest_api_endpoint.clone(),
             ),
             recv_window: config.recv_window,
         }
