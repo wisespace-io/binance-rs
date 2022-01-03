@@ -4,6 +4,7 @@ use crate::config::*;
 use crate::futures::account::FuturesAccount;
 use crate::futures::general::*;
 use crate::futures::market::*;
+use crate::futures::userstream::*;
 use crate::general::*;
 use crate::market::*;
 use crate::userstream::*;
@@ -85,6 +86,7 @@ pub enum Futures {
     ChangeInitialLeverage,
     Account,
     OpenOrders,
+    UserDataStream,
 }
 
 impl From<API> for String {
@@ -154,6 +156,7 @@ impl From<API> for String {
                 Futures::ChangeInitialLeverage => "/fapi/v1/leverage",
                 Futures::Account => "/fapi/v2/account",
                 Futures::OpenOrders => "/fapi/v1/openOrders",
+                Futures::UserDataStream => "/fapi/v1/listenKey",
             },
         })
     }
@@ -235,6 +238,25 @@ impl Binance for UserStream {
     ) -> UserStream {
         UserStream {
             client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
+            recv_window: config.recv_window,
+        }
+    }
+}
+
+impl Binance for FuturesUserStream {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> FuturesUserStream {
+        Self::new_with_config(api_key, secret_key, &Config::default())
+    }
+
+    fn new_with_config(
+        api_key: Option<String>, secret_key: Option<String>, config: &Config,
+    ) -> FuturesUserStream {
+        FuturesUserStream {
+            client: Client::new(
+                api_key,
+                secret_key,
+                config.futures_rest_api_endpoint.clone(),
+            ),
             recv_window: config.recv_window,
         }
     }
