@@ -48,7 +48,7 @@ impl FuturesWebsocketAPI {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum FuturesWebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
-    OrderTrade(OrderTradeEvent),
+    OrderTrade(FuturesOrderTradeEvent),
     AggrTrades(AggrTradesEvent),
     Trade(TradeEvent),
     OrderBook(OrderBook),
@@ -81,7 +81,7 @@ enum FuturesEvents {
     MiniTickerEvent(MiniTickerEvent),
     VecMiniTickerEvent(Vec<MiniTickerEvent>),
     AccountUpdateEvent(AccountUpdateEvent),
-    OrderTradeEvent(OrderTradeEvent),
+    OrderTradeEvent(FuturesOrderTradeEvent),
     AggrTradesEvent(AggrTradesEvent),
     IndexPriceEvent(IndexPriceEvent),
     MarkPriceEvent(MarkPriceEvent),
@@ -178,6 +178,7 @@ impl<'a> FuturesWebSockets<'a> {
             };
             (self.handler)(action)?;
         }
+
         Ok(())
     }
 
