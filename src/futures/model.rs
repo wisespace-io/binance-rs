@@ -357,3 +357,122 @@ fn default_activation_price() -> f64 {
 fn default_price_rate() -> f64 {
     0.0
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderUpdate {
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "c")]
+    pub new_client_order_id: String,
+
+    #[serde(rename = "S")]
+    pub side: String,
+
+    #[serde(rename = "o")]
+    pub order_type: String,
+
+    #[serde(rename = "f")]
+    pub time_in_force: String,
+
+    #[serde(rename = "q")]
+    pub qty: String,
+
+    #[serde(rename = "p")]
+    pub price: String,
+
+    #[serde(rename = "ap")]
+    pub average_price: String,
+
+    #[serde(rename = "sp")]
+    pub stop_price: String,
+
+    #[serde(rename = "x")]
+    pub execution_type: String,
+
+    #[serde(rename = "X")]
+    pub order_status: String,
+
+    #[serde(rename = "i")]
+    pub order_id: u64,
+
+    #[serde(rename = "l")]
+    pub qty_last_filled_trade: String,
+
+    #[serde(rename = "z")]
+    pub accumulated_qty_filled_trades: String,
+
+    #[serde(rename = "L")]
+    pub price_last_filled_trade: String,
+
+    #[serde(skip, rename = "N")]
+    pub asset_commisioned: Option<String>,
+
+    #[serde(rename = "n")]
+    pub commission: Option<String>,
+
+    #[serde(rename = "T")]
+    pub trade_order_time: u64,
+
+    #[serde(rename = "t")]
+    pub trade_id: i64,
+
+    #[serde(rename = "b")]
+    pub bids_notional: String,
+
+    #[serde(rename = "a")]
+    pub ask_notional: String,
+
+    #[serde(rename = "m")]
+    pub is_buyer_maker: bool,
+
+    #[serde(rename = "R")]
+    pub is_reduce_only: bool,
+
+    #[serde(rename = "wt")]
+    pub stop_price_working_type: String,
+
+    #[serde(rename = "ot")]
+    pub original_order_type: String,
+
+    #[serde(rename = "ps")]
+    pub position_side: String,
+
+    #[serde(rename = "cp")]
+    pub close_all: Option<bool>,
+
+    #[serde(rename = "AP")]
+    pub activation_price: Option<String>,
+
+    #[serde(rename = "cr")]
+    pub callback_rate: Option<String>,
+
+    #[serde(rename = "pP")]
+    pub pp_ignore: bool,
+
+    #[serde(rename = "si")]
+    pub si_ignore: i32,
+
+    #[serde(rename = "ss")]
+    pub ss_ignore: i32,
+
+    #[serde(rename = "rp")]
+    pub rp_ignore: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderTradeEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "T")]
+    pub transaction_time: u64,
+
+    #[serde(rename = "o")]
+    pub order: OrderUpdate,
+}

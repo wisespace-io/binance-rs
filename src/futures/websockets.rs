@@ -1,6 +1,7 @@
 use crate::errors::*;
 use crate::config::*;
 use crate::model::*;
+use crate::futures::model;
 use url::Url;
 use serde::{Deserialize, Serialize};
 
@@ -48,7 +49,7 @@ impl FuturesWebsocketAPI {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum FuturesWebsocketEvent {
     AccountUpdate(AccountUpdateEvent),
-    OrderTrade(FuturesOrderTradeEvent),
+    OrderTrade(model::OrderTradeEvent),
     AggrTrades(AggrTradesEvent),
     Trade(TradeEvent),
     OrderBook(OrderBook),
@@ -81,7 +82,7 @@ enum FuturesEvents {
     MiniTickerEvent(MiniTickerEvent),
     VecMiniTickerEvent(Vec<MiniTickerEvent>),
     AccountUpdateEvent(AccountUpdateEvent),
-    OrderTradeEvent(FuturesOrderTradeEvent),
+    OrderTradeEvent(model::OrderTradeEvent),
     AggrTradesEvent(AggrTradesEvent),
     IndexPriceEvent(IndexPriceEvent),
     MarkPriceEvent(MarkPriceEvent),
@@ -178,7 +179,6 @@ impl<'a> FuturesWebSockets<'a> {
             };
             (self.handler)(action)?;
         }
-
         Ok(())
     }
 
