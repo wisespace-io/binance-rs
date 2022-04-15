@@ -105,8 +105,8 @@ pub enum Filters {
     TrailingData {
         min_trailing_above_delta: Option<u16>,
         max_trailing_above_delta: Option<u16>,
-        min_trailing_aelow_delta: Option<u16>,
-        max_trailing_aelow_delta: Option<u16>
+        min_trailing_below_delta: Option<u16>,
+        max_trailing_below_delta: Option<u16>
     },
 }
 
