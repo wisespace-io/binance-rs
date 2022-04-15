@@ -100,6 +100,14 @@ pub enum Filters {
         max_qty: String,
         step_size: String,
     },
+    #[serde(rename = "TRAILING_DELTA")]
+    #[serde(rename_all = "camelCase")]
+    TrailingData {
+        min_trailing_above_delta: Option<u16>,
+        max_trailing_above_delta: Option<u16>,
+        min_trailing_below_delta: Option<u16>,
+        max_trailing_below_delta: Option<u16>
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
