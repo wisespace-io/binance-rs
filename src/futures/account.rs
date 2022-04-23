@@ -6,7 +6,10 @@ use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
-use super::model::{ChangeLeverageResponse, Transaction, CanceledOrder, Position, AccountBalance};
+use super::model::{
+    ChangeLeverageResponse, Transaction, CanceledOrder, PositionRisk, AccountBalance,
+    AccountInformation,
+};
 
 #[derive(Clone)]
 pub struct FuturesAccount {
@@ -373,7 +376,7 @@ impl FuturesAccount {
         parameters
     }
 
-    pub fn position_information<S>(&self, symbol: S) -> Result<Vec<Position>>
+    pub fn position_information<S>(&self, symbol: S) -> Result<Vec<PositionRisk>>
     where
         S: Into<String>,
     {
@@ -383,6 +386,17 @@ impl FuturesAccount {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Futures(Futures::PositionRisk), Some(request))
+    }
+
+    pub fn account_information<S>(&self) -> Result<AccountInformation>
+    where
+        S: Into<String>,
+    {
+        let parameters = BTreeMap::new();
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::Futures(Futures::Account), Some(request))
     }
 
     pub fn account_balance(&self) -> Result<Vec<AccountBalance>> {
