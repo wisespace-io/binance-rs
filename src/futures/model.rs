@@ -429,8 +429,8 @@ pub struct AccountInformation {
     pub available_balance: f64,
     #[serde(with = "string_or_float")]
     pub max_withdraw_amount: f64,
-    assets: Vec<FuturesAsset>,
-    positions: Vec<FuturesPosition>,
+    pub assets: Vec<FuturesAsset>,
+    pub positions: Vec<FuturesPosition>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
