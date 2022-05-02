@@ -297,7 +297,7 @@ pub struct CanceledOrder {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Position {
+pub struct PositionRisk {
     #[serde(with = "string_or_float")]
     pub entry_price: f64,
     pub margin_type: String,
@@ -318,6 +318,119 @@ pub struct Position {
     #[serde(with = "string_or_float", rename = "unRealizedProfit")]
     pub unrealized_profit: f64,
     pub position_side: String,
+    #[serde(with = "string_or_float")]
+    pub notional: f64,
+    #[serde(with = "string_or_float")]
+    pub isolated_wallet: f64,
+    #[serde(with = "string_or_float")]
+    pub update_time: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FuturesAsset {
+    pub asset: String,
+    #[serde(with = "string_or_float")]
+    pub wallet_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub unrealized_profit: f64,
+    #[serde(with = "string_or_float")]
+    pub margin_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub maint_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub position_initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub open_order_initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub max_withdraw_amount: f64,
+    #[serde(with = "string_or_float")]
+    pub cross_wallet_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub cross_un_pnl: f64,
+    #[serde(with = "string_or_float")]
+    pub available_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub margin_available: f64,
+    #[serde(with = "string_or_float")]
+    pub update_time: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FuturesPosition {
+    pub symbol: String,
+    #[serde(with = "string_or_float")]
+    pub initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub maint_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub unrealized_profit: f64,
+    #[serde(with = "string_or_float")]
+    pub position_initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub open_order_initial_margin: f64,
+    pub leverage: String,
+    #[serde(with = "string_or_bool")]
+    pub isolated: bool,
+    #[serde(with = "string_or_float")]
+    pub entry_price: f64,
+    #[serde(with = "string_or_float")]
+    pub max_notional: f64,
+    pub position_side: String,
+    #[serde(with = "string_or_float", rename = "positionAmt")]
+    pub position_amount: f64,
+    #[serde(with = "string_or_float")]
+    pub notional: f64,
+    #[serde(with = "string_or_float")]
+    pub isolated_wallet: f64,
+    #[serde(with = "string_or_float")]
+    pub update_time: f64,
+    #[serde(with = "string_or_float")]
+    pub bid_notional: f64,
+    #[serde(with = "string_or_float")]
+    pub ask_notional: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountInformation {
+    #[serde(with = "string_or_float")]
+    pub fee_tier: f64,
+    #[serde(with = "string_or_bool")]
+    pub can_trade: bool,
+    #[serde(with = "string_or_bool")]
+    pub can_deposit: bool,
+    #[serde(with = "string_or_bool")]
+    pub can_withdraw: bool,
+    #[serde(with = "string_or_float")]
+    pub update_time: f64,
+    #[serde(with = "string_or_float")]
+    pub total_initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub total_maint_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub total_wallet_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub total_unrealized_profit: f64,
+    #[serde(with = "string_or_float")]
+    pub total_margin_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub total_position_initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub total_open_order_initial_margin: f64,
+    #[serde(with = "string_or_float")]
+    pub total_cross_wallet_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub total_cross_un_pnl: f64,
+    #[serde(with = "string_or_float")]
+    pub available_balance: f64,
+    #[serde(with = "string_or_float")]
+    pub max_withdraw_amount: f64,
+    pub assets: Vec<FuturesAsset>,
+    pub positions: Vec<FuturesPosition>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
