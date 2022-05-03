@@ -388,10 +388,7 @@ impl FuturesAccount {
             .get_signed(API::Futures(Futures::PositionRisk), Some(request))
     }
 
-    pub fn account_information<S>(&self) -> Result<AccountInformation>
-    where
-        S: Into<String>,
-    {
+    pub fn account_information(&self) -> Result<AccountInformation> {
         let parameters = BTreeMap::new();
 
         let request = build_signed_request(parameters, self.recv_window)?;
