@@ -247,6 +247,19 @@ impl FuturesAccount {
             .delete_signed(API::Futures(Futures::Order), Some(request))
     }
 
+    pub fn cancel_order_with_client_id<S>(&self, symbol: S, orig_client_order_id: String) -> Result<CanceledOrder>
+    where
+        S: Into<String>,
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("origClientOrderId".into(), orig_client_order_id);
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .delete_signed(API::Futures(Futures::Order), Some(request))
+    }
+
     // Place a STOP_MARKET close - BUY
     pub fn stop_market_close_buy<S, F>(&self, symbol: S, stop_price: F) -> Result<Transaction>
     where
