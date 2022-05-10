@@ -322,8 +322,7 @@ pub struct PositionRisk {
     pub notional: f64,
     #[serde(with = "string_or_float")]
     pub isolated_wallet: f64,
-    #[serde(with = "string_or_float")]
-    pub update_time: f64,
+    pub update_time: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -352,10 +351,9 @@ pub struct FuturesAsset {
     pub cross_un_pnl: f64,
     #[serde(with = "string_or_float")]
     pub available_balance: f64,
-    #[serde(with = "string_or_float")]
-    pub margin_available: f64,
-    #[serde(with = "string_or_float")]
-    pub update_time: f64,
+    #[serde(with = "string_or_bool")]
+    pub margin_available: bool,
+    pub update_time: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -386,8 +384,7 @@ pub struct FuturesPosition {
     pub notional: f64,
     #[serde(with = "string_or_float")]
     pub isolated_wallet: f64,
-    #[serde(with = "string_or_float")]
-    pub update_time: f64,
+    pub update_time: u64,
     #[serde(with = "string_or_float")]
     pub bid_notional: f64,
     #[serde(with = "string_or_float")]
