@@ -7,14 +7,15 @@ use binance::market::*;
 use binance::model::KlineSummary;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // The general spot API endpoints; shown with
     // testnet=false and testnet=true
-    general(false);
-    general(true);
+    general(false).await;
+    general(true).await;
 
     // The market data API endpoint
-    market_data();
+    market_data().await;
 
     // The account data API and savings API endpoint examples need an API key. Change those lines locally
     // and uncomment the line below (and do not commit your api key :)).
@@ -22,7 +23,7 @@ fn main() {
     //savings();
 }
 
-fn general(use_testnet: bool) {
+async fn general(use_testnet: bool) {
     let general: General = if use_testnet {
         let config = Config::default().set_rest_api_endpoint("https://testnet.binance.vision");
         Binance::new_with_config(None, None, &config)
@@ -30,7 +31,7 @@ fn general(use_testnet: bool) {
         Binance::new(None, None)
     };
 
-    let ping = general.ping();
+    let ping = general.ping().await;
     match ping {
         Ok(answer) => println!("{:?}", answer),
         Err(err) => {
@@ -45,19 +46,19 @@ fn general(use_testnet: bool) {
         }
     }
 
-    let result = general.get_server_time();
+    let result = general.get_server_time().await;
     match result {
         Ok(answer) => println!("Server Time: {}", answer.server_time),
         Err(e) => println!("Error: {}", e),
     }
 
-    let result = general.exchange_info();
+    let result = general.exchange_info().await;
     match result {
         Ok(answer) => println!("Exchange information: {:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    let result = general.get_symbol_info("ethbtc");
+    let result = general.get_symbol_info("ethbtc").await;
     match result {
         Ok(answer) => println!("Symbol information: {:?}", answer),
         Err(e) => println!("Error: {}", e),
@@ -65,138 +66,138 @@ fn general(use_testnet: bool) {
 }
 
 #[allow(dead_code)]
-fn account() {
+async fn account() {
     let api_key = Some("YOUR_API_KEY".into());
     let secret_key = Some("YOUR_SECRET_KEY".into());
 
     let account: Account = Binance::new(api_key, secret_key);
 
-    match account.get_account() {
+    match account.get_account().await {
         Ok(answer) => println!("{:?}", answer.balances),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.get_open_orders("WTCETH") {
+    match account.get_open_orders("WTCETH").await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.limit_buy("WTCETH", 10, 0.014000) {
+    match account.limit_buy("WTCETH", 10, 0.014000).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_buy("WTCETH", 5) {
+    match account.market_buy("WTCETH", 5).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_buy_using_quote_quantity("WTCETH", 5) {
+    match account.market_buy_using_quote_quantity("WTCETH", 5).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.limit_sell("WTCETH", 10, 0.035000) {
+    match account.limit_sell("WTCETH", 10, 0.035000).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_sell("WTCETH", 5) {
+    match account.market_sell("WTCETH", 5).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.market_sell_using_quote_quantity("WTCETH", 5) {
+    match account.market_sell_using_quote_quantity("WTCETH", 5).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     let order_id = 1_957_528;
-    match account.order_status("WTCETH", order_id) {
+    match account.order_status("WTCETH", order_id).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.cancel_order("WTCETH", order_id) {
+    match account.cancel_order("WTCETH", order_id).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.get_balance("KNC") {
+    match account.get_balance("KNC").await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match account.trade_history("WTCETH") {
+    match account.trade_history("WTCETH").await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 }
 
 #[allow(dead_code)]
-fn savings() {
+async fn savings() {
     let api_key = Some("YOUR_API_KEY".into());
     let api_secret = Some("YOUR_SECRET_KEY".into());
 
     let savings: Savings = Binance::new(api_key, api_secret);
 
-    match savings.get_all_coins() {
+    match savings.get_all_coins().await {
         Ok(answer) => println!("{:#?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match savings.asset_detail(None) {
+    match savings.asset_detail(None).await {
         Ok(answer) => println!("{:#?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
-    match savings.deposit_address("BTC", None) {
+    match savings.deposit_address("BTC", None).await {
         Ok(answer) => println!("{:#?}", answer),
         Err(e) => println!("Error: {:?}", e),
     }
 }
 
 #[allow(dead_code)]
-fn market_data() {
+async fn market_data() {
     let market: Market = Binance::new(None, None);
 
     // Order book at default depth
-    match market.get_depth("BNBETH") {
+    match market.get_depth("BNBETH").await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
     // Order book at depth 500
-    match market.get_custom_depth("BNBETH", 500) {
+    match market.get_custom_depth("BNBETH", 500).await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Latest price for ALL symbols
-    match market.get_all_prices() {
+    match market.get_all_prices().await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Latest price for ONE symbol
-    match market.get_price("KNCETH") {
+    match market.get_price("KNCETH").await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Current average price for ONE symbol
-    match market.get_average_price("KNCETH") {
+    match market.get_average_price("KNCETH").await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Best price/qty on the order book for ALL symbols
-    match market.get_all_book_tickers() {
+    match market.get_all_book_tickers().await {
         Ok(answer) => println!("{:?}", answer),
         Err(e) => println!("Error: {}", e),
     }
 
     // Best price/qty on the order book for ONE symbol
-    match market.get_book_ticker("BNBETH") {
+    match market.get_book_ticker("BNBETH").await {
         Ok(answer) => println!(
             "Bid Price: {}, Ask Price: {}",
             answer.bid_price, answer.ask_price
@@ -205,7 +206,7 @@ fn market_data() {
     }
 
     // 24hr ticker price change statistics
-    match market.get_24h_price_stats("BNBETH") {
+    match market.get_24h_price_stats("BNBETH").await {
         Ok(answer) => println!(
             "Open Price: {}, Higher Price: {}, Lower Price: {:?}",
             answer.open_price, answer.high_price, answer.low_price
@@ -214,7 +215,7 @@ fn market_data() {
     }
 
     // 10 latest (aggregated) trades
-    match market.get_agg_trades("BNBETH", None, None, None, Some(10)) {
+    match market.get_agg_trades("BNBETH", None, None, None, Some(10)).await {
         Ok(trades) => {
             let trade = &trades[0]; // You need to iterate over them
             println!(
@@ -228,7 +229,7 @@ fn market_data() {
     }
 
     // last 10 5min klines (candlesticks) for a symbol:
-    match market.get_klines("BNBETH", "5m", 10, None, None) {
+    match market.get_klines("BNBETH", "5m", 10, None, None).await {
         Ok(klines) => {
             match klines {
                 binance::model::KlineSummaries::AllKlineSummaries(klines) => {

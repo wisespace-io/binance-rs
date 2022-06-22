@@ -5,11 +5,12 @@ use binance::futures::model::OpenInterestHist;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use mockito::{mock, Matcher};
+    use mockito::{Matcher, mock};
 
-    #[test]
-    fn open_interest_statistics() {
+    use super::*;
+
+    #[tokio::test]
+    async fn open_interest_statistics() {
         let mock_open_interest_statistics = mock("GET", "/futures/data/openInterestHist")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("limit=10&period=5m&symbol=BTCUSDT".into()))
@@ -21,7 +22,7 @@ mod tests {
 
         let open_interest_hists = market
             .open_interest_statistics("BTCUSDT", "5m", 10, None, None)
-            .unwrap();
+            .await.unwrap();
         mock_open_interest_statistics.assert();
 
         let expectation = vec![
