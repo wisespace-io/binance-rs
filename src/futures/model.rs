@@ -568,7 +568,7 @@ pub struct OrderUpdate {
     pub ss_ignore: i32,
 
     #[serde(rename = "rp")]
-    pub rp_ignore: String,
+    pub realized_profit: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
