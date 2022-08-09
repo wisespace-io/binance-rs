@@ -66,6 +66,7 @@ pub enum FuturesWebsocketEvent {
     Liquidation(LiquidationEvent),
     DepthOrderBook(DepthOrderBookEvent),
     BookTicker(BookTickerEvent),
+    UserDataStreamExpiredEvent(UserDataStreamExpiredEvent)
 }
 
 pub struct FuturesWebSockets<'a> {
@@ -94,6 +95,7 @@ enum FuturesEvents {
     LiquidationEvent(LiquidationEvent),
     OrderBook(OrderBook),
     DepthOrderBookEvent(DepthOrderBookEvent),
+    UserDataStreamExpiredEvent(UserDataStreamExpiredEvent)
 }
 
 impl<'a> FuturesWebSockets<'a> {
@@ -176,6 +178,7 @@ impl<'a> FuturesWebSockets<'a> {
                 FuturesEvents::OrderBook(v) => FuturesWebsocketEvent::OrderBook(v),
                 FuturesEvents::DepthOrderBookEvent(v) => FuturesWebsocketEvent::DepthOrderBook(v),
                 FuturesEvents::AggrTradesEvent(v) => FuturesWebsocketEvent::AggrTrades(v),
+                FuturesEvents::UserDataStreamExpiredEvent(v) => FuturesWebsocketEvent::UserDataStreamExpiredEvent(v)
             };
             (self.handler)(action)?;
         }
@@ -192,8 +195,12 @@ impl<'a> FuturesWebSockets<'a> {
                             bail!(format!("Error on handling stream message: {}", e));
                         }
                     }
-                    Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
+                    Message::Ping(_) => {
+                        socket.0.write_message(Message::Pong(vec![])).unwrap();
+                        ()
+                    }
+                    Message::Pong(_) | Message::Binary(_) => (),
+                    Message::Close(e) => bail!(format!("Disconnected {:?}", e))
                 }
             }
         }
