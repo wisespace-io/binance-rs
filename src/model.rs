@@ -63,6 +63,15 @@ pub enum Filters {
         multiplier_down: String,
         avg_price_mins: Option<f64>,
     },
+    #[serde(rename = "PERCENT_PRICE_BY_SIDE")]
+    #[serde(rename_all = "camelCase")]
+    PercentPriceBySide {
+        bid_multiplier_up: String,
+        bid_multiplier_down: String,
+        ask_multiplier_up: String,
+        ask_multiplier_down: String,
+        avg_price_mins: Option<f64>,
+    },
     #[serde(rename = "LOT_SIZE")]
     #[serde(rename_all = "camelCase")]
     LotSize {
@@ -73,6 +82,14 @@ pub enum Filters {
     #[serde(rename = "MIN_NOTIONAL")]
     #[serde(rename_all = "camelCase")]
     MinNotional {
+        notional: Option<String>,
+        min_notional: Option<String>,
+        apply_to_market: Option<bool>,
+        avg_price_mins: Option<f64>,
+    },
+    #[serde(rename = "NOTIONAL")]
+    #[serde(rename_all = "camelCase")]
+    Notional {
         notional: Option<String>,
         min_notional: Option<String>,
         apply_to_market: Option<bool>,
