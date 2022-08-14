@@ -50,6 +50,7 @@ rustup install stable
 
 ```rust
 use binance::api::*;
+use binance::model::*;
 use binance::market::*;
 
 fn main() {
