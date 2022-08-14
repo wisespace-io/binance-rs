@@ -172,7 +172,7 @@ pub struct OpenInterest {
     pub symbol: String,
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OpenInterestHist {
     pub symbol: String,

@@ -4,14 +4,12 @@ use crate::model::*;
 use crate::futures::model;
 use url::Url;
 use serde::{Deserialize, Serialize};
-
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::net::TcpStream;
 use tungstenite::{connect, Message};
 use tungstenite::protocol::WebSocket;
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::handshake::client::Response;
-
 #[allow(clippy::all)]
 enum FuturesWebsocketAPI {
     Default,
@@ -197,13 +195,12 @@ impl<'a> FuturesWebSockets<'a> {
                     }
                     Message::Ping(_) => {
                         socket.0.write_message(Message::Pong(vec![])).unwrap();
-                        ()
                     }
                     Message::Pong(_) | Message::Binary(_) => (),
                     Message::Close(e) => bail!(format!("Disconnected {:?}", e))
                 }
             }
         }
-        Ok(())
+        bail!("running loop closed");
     }
 }
