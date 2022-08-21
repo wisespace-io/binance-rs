@@ -151,7 +151,10 @@ impl<'a> WebSockets<'a> {
                             bail!(format!("Error on handling stream message: {}", e));
                         }
                     }
-                    Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => (),
+                    Message::Ping(_) => {
+                        socket.0.write_message(Message::Pong(vec![])).unwrap();
+                    }
+                    Message::Pong(_) | Message::Binary(_) => (),
                     Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
                 }
             }

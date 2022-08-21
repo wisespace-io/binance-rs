@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Config {
     pub rest_api_endpoint: String,
     pub ws_endpoint: String,

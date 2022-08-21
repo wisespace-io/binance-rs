@@ -123,7 +123,7 @@ pub enum Filters {
         min_trailing_above_delta: Option<u16>,
         max_trailing_above_delta: Option<u16>,
         min_trailing_below_delta: Option<u16>,
-        max_trailing_below_delta: Option<u16>
+        max_trailing_below_delta: Option<u16>,
     },
 }
 
@@ -385,6 +385,17 @@ pub struct AggTrade {
     pub qty: f64,
 }
 
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct UserDataStreamExpiredEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountUpdateEvent {
@@ -394,20 +405,56 @@ pub struct AccountUpdateEvent {
     #[serde(rename = "E")]
     pub event_time: u64,
 
-    m: u64,
-    t: u64,
-    b: u64,
-    s: u64,
+    #[serde(rename = "a")]
+    pub data: AccountUpdateDataEvent
 
-    #[serde(rename = "T")]
-    t_ignore: bool,
-    #[serde(rename = "W")]
-    w_ignore: bool,
-    #[serde(rename = "D")]
-    d_ignore: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountUpdateDataEvent {
+    #[serde(rename = "m")]
+    pub reason: String,
 
     #[serde(rename = "B")]
-    pub balance: Vec<EventBalance>,
+    pub balances: Vec<EventBalance>,
+
+    #[serde(rename = "P")]
+    pub positions: Vec<EventPosition>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct EventBalance {
+    #[serde(rename = "a")]
+    pub asset: String,
+    #[serde(rename = "wb")]
+    pub wallet_balance: String,
+    #[serde(rename = "cw")]
+    pub cross_wallet_balance: String,
+    #[serde(rename = "bc")]
+    pub balance_change: String, // Balance Change except PnL and Commission
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct EventPosition {
+    #[serde(rename = "s")]
+    pub symbol: String,
+    #[serde(rename = "pa")]
+    pub position_amount: String,
+    #[serde(rename = "ep")]
+    pub entry_price: String,
+    #[serde(rename = "cr")]
+    pub accumulated_realized: String, // (Pre-fee) Accumulated Realized
+    #[serde(rename = "up")]
+    pub unrealized_pnl: String,
+    #[serde(rename = "mt")]
+    pub margin_type: String,
+    #[serde(rename = "iw")]
+    pub isolated_wallet: String,
+    #[serde(rename = "ps")]
+    pub position_side: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -424,17 +471,6 @@ pub struct BalanceUpdateEvent {
 
     #[serde(rename = "u")]
     pub last_account_update_time: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct EventBalance {
-    #[serde(rename = "a")]
-    pub asset: String,
-    #[serde(rename = "f")]
-    pub free: String,
-    #[serde(rename = "l")]
-    pub locked: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -1324,4 +1360,72 @@ pub(crate) mod string_or_bool {
             StringOrFloat::Bool(i) => Ok(i),
         }
     }
+}
+
+#[test]
+fn test_account_update_event() {
+    let json = r#"
+    {
+  "e": "ACCOUNT_UPDATE",
+  "E": 1564745798939,
+  "T": 1564745798938,
+  "a": {
+    "m": "ORDER",
+    "B": [
+      {
+        "a": "USDT",
+        "wb": "122624.12345678",
+        "cw": "100.12345678",
+        "bc": "50.12345678"
+      },
+      {
+        "a": "BUSD",
+        "wb": "1.00000000",
+        "cw": "0.00000000",
+        "bc": "-49.12345678"
+      }
+    ],
+    "P": [
+      {
+        "s": "BTCUSDT",
+        "pa": "0",
+        "ep": "0.00000",
+        "cr": "200",
+        "up": "0",
+        "mt": "isolated",
+        "iw": "0.00000000",
+        "ps": "BOTH"
+      },
+      {
+        "s": "BTCUSDT",
+        "pa": "20",
+        "ep": "6563.66500",
+        "cr": "0",
+        "up": "2850.21200",
+        "mt": "isolated",
+        "iw": "13200.70726908",
+        "ps": "LONG"
+      },
+      {
+        "s": "BTCUSDT",
+        "pa": "-10",
+        "ep": "6563.86000",
+        "cr": "-45.04000000",
+        "up": "-1423.15600",
+        "mt": "isolated",
+        "iw": "6570.42511771",
+        "ps": "SHORT"
+      }
+    ]
+  }
+}
+    "#;
+
+
+
+    let res = r#"AccountUpdateEvent { event_type: "ACCOUNT_UPDATE", event_time: 1564745798939, data: AccountUpdateDataEvent { reason: "ORDER", balances: [EventBalance { asset: "USDT", wallet_balance: "122624.12345678", cross_wallet_balance: "100.12345678", balance_change: "50.12345678" }, EventBalance { asset: "BUSD", wallet_balance: "1.00000000", cross_wallet_balance: "0.00000000", balance_change: "-49.12345678" }], positions: [EventPosition { symbol: "BTCUSDT", position_amount: "0", entry_price: "0.00000", accumulated_realized: "200", unrealized_pnl: "0", margin_type: "isolated", isolated_wallet: "0.00000000", position_side: "BOTH" }, EventPosition { symbol: "BTCUSDT", position_amount: "20", entry_price: "6563.66500", accumulated_realized: "0", unrealized_pnl: "2850.21200", margin_type: "isolated", isolated_wallet: "13200.70726908", position_side: "LONG" }, EventPosition { symbol: "BTCUSDT", position_amount: "-10", entry_price: "6563.86000", accumulated_realized: "-45.04000000", unrealized_pnl: "-1423.15600", margin_type: "isolated", isolated_wallet: "6570.42511771", position_side: "SHORT" }] } }"#;
+        let v: AccountUpdateEvent = serde_json::from_str(json).unwrap();
+      assert_eq!(format!("{v:?}"), res);
+     //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
+
 }
