@@ -9,9 +9,9 @@ pub struct Config {
     pub recv_window: u64,
 }
 
-impl Config {
-    pub fn default() -> Config {
-        Config {
+impl Default for Config {
+    fn default() -> Self {
+        Self {
             rest_api_endpoint: "https://api.binance.com".into(),
             ws_endpoint: "wss://stream.binance.com:9443/ws".into(),
 
@@ -21,9 +21,11 @@ impl Config {
             recv_window: 5000,
         }
     }
+}
 
-    pub fn testnet() -> Config {
-        Config::default()
+impl Config {
+    pub fn testnet() -> Self {
+        Self::default()
             .set_rest_api_endpoint("https://testnet.binance.vision")
             .set_ws_endpoint("wss://testnet.binance.vision/ws")
             .set_futures_rest_api_endpoint("https://testnet.binancefuture.com")

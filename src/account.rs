@@ -3,6 +3,7 @@ use crate::model::*;
 use crate::client::*;
 use crate::errors::*;
 use std::collections::BTreeMap;
+use std::fmt::Display;
 use crate::api::API;
 use crate::api::Spot;
 
@@ -39,12 +40,12 @@ pub enum OrderType {
     StopLossLimit,
 }
 
-impl From<OrderType> for String {
-    fn from(item: OrderType) -> Self {
-        match item {
-            OrderType::Limit => String::from("LIMIT"),
-            OrderType::Market => String::from("MARKET"),
-            OrderType::StopLossLimit => String::from("STOP_LOSS_LIMIT"),
+impl Display for OrderType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Limit => write!(f, "LIMIT"),
+            Self::Market => write!(f, "MARKET"),
+            Self::StopLossLimit => write!(f, "STOP_LOSS_LIMIT"),
         }
     }
 }
@@ -54,11 +55,11 @@ pub enum OrderSide {
     Sell,
 }
 
-impl From<OrderSide> for String {
-    fn from(item: OrderSide) -> Self {
-        match item {
-            OrderSide::Buy => String::from("BUY"),
-            OrderSide::Sell => String::from("SELL"),
+impl Display for OrderSide {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Buy => write!(f, "BUY"),
+            Self::Sell => write!(f, "SELL"),
         }
     }
 }
@@ -70,12 +71,12 @@ pub enum TimeInForce {
     FOK,
 }
 
-impl From<TimeInForce> for String {
-    fn from(item: TimeInForce) -> Self {
-        match item {
-            TimeInForce::GTC => String::from("GTC"),
-            TimeInForce::IOC => String::from("IOC"),
-            TimeInForce::FOK => String::from("FOK"),
+impl Display for TimeInForce {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::GTC => write!(f, "GTC"),
+            Self::IOC => write!(f, "IOC"),
+            Self::FOK => write!(f, "FOK"),
         }
     }
 }
@@ -719,8 +720,8 @@ impl Account {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side.into());
-        order_parameters.insert("type".into(), order.order_type.into());
+        order_parameters.insert("side".into(), order.order_side.to_string());
+        order_parameters.insert("type".into(), order.order_type.to_string());
         order_parameters.insert("quantity".into(), order.qty.to_string());
 
         if let Some(stop_price) = order.stop_price {
@@ -729,7 +730,7 @@ impl Account {
 
         if order.price != 0.0 {
             order_parameters.insert("price".into(), order.price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force.into());
+            order_parameters.insert("timeInForce".into(), order.time_in_force.to_string());
         }
 
         if let Some(client_order_id) = order.new_client_order_id {
@@ -745,13 +746,13 @@ impl Account {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side.into());
-        order_parameters.insert("type".into(), order.order_type.into());
+        order_parameters.insert("side".into(), order.order_side.to_string());
+        order_parameters.insert("type".into(), order.order_type.to_string());
         order_parameters.insert("quoteOrderQty".into(), order.quote_order_qty.to_string());
 
         if order.price != 0.0 {
             order_parameters.insert("price".into(), order.price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force.into());
+            order_parameters.insert("timeInForce".into(), order.time_in_force.to_string());
         }
 
         if let Some(client_order_id) = order.new_client_order_id {
