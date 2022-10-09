@@ -530,7 +530,7 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account.test_market_sell("LTCBTC", 1).unwrap();
+        account.test_market_sell("LTCBTC", 1).unwrap();
 
         mock_test_market_sell.assert();
     }
@@ -631,7 +631,7 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account
+        account
             .test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
             .unwrap();
 
@@ -691,7 +691,7 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account
+        account
             .test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
             .unwrap();
 
@@ -760,7 +760,7 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let _ = account
+        account
             .test_custom_order(
                 "LTCBTC",
                 1,
