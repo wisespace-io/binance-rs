@@ -77,7 +77,7 @@ fn market_websocket() {
 
         let mut web_socket: FuturesWebSockets<'_> = FuturesWebSockets::new(callback_fn);
         web_socket
-            .connect(FuturesMarket::USDM, stream_example)
+            .connect(&FuturesMarket::USDM, &stream_example)
             .unwrap();
         web_socket.event_loop(&keep_running).unwrap();
         web_socket.disconnect().unwrap();
@@ -90,7 +90,7 @@ fn market_websocket() {
 
         let mut web_socket: FuturesWebSockets<'_> = FuturesWebSockets::new(callback_fn);
         web_socket
-            .connect(FuturesMarket::COINM, stream_example)
+            .connect(&FuturesMarket::COINM, &stream_example)
             .unwrap();
         web_socket.event_loop(&keep_running).unwrap();
         web_socket.disconnect().unwrap();
