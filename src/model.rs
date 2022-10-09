@@ -385,7 +385,6 @@ pub struct AggTrade {
     pub qty: f64,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UserDataStreamExpiredEvent {
@@ -406,8 +405,7 @@ pub struct AccountUpdateEvent {
     pub event_time: u64,
 
     #[serde(rename = "a")]
-    pub data: AccountUpdateDataEvent
-
+    pub data: AccountUpdateDataEvent,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -1421,11 +1419,8 @@ fn test_account_update_event() {
 }
     "#;
 
-
-
     let res = r#"AccountUpdateEvent { event_type: "ACCOUNT_UPDATE", event_time: 1564745798939, data: AccountUpdateDataEvent { reason: "ORDER", balances: [EventBalance { asset: "USDT", wallet_balance: "122624.12345678", cross_wallet_balance: "100.12345678", balance_change: "50.12345678" }, EventBalance { asset: "BUSD", wallet_balance: "1.00000000", cross_wallet_balance: "0.00000000", balance_change: "-49.12345678" }], positions: [EventPosition { symbol: "BTCUSDT", position_amount: "0", entry_price: "0.00000", accumulated_realized: "200", unrealized_pnl: "0", margin_type: "isolated", isolated_wallet: "0.00000000", position_side: "BOTH" }, EventPosition { symbol: "BTCUSDT", position_amount: "20", entry_price: "6563.66500", accumulated_realized: "0", unrealized_pnl: "2850.21200", margin_type: "isolated", isolated_wallet: "13200.70726908", position_side: "LONG" }, EventPosition { symbol: "BTCUSDT", position_amount: "-10", entry_price: "6563.86000", accumulated_realized: "-45.04000000", unrealized_pnl: "-1423.15600", margin_type: "isolated", isolated_wallet: "6570.42511771", position_side: "SHORT" }] } }"#;
-        let v: AccountUpdateEvent = serde_json::from_str(json).unwrap();
-      assert_eq!(format!("{v:?}"), res);
-     //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
-
+    let v: AccountUpdateEvent = serde_json::from_str(json).unwrap();
+    assert_eq!(format!("{v:?}"), res);
+    //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
 }

@@ -49,7 +49,10 @@ fn user_stream_websocket() {
                     for balance in &account_update.data.balances {
                         println!(
                             "Asset: {}, wallet_balance: {}, cross_wallet_balance: {}, balance: {}",
-                            balance.asset, balance.wallet_balance, balance.cross_wallet_balance, balance.balance_change
+                            balance.asset,
+                            balance.wallet_balance,
+                            balance.cross_wallet_balance,
+                            balance.balance_change
                         );
                     }
                 }
