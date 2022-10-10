@@ -32,9 +32,9 @@ mod tests {
         assert!(approx_eq!(f32, account.taker_commission, 15.0, ulps = 2));
         assert!(approx_eq!(f32, account.buyer_commission, 0.0, ulps = 2));
         assert!(approx_eq!(f32, account.seller_commission, 0.0, ulps = 2));
-        assert_eq!(account.can_trade, true);
-        assert_eq!(account.can_withdraw, true);
-        assert_eq!(account.can_deposit, true);
+        assert!(account.can_trade);
+        assert!(account.can_withdraw);
+        assert!(account.can_deposit);
 
         assert!(!account.balances.is_empty());
 
@@ -111,7 +111,7 @@ mod tests {
         assert_eq!(open_order.iceberg_qty, "0.0");
         assert_eq!(open_order.time, 1499827319559);
         assert_eq!(open_order.update_time, 1499827319559);
-        assert_eq!(open_order.is_working, true);
+        assert!(open_order.is_working);
         assert_eq!(open_order.orig_quote_order_qty, "0.000000");
     }
 
@@ -151,7 +151,7 @@ mod tests {
         assert_eq!(open_order.iceberg_qty, "0.0");
         assert_eq!(open_order.time, 1499827319559);
         assert_eq!(open_order.update_time, 1499827319559);
-        assert_eq!(open_order.is_working, true);
+        assert!(open_order.is_working);
         assert_eq!(open_order.orig_quote_order_qty, "0.000000");
     }
 
@@ -236,7 +236,7 @@ mod tests {
         assert_eq!(order_status.iceberg_qty, "0.0");
         assert_eq!(order_status.time, 1499827319559);
         assert_eq!(order_status.update_time, 1499827319559);
-        assert_eq!(order_status.is_working, true);
+        assert!(order_status.is_working);
         assert_eq!(order_status.orig_quote_order_qty, "0.000000");
     }
 
@@ -850,8 +850,8 @@ mod tests {
         assert_eq!(history.commission, "10.10000000");
         assert_eq!(history.commission_asset, "BNB");
         assert_eq!(history.time, 1499865549590);
-        assert_eq!(history.is_buyer, true);
-        assert_eq!(history.is_maker, false);
-        assert_eq!(history.is_best_match, true);
+        assert!(history.is_buyer);
+        assert!(!history.is_maker);
+        assert!(history.is_best_match);
     }
 }
