@@ -247,7 +247,9 @@ impl FuturesAccount {
             .delete_signed(API::Futures(Futures::Order), Some(request))
     }
 
-    pub fn cancel_order_with_client_id<S>(&self, symbol: S, orig_client_order_id: String) -> Result<CanceledOrder>
+    pub fn cancel_order_with_client_id<S>(
+        &self, symbol: S, orig_client_order_id: String,
+    ) -> Result<CanceledOrder>
     where
         S: Into<String>,
     {
