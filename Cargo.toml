@@ -37,7 +37,7 @@ vendored-tls = ["reqwest/native-tls-vendored", "tungstenite/native-tls-vendored"
 csv ="1.1.6"
 mockito = "0.31.0"
 env_logger = "0.9.0"
-criterion = "0.3"
+criterion = "0.4"
 float-cmp = "0.9.0"
 serde_json = "1.0"
 
