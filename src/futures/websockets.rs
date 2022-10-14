@@ -24,7 +24,7 @@ pub enum FuturesMarket {
 }
 
 impl FuturesWebsocketAPI {
-    fn params(self, market: FuturesMarket, subscription: &str) -> String {
+    fn params(self, market: &FuturesMarket, subscription: &str) -> String {
         let baseurl = match market {
             FuturesMarket::USDM => "wss://fstream.binance.com",
             FuturesMarket::COINM => "wss://dstream.binance.com",
@@ -107,26 +107,26 @@ impl<'a> FuturesWebSockets<'a> {
         }
     }
 
-    pub fn connect(&mut self, market: FuturesMarket, subscription: &'a str) -> Result<()> {
-        self.connect_wss(FuturesWebsocketAPI::Default.params(market, subscription))
+    pub fn connect(&mut self, market: &FuturesMarket, subscription: &'a str) -> Result<()> {
+        self.connect_wss(&FuturesWebsocketAPI::Default.params(market, subscription))
     }
 
     pub fn connect_with_config(
-        &mut self, market: FuturesMarket, subscription: &'a str, config: &'a Config,
+        &mut self, market: &FuturesMarket, subscription: &'a str, config: &'a Config,
     ) -> Result<()> {
         self.connect_wss(
-            FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(market, subscription),
+            &FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(market, subscription),
         )
     }
 
     pub fn connect_multiple_streams(
-        &mut self, market: FuturesMarket, endpoints: &[String],
+        &mut self, market: &FuturesMarket, endpoints: &[String],
     ) -> Result<()> {
-        self.connect_wss(FuturesWebsocketAPI::MultiStream.params(market, &endpoints.join("/")))
+        self.connect_wss(&FuturesWebsocketAPI::MultiStream.params(market, &endpoints.join("/")))
     }
 
-    fn connect_wss(&mut self, wss: String) -> Result<()> {
-        let url = Url::parse(&wss)?;
+    fn connect_wss(&mut self, wss: &str) -> Result<()> {
+        let url = Url::parse(wss)?;
         match connect(url) {
             Ok(answer) => {
                 self.socket = Some(answer);

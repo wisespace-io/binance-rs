@@ -80,19 +80,19 @@ impl<'a> WebSockets<'a> {
     }
 
     pub fn connect(&mut self, subscription: &str) -> Result<()> {
-        self.connect_wss(WebsocketAPI::Default.params(subscription))
+        self.connect_wss(&WebsocketAPI::Default.params(subscription))
     }
 
     pub fn connect_with_config(&mut self, subscription: &str, config: &Config) -> Result<()> {
-        self.connect_wss(WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
+        self.connect_wss(&WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
     }
 
     pub fn connect_multiple_streams(&mut self, endpoints: &[String]) -> Result<()> {
-        self.connect_wss(WebsocketAPI::MultiStream.params(&endpoints.join("/")))
+        self.connect_wss(&WebsocketAPI::MultiStream.params(&endpoints.join("/")))
     }
 
-    fn connect_wss(&mut self, wss: String) -> Result<()> {
-        let url = Url::parse(&wss)?;
+    fn connect_wss(&mut self, wss: &str) -> Result<()> {
+        let url = Url::parse(wss)?;
         match connect(url) {
             Ok(answer) => {
                 self.socket = Some(answer);
