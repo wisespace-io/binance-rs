@@ -149,7 +149,7 @@ mod tests {
             qty: None,
             reduce_only: None,
             price: None,
-            stop_price: Some(7.4.into()),
+            stop_price: Some(7.4),
             close_position: Some(true),
             activation_price: None,
             callback_rate: None,
