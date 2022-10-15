@@ -1,5 +1,5 @@
 use hex::encode as hex_encode;
-use hmac::{Hmac, Mac, NewMac};
+use hmac::{Hmac, Mac};
 use crate::errors::*;
 use reqwest::StatusCode;
 use reqwest::blocking::Response;
