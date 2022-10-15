@@ -1,6 +1,6 @@
 use hex::encode as hex_encode;
 use hmac::{Hmac, Mac};
-use crate::errors::*;
+use crate::errors::{BinanceContentError, ErrorKind, Result};
 use reqwest::StatusCode;
 use reqwest::blocking::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};

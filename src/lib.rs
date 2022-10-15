@@ -7,6 +7,7 @@
     clippy::all
 )]
 #![allow(clippy::needless_doctest_main)]
+#![warn(clippy::wildcard_imports)]
 
 #[macro_use]
 extern crate error_chain;

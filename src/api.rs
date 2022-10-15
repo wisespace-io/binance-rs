@@ -1,14 +1,14 @@
-use crate::account::*;
-use crate::client::*;
-use crate::config::*;
+use crate::account::Account;
+use crate::client::Client;
+use crate::config::Config;
 use crate::futures::account::FuturesAccount;
-use crate::futures::general::*;
-use crate::futures::market::*;
-use crate::futures::userstream::*;
-use crate::general::*;
-use crate::market::*;
-use crate::userstream::*;
-use crate::savings::*;
+use crate::futures::general::FuturesGeneral;
+use crate::futures::market::FuturesMarket;
+use crate::futures::userstream::FuturesUserStream;
+use crate::general::General;
+use crate::market::Market;
+use crate::userstream::UserStream;
+use crate::savings::Savings;
 
 #[allow(clippy::all)]
 pub enum API {

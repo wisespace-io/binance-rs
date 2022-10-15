@@ -1,6 +1,9 @@
-use crate::errors::*;
-use crate::config::*;
-use crate::model::*;
+use crate::errors::Result;
+use crate::config::Config;
+use crate::model::{
+    AccountUpdateEvent, AggrTradesEvent, BalanceUpdateEvent, BookTickerEvent, DayTickerEvent,
+    DepthOrderBookEvent, KlineEvent, OrderBook, OrderTradeEvent, TradeEvent,
+};
 use url::Url;
 use serde::{Deserialize, Serialize};
 
