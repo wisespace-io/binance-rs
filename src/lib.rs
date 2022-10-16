@@ -14,9 +14,6 @@
     clippy::implicit_clone
 )]
 
-#[macro_use]
-extern crate error_chain;
-
 mod client;
 pub mod errors;
 pub mod util;

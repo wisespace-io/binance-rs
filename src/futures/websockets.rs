@@ -6,6 +6,7 @@ use crate::model::{
     MarkPriceEvent, MiniTickerEvent, OrderBook, TradeEvent, UserDataStreamExpiredEvent,
 };
 use crate::futures::model;
+use error_chain::bail;
 use url::Url;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicBool, Ordering};

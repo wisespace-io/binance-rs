@@ -1,3 +1,4 @@
+use error_chain::bail;
 use hex::encode as hex_encode;
 use hmac::{Hmac, Mac};
 use crate::errors::{BinanceContentError, ErrorKind, Result};

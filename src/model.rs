@@ -565,7 +565,7 @@ pub struct OrderTradeEvent {
 ///
 /// Update Speed: Real-time
 ///
-/// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams
+/// <https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AggrTradesEvent {
@@ -609,7 +609,7 @@ pub struct AggrTradesEvent {
 ///
 /// Update Speed: Real-time
 ///
-/// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#trade-streams
+/// <https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#trade-streams>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeEvent {

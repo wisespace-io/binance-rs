@@ -1,3 +1,5 @@
+use error_chain::bail;
+
 use crate::model::{Empty, ExchangeInformation, ServerTime, Symbol};
 use crate::client::Client;
 use crate::errors::Result;

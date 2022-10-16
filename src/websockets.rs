@@ -4,6 +4,7 @@ use crate::model::{
     AccountUpdateEvent, AggrTradesEvent, BalanceUpdateEvent, BookTickerEvent, DayTickerEvent,
     DepthOrderBookEvent, KlineEvent, OrderBook, OrderTradeEvent, TradeEvent,
 };
+use error_chain::bail;
 use url::Url;
 use serde::{Deserialize, Serialize};
 

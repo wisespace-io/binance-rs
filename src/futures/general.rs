@@ -1,3 +1,5 @@
+use error_chain::bail;
+
 use crate::futures::model::{ExchangeInformation, ServerTime, Symbol};
 use crate::client::Client;
 use crate::errors::Result;

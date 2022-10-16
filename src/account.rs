@@ -1,3 +1,5 @@
+use error_chain::bail;
+
 use crate::util::build_signed_request;
 use crate::model::{
     AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction,
