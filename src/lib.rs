@@ -10,7 +10,8 @@
 #![warn(
     clippy::wildcard_imports,
     clippy::manual_string_new,
-    clippy::single_match_else
+    clippy::single_match_else,
+    clippy::implicit_clone
 )]
 
 #[macro_use]
