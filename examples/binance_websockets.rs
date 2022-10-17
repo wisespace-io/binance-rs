@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use binance::api::*;
 use binance::userstream::*;
 use binance::websockets::*;

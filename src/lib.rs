@@ -3,7 +3,8 @@
     unused_must_use,
     unused_mut,
     unused_imports,
-    unused_import_braces
+    unused_import_braces,
+    clippy::all
 )]
 #![allow(clippy::needless_doctest_main)]
 
