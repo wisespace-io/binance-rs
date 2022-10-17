@@ -198,7 +198,7 @@ impl<'a> FuturesWebSockets<'a> {
                     Message::Ping(_) => {
                         socket.0.write_message(Message::Pong(vec![])).unwrap();
                     }
-                    Message::Pong(_) | Message::Binary(_) => (),
+                    Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
                     Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
                 }
             }
