@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 use std::fmt::Display;
 
-use crate::util::*;
-use crate::errors::*;
+use crate::util::build_signed_request;
+use crate::errors::Result;
 use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;

@@ -1,6 +1,7 @@
-use crate::errors::*;
+use crate::errors::Result;
 use std::collections::BTreeMap;
 use std::time::{SystemTime, UNIX_EPOCH};
+use error_chain::bail;
 use serde_json::Value;
 
 pub fn build_request(parameters: BTreeMap<String, String>) -> String {

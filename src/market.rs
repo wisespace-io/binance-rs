@@ -1,7 +1,10 @@
-use crate::util::*;
-use crate::model::*;
-use crate::client::*;
-use crate::errors::*;
+use crate::util::build_request;
+use crate::model::{
+    AggTrade, AveragePrice, BookTickers, KlineSummaries, KlineSummary, OrderBook, PriceStats,
+    Prices, SymbolPrice, Tickers,
+};
+use crate::client::Client;
+use crate::errors::Result;
 use std::collections::BTreeMap;
 use serde_json::Value;
 use crate::api::API;

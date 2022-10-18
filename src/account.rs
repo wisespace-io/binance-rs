@@ -1,7 +1,11 @@
-use crate::util::*;
-use crate::model::*;
-use crate::client::*;
-use crate::errors::*;
+use error_chain::bail;
+
+use crate::util::build_signed_request;
+use crate::model::{
+    AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction,
+};
+use crate::client::Client;
+use crate::errors::Result;
 use std::collections::BTreeMap;
 use std::fmt::Display;
 use crate::api::API;

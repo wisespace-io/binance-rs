@@ -7,9 +7,12 @@
     clippy::all
 )]
 #![allow(clippy::needless_doctest_main)]
-
-#[macro_use]
-extern crate error_chain;
+#![warn(
+    clippy::wildcard_imports,
+    clippy::manual_string_new,
+    clippy::single_match_else,
+    clippy::implicit_clone
+)]
 
 mod client;
 pub mod errors;

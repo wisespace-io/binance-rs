@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{from_value, Value};
 use std::convert::TryFrom;
-use crate::errors::*;
+use crate::errors::{Error, ErrorKind, Result};
 
 #[derive(Deserialize, Clone)]
 pub struct Empty {}
@@ -565,7 +565,7 @@ pub struct OrderTradeEvent {
 ///
 /// Update Speed: Real-time
 ///
-/// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams
+/// <https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AggrTradesEvent {
@@ -609,7 +609,7 @@ pub struct AggrTradesEvent {
 ///
 /// Update Speed: Real-time
 ///
-/// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#trade-streams
+/// <https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#trade-streams>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TradeEvent {
@@ -955,7 +955,7 @@ fn get_value(row: &[Value], index: usize, name: &'static str) -> Result<Value> {
     Ok(row
         .get(index)
         .ok_or_else(|| ErrorKind::KlineValueMissingError(index, name))?
-        .to_owned())
+        .clone())
 }
 
 impl TryFrom<&Vec<Value>> for KlineSummary {
