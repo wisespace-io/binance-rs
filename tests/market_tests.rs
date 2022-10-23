@@ -9,8 +9,8 @@ mod tests {
     use mockito::{mock, Matcher};
     use float_cmp::*;
 
-    #[test]
-    fn get_depth() {
+    #[tokio::test]
+    async fn get_depth() {
         let mock_get_depth = mock("GET", "/api/v3/depth")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("symbol=LTCBTC".into()))
@@ -20,15 +20,15 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let order_book = market.get_depth("LTCBTC").unwrap();
+        let order_book = market.get_depth("LTCBTC").await.unwrap();
         mock_get_depth.assert();
 
         assert_eq!(order_book.last_update_id, 1027024);
         assert_eq!(order_book.bids[0], Bids::new(4.00000000, 431.00000000));
     }
 
-    #[test]
-    fn get_custom_depth() {
+    #[tokio::test]
+    async fn get_custom_depth() {
         let mock_get_custom_depth = mock("GET", "/api/v3/depth")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("limit=10&symbol=LTCBTC".into()))
@@ -38,15 +38,15 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let order_book = market.get_custom_depth("LTCBTC", 10).unwrap();
+        let order_book = market.get_custom_depth("LTCBTC", 10).await.unwrap();
         mock_get_custom_depth.assert();
 
         assert_eq!(order_book.last_update_id, 1027024);
         assert_eq!(order_book.bids[0], Bids::new(4.00000000, 431.00000000));
     }
 
-    #[test]
-    fn get_all_prices() {
+    #[tokio::test]
+    async fn get_all_prices() {
         let mock_get_all_prices = mock("GET", "/api/v3/ticker/price")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body_from_file("tests/mocks/market/get_all_prices.json")
@@ -55,7 +55,7 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let prices: Prices = market.get_all_prices().unwrap();
+        let prices: Prices = market.get_all_prices().await.unwrap();
         mock_get_all_prices.assert();
 
         match prices {
@@ -71,8 +71,8 @@ mod tests {
         }
     }
 
-    #[test]
-    fn get_price() {
+    #[tokio::test]
+    async fn get_price() {
         let mock_get_price = mock("GET", "/api/v3/ticker/price")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("symbol=LTCBTC".into()))
@@ -82,15 +82,15 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let symbol = market.get_price("LTCBTC").unwrap();
+        let symbol = market.get_price("LTCBTC").await.unwrap();
         mock_get_price.assert();
 
         assert_eq!(symbol.symbol, "LTCBTC");
         assert!(approx_eq!(f64, symbol.price, 4.00000200, ulps = 2));
     }
 
-    #[test]
-    fn get_average_price() {
+    #[tokio::test]
+    async fn get_average_price() {
         let mock_get_average_price = mock("GET", "/api/v3/avgPrice")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("symbol=LTCBTC".into()))
@@ -100,15 +100,15 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let symbol = market.get_average_price("LTCBTC").unwrap();
+        let symbol = market.get_average_price("LTCBTC").await.unwrap();
         mock_get_average_price.assert();
 
         assert_eq!(symbol.mins, 5);
         assert!(approx_eq!(f64, symbol.price, 9.35751834, ulps = 2));
     }
 
-    #[test]
-    fn get_all_book_tickers() {
+    #[tokio::test]
+    async fn get_all_book_tickers() {
         let mock_get_all_book_tickers = mock("GET", "/api/v3/ticker/bookTicker")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body_from_file("tests/mocks/market/get_all_book_tickers.json")
@@ -117,7 +117,7 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let book_tickers = market.get_all_book_tickers().unwrap();
+        let book_tickers = market.get_all_book_tickers().await.unwrap();
         mock_get_all_book_tickers.assert();
 
         match book_tickers {
@@ -169,8 +169,8 @@ mod tests {
         }
     }
 
-    #[test]
-    fn get_book_ticker() {
+    #[tokio::test]
+    async fn get_book_ticker() {
         let mock_get_book_ticker = mock("GET", "/api/v3/ticker/bookTicker")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("symbol=LTCBTC".into()))
@@ -180,7 +180,7 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let book_ticker = market.get_book_ticker("LTCBTC").unwrap();
+        let book_ticker = market.get_book_ticker("LTCBTC").await.unwrap();
         mock_get_book_ticker.assert();
 
         assert_eq!(book_ticker.symbol, "LTCBTC");
@@ -190,8 +190,8 @@ mod tests {
         assert!(approx_eq!(f64, book_ticker.ask_qty, 9.00000000, ulps = 2));
     }
 
-    #[test]
-    fn get_24h_price_stats() {
+    #[tokio::test]
+    async fn get_24h_price_stats() {
         let mock_get_24h_price_stats = mock("GET", "/api/v3/ticker/24hr")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("symbol=BNBBTC".into()))
@@ -201,7 +201,7 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let price_stats = market.get_24h_price_stats("BNBBTC").unwrap();
+        let price_stats = market.get_24h_price_stats("BNBBTC").await.unwrap();
         mock_get_24h_price_stats.assert();
 
         assert_eq!(price_stats.symbol, "BNBBTC");
@@ -243,8 +243,8 @@ mod tests {
         assert_eq!(price_stats.count, 76);
     }
 
-    #[test]
-    fn get_all_24h_price_stats() {
+    #[tokio::test]
+    async fn get_all_24h_price_stats() {
         let mock_get_all_24h_price_stats = mock("GET", "/api/v3/ticker/24hr")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body_from_file("tests/mocks/market/get_all_24h_price_stats.json")
@@ -253,7 +253,7 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let prices_stats = market.get_all_24h_price_stats().unwrap();
+        let prices_stats = market.get_all_24h_price_stats().await.unwrap();
         mock_get_all_24h_price_stats.assert();
 
         assert!(!prices_stats.is_empty());
@@ -299,8 +299,8 @@ mod tests {
         assert_eq!(price_stats.count, 76);
     }
 
-    #[test]
-    fn get_klines() {
+    #[tokio::test]
+    async fn get_klines() {
         let mock_get_klines = mock("GET", "/api/v3/klines")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("interval=5m&limit=10&symbol=LTCBTC".into()))
@@ -310,7 +310,7 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let klines = market.get_klines("LTCBTC", "5m", 10, None, None).unwrap();
+        let klines = market.get_klines("LTCBTC", "5m", 10, None, None).await.unwrap();
         mock_get_klines.assert();
 
         match klines {

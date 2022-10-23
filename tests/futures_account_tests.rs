@@ -10,8 +10,8 @@ mod tests {
     use binance::account::OrderSide;
     use binance::futures::model::Transaction;
 
-    #[test]
-    fn change_initial_leverage() {
+    #[tokio::test]
+    async fn change_initial_leverage() {
         let mock_change_leverage = mock("POST", "/fapi/v1/leverage")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
@@ -25,7 +25,7 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let response = account.change_initial_leverage("LTCUSDT", 2).unwrap();
+        let response = account.change_initial_leverage("LTCUSDT", 2).await.unwrap();
 
         mock_change_leverage.assert();
 
@@ -39,8 +39,8 @@ mod tests {
         ));
     }
 
-    #[test]
-    fn cancel_all_open_orders() {
+    #[tokio::test]
+    async fn cancel_all_open_orders() {
         let mock = mock("DELETE", "/fapi/v1/allOpenOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
@@ -54,13 +54,13 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        account.cancel_all_open_orders("BTCUSDT").unwrap();
+        account.cancel_all_open_orders("BTCUSDT").await.unwrap();
 
         mock.assert();
     }
 
-    #[test]
-    fn change_position_mode() {
+    #[tokio::test]
+    async fn change_position_mode() {
         let mock = mock("POST", "/fapi/v1/positionSide/dual")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
@@ -74,13 +74,13 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        account.change_position_mode(true).unwrap();
+        account.change_position_mode(true).await.unwrap();
 
         mock.assert();
     }
 
-    #[test]
-    fn stop_market_close_buy() {
+    #[tokio::test]
+    async fn stop_market_close_buy() {
         let mock_stop_market_close_sell = mock("POST", "/fapi/v1/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("closePosition=TRUE&recvWindow=1234&side=BUY&stopPrice=10.5&symbol=SRMUSDT&timestamp=\\d+&type=STOP_MARKET".into()))
@@ -92,7 +92,7 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.stop_market_close_buy("SRMUSDT", 10.5).unwrap();
+        let transaction: Transaction = account.stop_market_close_buy("SRMUSDT", 10.5).await.unwrap();
 
         mock_stop_market_close_sell.assert();
 
@@ -103,8 +103,8 @@ mod tests {
         assert!(approx_eq!(f64, transaction.stop_price, 10.5, ulps = 2));
     }
 
-    #[test]
-    fn stop_market_close_sell() {
+    #[tokio::test]
+    async fn stop_market_close_sell() {
         let mock_stop_market_close_sell = mock("POST", "/fapi/v1/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("closePosition=TRUE&recvWindow=1234&side=SELL&stopPrice=7.4&symbol=SRMUSDT&timestamp=\\d+&type=STOP_MARKET".into()))
@@ -116,7 +116,7 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.stop_market_close_sell("SRMUSDT", 7.4).unwrap();
+        let transaction: Transaction = account.stop_market_close_sell("SRMUSDT", 7.4).await.unwrap();
 
         mock_stop_market_close_sell.assert();
 
@@ -127,8 +127,8 @@ mod tests {
         assert!(approx_eq!(f64, transaction.stop_price, 7.4, ulps = 2));
     }
 
-    #[test]
-    fn custom_order() {
+    #[tokio::test]
+    async fn custom_order() {
         let mock_custom_order = mock("POST", "/fapi/v1/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("closePosition=TRUE&recvWindow=1234&side=SELL&stopPrice=7.4&symbol=SRMUSDT&timestamp=\\d+&type=STOP_MARKET".into()))
@@ -156,7 +156,7 @@ mod tests {
             working_type: None,
             price_protect: None,
         };
-        let transaction: Transaction = account.custom_order(custom_order).unwrap();
+        let transaction: Transaction = account.custom_order(custom_order).await.unwrap();
 
         mock_custom_order.assert();
 
