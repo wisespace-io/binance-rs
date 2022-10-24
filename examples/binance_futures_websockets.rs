@@ -1,11 +1,12 @@
 use binance::futures::websockets::*;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-fn main() {
-    market_websocket();
+#[tokio::main]
+async fn main() {
+    market_websocket().await;
 }
 
-fn market_websocket() {
+async fn market_websocket() {
     // Example to show the future market websockets. It will print one event for each
     // endpoint and continue to the next.
 

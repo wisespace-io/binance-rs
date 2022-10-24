@@ -3,7 +3,7 @@ use hex::encode as hex_encode;
 use hmac::{Hmac, Mac};
 use crate::errors::{BinanceContentError, ErrorKind, Result};
 use reqwest::StatusCode;
-use reqwest::blocking::Response;
+use reqwest::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
 use sha2::Sha256;
 use serde::de::DeserializeOwned;
@@ -14,7 +14,7 @@ pub struct Client {
     api_key: String,
     secret_key: String,
     host: String,
-    inner_client: reqwest::blocking::Client,
+    inner_client: reqwest::Client,
 }
 
 impl Client {
@@ -23,14 +23,14 @@ impl Client {
             api_key: api_key.unwrap_or_default(),
             secret_key: secret_key.unwrap_or_default(),
             host,
-            inner_client: reqwest::blocking::Client::builder()
+            inner_client: reqwest::Client::builder()
                 .pool_idle_timeout(None)
                 .build()
                 .unwrap(),
         }
     }
 
-    pub fn get_signed<T: DeserializeOwned>(
+    pub async fn get_signed<T: DeserializeOwned>(
         &self, endpoint: API, request: Option<String>,
     ) -> Result<T> {
         let url = self.sign_request(endpoint, request);
@@ -38,23 +38,23 @@ impl Client {
         let response = client
             .get(url.as_str())
             .headers(self.build_headers(true)?)
-            .send()?;
+            .send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
-    pub fn post_signed<T: DeserializeOwned>(&self, endpoint: API, request: String) -> Result<T> {
+    pub async fn post_signed<T: DeserializeOwned>(&self, endpoint: API, request: String) -> Result<T> {
         let url = self.sign_request(endpoint, Some(request));
         let client = &self.inner_client;
         let response = client
             .post(url.as_str())
             .headers(self.build_headers(true)?)
-            .send()?;
+            .send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
-    pub fn delete_signed<T: DeserializeOwned>(
+    pub async fn delete_signed<T: DeserializeOwned>(
         &self, endpoint: API, request: Option<String>,
     ) -> Result<T> {
         let url = self.sign_request(endpoint, request);
@@ -62,12 +62,12 @@ impl Client {
         let response = client
             .delete(url.as_str())
             .headers(self.build_headers(true)?)
-            .send()?;
+            .send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
-    pub fn get<T: DeserializeOwned>(&self, endpoint: API, request: Option<String>) -> Result<T> {
+    pub async fn get<T: DeserializeOwned>(&self, endpoint: API, request: Option<String>) -> Result<T> {
         let mut url: String = format!("{}{}", self.host, String::from(endpoint));
         if let Some(request) = request {
             if !request.is_empty() {
@@ -76,24 +76,24 @@ impl Client {
         }
 
         let client = &self.inner_client;
-        let response = client.get(url.as_str()).send()?;
+        let response = client.get(url.as_str()).send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
-    pub fn post<T: DeserializeOwned>(&self, endpoint: API) -> Result<T> {
+    pub async fn post<T: DeserializeOwned>(&self, endpoint: API) -> Result<T> {
         let url: String = format!("{}{}", self.host, String::from(endpoint));
 
         let client = &self.inner_client;
         let response = client
             .post(url.as_str())
             .headers(self.build_headers(false)?)
-            .send()?;
+            .send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
-    pub fn put<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
+    pub async fn put<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
         let url: String = format!("{}{}", self.host, String::from(endpoint));
         let data: String = format!("listenKey={}", listen_key);
 
@@ -102,12 +102,12 @@ impl Client {
             .put(url.as_str())
             .headers(self.build_headers(false)?)
             .body(data)
-            .send()?;
+            .send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
-    pub fn delete<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
+    pub async fn delete<T: DeserializeOwned>(&self, endpoint: API, listen_key: &str) -> Result<T> {
         let url: String = format!("{}{}", self.host, String::from(endpoint));
         let data: String = format!("listenKey={}", listen_key);
 
@@ -116,9 +116,9 @@ impl Client {
             .delete(url.as_str())
             .headers(self.build_headers(false)?)
             .body(data)
-            .send()?;
+            .send().await?;
 
-        self.handler(response)
+        self.handler(response).await
     }
 
     // Request must be signed
@@ -156,9 +156,9 @@ impl Client {
         Ok(custom_headers)
     }
 
-    fn handler<T: DeserializeOwned>(&self, response: Response) -> Result<T> {
+    async fn handler<T: DeserializeOwned>(&self, response: Response) -> Result<T> {
         match response.status() {
-            StatusCode::OK => Ok(response.json::<T>()?),
+            StatusCode::OK => Ok(response.json::<T>().await?),
             StatusCode::INTERNAL_SERVER_ERROR => {
                 bail!("Internal Server Error");
             }
@@ -169,7 +169,7 @@ impl Client {
                 bail!("Unauthorized");
             }
             StatusCode::BAD_REQUEST => {
-                let error: BinanceContentError = response.json()?;
+                let error: BinanceContentError = response.json().await?;
 
                 Err(ErrorKind::BinanceError(error).into())
             }
