@@ -1,6 +1,7 @@
+use error_chain::bail;
 use hex::encode as hex_encode;
-use hmac::{Hmac, Mac, NewMac};
-use crate::errors::*;
+use hmac::{Hmac, Mac};
+use crate::errors::{BinanceContentError, ErrorKind, Result};
 use reqwest::StatusCode;
 use reqwest::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT, CONTENT_TYPE};
@@ -19,8 +20,8 @@ pub struct Client {
 impl Client {
     pub fn new(api_key: Option<String>, secret_key: Option<String>, host: String) -> Self {
         Client {
-            api_key: api_key.unwrap_or_else(|| "".into()),
-            secret_key: secret_key.unwrap_or_else(|| "".into()),
+            api_key: api_key.unwrap_or_default(),
+            secret_key: secret_key.unwrap_or_default(),
             host,
             inner_client: reqwest::Client::builder()
                 .pool_idle_timeout(None)
@@ -122,22 +123,18 @@ impl Client {
 
     // Request must be signed
     fn sign_request(&self, endpoint: API, request: Option<String>) -> String {
-        match request {
-            Some(request) => {
-                let mut signed_key =
-                    Hmac::<Sha256>::new_from_slice(self.secret_key.as_bytes()).unwrap();
-                signed_key.update(request.as_bytes());
-                let signature = hex_encode(signed_key.finalize().into_bytes());
-                let request_body: String = format!("{}&signature={}", request, signature);
-                format!("{}{}?{}", self.host, String::from(endpoint), request_body)
-            }
-            None => {
-                let signed_key =
-                    Hmac::<Sha256>::new_from_slice(self.secret_key.as_bytes()).unwrap();
-                let signature = hex_encode(signed_key.finalize().into_bytes());
-                let request_body: String = format!("&signature={}", signature);
-                format!("{}{}?{}", self.host, String::from(endpoint), request_body)
-            }
+        if let Some(request) = request {
+            let mut signed_key =
+                Hmac::<Sha256>::new_from_slice(self.secret_key.as_bytes()).unwrap();
+            signed_key.update(request.as_bytes());
+            let signature = hex_encode(signed_key.finalize().into_bytes());
+            let request_body: String = format!("{}&signature={}", request, signature);
+            format!("{}{}?{}", self.host, String::from(endpoint), request_body)
+        } else {
+            let signed_key = Hmac::<Sha256>::new_from_slice(self.secret_key.as_bytes()).unwrap();
+            let signature = hex_encode(signed_key.finalize().into_bytes());
+            let request_body: String = format!("&signature={}", signature);
+            format!("{}{}?{}", self.host, String::from(endpoint), request_body)
         }
     }
 

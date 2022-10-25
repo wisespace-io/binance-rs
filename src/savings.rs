@@ -1,7 +1,7 @@
-use crate::util::*;
-use crate::model::*;
-use crate::client::*;
-use crate::errors::*;
+use crate::util::build_signed_request;
+use crate::model::{AssetDetail, CoinInfo, DepositAddress};
+use crate::client::Client;
+use crate::errors::Result;
 use std::collections::BTreeMap;
 use crate::api::API;
 use crate::api::Sapi;

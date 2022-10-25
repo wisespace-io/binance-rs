@@ -1,6 +1,6 @@
-use crate::model::*;
-use crate::client::*;
-use crate::errors::*;
+use crate::model::{Success, UserDataStream};
+use crate::client::Client;
+use crate::errors::Result;
 use crate::api::API;
 use crate::api::Futures;
 

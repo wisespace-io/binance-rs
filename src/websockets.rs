@@ -1,6 +1,10 @@
-use crate::errors::*;
-use crate::config::*;
-use crate::model::*;
+use crate::errors::Result;
+use crate::config::Config;
+use crate::model::{
+    AccountUpdateEvent, AggrTradesEvent, BalanceUpdateEvent, BookTickerEvent, DayTickerEvent,
+    DepthOrderBookEvent, KlineEvent, OrderBook, OrderTradeEvent, TradeEvent,
+};
+use error_chain::bail;
 use url::Url;
 use serde::{Deserialize, Serialize};
 
@@ -80,19 +84,19 @@ impl<'a> WebSockets<'a> {
     }
 
     pub fn connect(&mut self, subscription: &str) -> Result<()> {
-        self.connect_wss(WebsocketAPI::Default.params(subscription))
+        self.connect_wss(&WebsocketAPI::Default.params(subscription))
     }
 
     pub fn connect_with_config(&mut self, subscription: &str, config: &Config) -> Result<()> {
-        self.connect_wss(WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
+        self.connect_wss(&WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
     }
 
     pub fn connect_multiple_streams(&mut self, endpoints: &[String]) -> Result<()> {
-        self.connect_wss(WebsocketAPI::MultiStream.params(&endpoints.join("/")))
+        self.connect_wss(&WebsocketAPI::MultiStream.params(&endpoints.join("/")))
     }
 
-    fn connect_wss(&mut self, wss: String) -> Result<()> {
-        let url = Url::parse(&wss)?;
+    fn connect_wss(&mut self, wss: &str) -> Result<()> {
+        let url = Url::parse(wss)?;
         match connect(url) {
             Ok(answer) => {
                 self.socket = Some(answer);
@@ -151,7 +155,10 @@ impl<'a> WebSockets<'a> {
                             bail!(format!("Error on handling stream message: {}", e));
                         }
                     }
-                    Message::Ping(_) | Message::Pong(_) | Message::Binary(_) => (),
+                    Message::Ping(_) => {
+                        socket.0.write_message(Message::Pong(vec![])).unwrap();
+                    }
+                    Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
                     Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
                 }
             }

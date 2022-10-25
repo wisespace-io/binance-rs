@@ -84,9 +84,9 @@ mod tests {
         assert_eq!(symbol.order_types[3], "STOP_LOSS_LIMIT");
         assert_eq!(symbol.order_types[4], "TAKE_PROFIT_LIMIT");
 
-        assert_eq!(symbol.iceberg_allowed, true);
-        assert_eq!(symbol.is_spot_trading_allowed, true);
-        assert_eq!(symbol.is_margin_trading_allowed, true);
+        assert!(symbol.iceberg_allowed);
+        assert!(symbol.is_spot_trading_allowed);
+        assert!(symbol.is_margin_trading_allowed);
 
         assert!(!symbol.filters.is_empty());
 
@@ -127,7 +127,7 @@ mod tests {
                 } => {
                     assert!(notional.is_none());
                     assert_eq!(min_notional.unwrap(), "0.00010000");
-                    assert_eq!(apply_to_market.unwrap(), true);
+                    assert!(apply_to_market.unwrap());
                     assert!(approx_eq!(f64, avg_price_mins.unwrap(), 5.0, ulps = 2));
                 }
                 Filters::IcebergParts { limit } => {

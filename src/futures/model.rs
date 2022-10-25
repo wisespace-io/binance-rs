@@ -172,7 +172,7 @@ pub struct OpenInterest {
     pub symbol: String,
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct OpenInterestHist {
     pub symbol: String,
@@ -568,7 +568,7 @@ pub struct OrderUpdate {
     pub ss_ignore: i32,
 
     #[serde(rename = "rp")]
-    pub rp_ignore: String,
+    pub realized_profit: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

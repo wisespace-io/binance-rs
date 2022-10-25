@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use binance::api::*;
 use binance::userstream::*;
 use binance::websockets::*;
@@ -47,10 +49,13 @@ async fn user_stream_websocket() {
         let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
             match event {
                 WebsocketEvent::AccountUpdate(account_update) => {
-                    for balance in &account_update.balance {
+                    for balance in &account_update.data.balances {
                         println!(
-                            "Asset: {}, free: {}, locked: {}",
-                            balance.asset, balance.free, balance.locked
+                            "Asset: {}, wallet_balance: {}, cross_wallet_balance: {}, balance: {}",
+                            balance.asset,
+                            balance.wallet_balance,
+                            balance.cross_wallet_balance,
+                            balance.balance_change
                         );
                     }
                 }

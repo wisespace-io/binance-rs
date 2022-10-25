@@ -99,7 +99,7 @@ mod tests {
         assert_eq!(transaction.symbol, "SRMUSDT");
         assert_eq!(transaction.side, "BUY");
         assert_eq!(transaction.orig_type, "STOP_MARKET");
-        assert_eq!(transaction.close_position, true);
+        assert!(transaction.close_position);
         assert!(approx_eq!(f64, transaction.stop_price, 10.5, ulps = 2));
     }
 
@@ -123,7 +123,7 @@ mod tests {
         assert_eq!(transaction.symbol, "SRMUSDT");
         assert_eq!(transaction.side, "SELL");
         assert_eq!(transaction.orig_type, "STOP_MARKET");
-        assert_eq!(transaction.close_position, true);
+        assert!(transaction.close_position);
         assert!(approx_eq!(f64, transaction.stop_price, 7.4, ulps = 2));
     }
 
@@ -149,7 +149,7 @@ mod tests {
             qty: None,
             reduce_only: None,
             price: None,
-            stop_price: Some(7.4.into()),
+            stop_price: Some(7.4),
             close_position: Some(true),
             activation_price: None,
             callback_rate: None,
@@ -163,7 +163,7 @@ mod tests {
         assert_eq!(transaction.symbol, "SRMUSDT");
         assert_eq!(transaction.side, "SELL");
         assert_eq!(transaction.orig_type, "STOP_MARKET");
-        assert_eq!(transaction.close_position, true);
+        assert!(transaction.close_position);
         assert!(approx_eq!(f64, transaction.stop_price, 7.4, ulps = 2));
     }
 }

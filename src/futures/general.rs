@@ -1,6 +1,8 @@
-use crate::futures::model::*;
-use crate::client::*;
-use crate::errors::*;
+use error_chain::bail;
+
+use crate::futures::model::{ExchangeInformation, ServerTime, Symbol};
+use crate::client::Client;
+use crate::errors::Result;
 use crate::api::API;
 use crate::api::Futures;
 
