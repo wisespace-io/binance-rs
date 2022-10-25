@@ -7,13 +7,13 @@ use core::time::Duration;
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("websockets-decoder");
 
-    let all_symbols_json = reqwest::blocking::get("https://api.binance.com/api/v3/ticker/price")
+    let all_symbols_json = reqwest::get("https://api.binance.com/api/v3/ticker/price")
         .unwrap()
         .text()
         .unwrap();
 
     let btc_symbol_json =
-        reqwest::blocking::get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")
+        reqwest::get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")
             .unwrap()
             .text()
             .unwrap();
