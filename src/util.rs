@@ -1,10 +1,10 @@
 use crate::errors::Result;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 use error_chain::bail;
 use serde_json::Value;
 
-pub fn build_request(parameters: BTreeMap<String, String>) -> String {
+pub fn build_request(parameters: HashMap<&'static str, String>) -> String {
     let mut request = String::new();
     for (key, value) in parameters {
         let param = format!("{}={}&", key, value);
@@ -15,19 +15,19 @@ pub fn build_request(parameters: BTreeMap<String, String>) -> String {
 }
 
 pub fn build_signed_request(
-    parameters: BTreeMap<String, String>, recv_window: u64,
+    parameters: HashMap<&'static str, String>, recv_window: u64,
 ) -> Result<String> {
     build_signed_request_custom(parameters, recv_window, SystemTime::now())
 }
 
 pub fn build_signed_request_custom(
-    mut parameters: BTreeMap<String, String>, recv_window: u64, start: SystemTime,
+    mut parameters: HashMap<&'static str, String>, recv_window: u64, start: SystemTime,
 ) -> Result<String> {
     if recv_window > 0 {
-        parameters.insert("recvWindow".into(), recv_window.to_string());
+        parameters.insert("recvWindow", recv_window.to_string());
     }
     if let Ok(timestamp) = get_timestamp(start) {
-        parameters.insert("timestamp".into(), timestamp.to_string());
+        parameters.insert("timestamp", timestamp.to_string());
         return Ok(build_request(parameters));
     }
     bail!("Failed to get timestamp")

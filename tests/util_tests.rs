@@ -3,21 +3,21 @@ use binance::util::*;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::BTreeMap;
+    use std::collections::HashMap;
     use std::time::{SystemTime, UNIX_EPOCH};
     use float_cmp::*;
 
     #[test]
     fn build_request_empty() {
-        let parameters: BTreeMap<String, String> = BTreeMap::new();
+        let parameters: HashMap<&'static str, String> = HashMap::new();
         let result = build_request(parameters);
         assert!(result.is_empty());
     }
 
     #[test]
     fn build_request_not_empty() {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("recvWindow".into(), "1234".to_string());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("recvWindow", "1234".to_string());
         let result = build_request(parameters);
         assert_eq!(result, format!("recvWindow={}", 1234));
     }
@@ -31,7 +31,7 @@ mod tests {
         let timestamp =
             since_epoch.as_secs() * 1000 + u64::from(since_epoch.subsec_nanos()) / 1_000_000;
 
-        let parameters: BTreeMap<String, String> = BTreeMap::new();
+        let parameters: HashMap<&'static str, String> = HashMap::new();
         let result =
             binance::util::build_signed_request_custom(parameters, recv_window, now).unwrap();
 
