@@ -13,9 +13,13 @@ mod tests {
     fn get_account() {
         let mock_get_account = mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex(
-                "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
-            ))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                    Matcher::Regex("signature=.*".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/get_account.json")
             .create();
 
@@ -53,9 +57,13 @@ mod tests {
     fn get_balance() {
         let mock_get_account = mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex(
-                "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
-            ))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                    Matcher::Regex("signature=.*".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/get_account.json")
             .create();
 
@@ -77,9 +85,13 @@ mod tests {
     fn get_open_orders() {
         let mock_open_orders = mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex(
-                "recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
-            ))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/get_open_orders.json")
             .create();
 
@@ -119,7 +131,12 @@ mod tests {
     fn get_all_open_orders() {
         let mock_open_orders = mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("recvWindow=1234&timestamp=\\d+".into()))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/get_open_orders.json")
             .create();
 
@@ -159,9 +176,13 @@ mod tests {
     fn cancel_all_open_orders() {
         let mock_cancel_all_open_orders = mock("DELETE", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex(
-                "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
-            ))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::UrlEncoded("symbol".to_string(), "BTCUSDT".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/cancel_all_open_orders.json")
             .create();
 
@@ -264,7 +285,18 @@ mod tests {
     fn limit_buy() {
         let mock_limit_buy = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
+                    Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
+                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                    Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                    Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/limit_buy.json")
             .create();
 
@@ -319,7 +351,18 @@ mod tests {
     fn limit_sell() {
         let mock_limit_sell = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
+                    Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                    Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                    Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                ])
+            )
             .with_body_from_file("tests/mocks/account/limit_sell.json")
             .create();
 
@@ -356,7 +399,18 @@ mod tests {
     fn test_limit_sell() {
         let mock_test_limit_sell = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=LIMIT".into()))
+            .match_query(
+                Matcher::AllOf(vec![
+                    Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
+                    Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                    Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                    Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                    Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
+                    Matcher::Regex("timestamp=\\d+".to_string()),
+                ])
+            )
             .with_body("{}")
             .create();
 
