@@ -19,7 +19,8 @@ fn criterion_benchmark(c: &mut Criterion) {
             .unwrap();
 
     let mut web_socket_subscribed: WebSockets<'_> =
-        WebSockets::new_with_subscription("!ticker@arr", |_event: WebsocketEvent| Ok(()));
+        WebSockets::new(|_event: WebsocketEvent| Ok(()));
+    web_socket_subscribed.connect("!ticker@arr").unwrap();
 
     let mut web_socket: WebSockets<'_> = WebSockets::new(|_event: WebsocketEvent| Ok(()));
 

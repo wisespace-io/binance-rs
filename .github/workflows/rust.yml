@@ -19,7 +19,7 @@ jobs:
           toolchain: nightly-2022-10-15
           override: true
           components: clippy
-      - run: cargo clippy --tests --examples
+      - run: cargo clippy --all-targets
 
   test:
     name: test
