@@ -13,16 +13,20 @@ pub struct FuturesUserStream {
 impl FuturesUserStream {
     // User Stream
     pub async fn start(&self) -> Result<UserDataStream> {
-        self.client.post(API::Futures(Futures::UserDataStream)).await
+        self.client
+            .post(API::Futures(Futures::UserDataStream))
+            .await
     }
 
     pub async fn keep_alive(&self, listen_key: &str) -> Result<Success> {
         self.client
-            .put(API::Futures(Futures::UserDataStream), listen_key).await
+            .put(API::Futures(Futures::UserDataStream), listen_key)
+            .await
     }
 
     pub async fn close(&self, listen_key: &str) -> Result<Success> {
         self.client
-            .delete(API::Futures(Futures::UserDataStream), listen_key).await
+            .delete(API::Futures(Futures::UserDataStream), listen_key)
+            .await
     }
 }

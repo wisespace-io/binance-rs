@@ -26,7 +26,9 @@ impl FuturesGeneral {
     // Obtain exchange information
     // - Current exchange trading rules and symbol information
     pub async fn exchange_info(&self) -> Result<ExchangeInformation> {
-        self.client.get(API::Futures(Futures::ExchangeInfo), None).await
+        self.client
+            .get(API::Futures(Futures::ExchangeInfo), None)
+            .await
     }
 
     // Get Symbol information

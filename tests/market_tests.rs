@@ -310,7 +310,10 @@ mod tests {
         let config = Config::default().set_rest_api_endpoint(mockito::server_url());
         let market: Market = Binance::new_with_config(None, None, &config);
 
-        let klines = market.get_klines("LTCBTC", "5m", 10, None, None).await.unwrap();
+        let klines = market
+            .get_klines("LTCBTC", "5m", 10, None, None)
+            .await
+            .unwrap();
         mock_get_klines.assert();
 
         match klines {

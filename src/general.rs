@@ -14,7 +14,9 @@ pub struct General {
 impl General {
     // Test connectivity
     pub async fn ping(&self) -> Result<String> {
-        self.client.get::<Empty>(API::Spot(Spot::Ping), None).await?;
+        self.client
+            .get::<Empty>(API::Spot(Spot::Ping), None)
+            .await?;
         Ok("pong".into())
     }
 

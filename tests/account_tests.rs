@@ -444,7 +444,10 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        match account.market_buy_using_quote_quantity("BNBBTC", 0.002).await {
+        match account
+            .market_buy_using_quote_quantity("BNBBTC", 0.002)
+            .await
+        {
             Ok(answer) => {
                 assert!(answer.order_id == 1);
             }
@@ -469,7 +472,8 @@ mod tests {
         let _ = env_logger::try_init();
         account
             .test_market_buy_using_quote_quantity("BNBBTC", 0.002)
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_test_market_buy_using_quote_quantity.assert();
     }
@@ -548,7 +552,10 @@ mod tests {
             .set_recv_window(1234);
         let account: Account = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        match account.market_sell_using_quote_quantity("BNBBTC", 0.002).await {
+        match account
+            .market_sell_using_quote_quantity("BNBBTC", 0.002)
+            .await
+        {
             Ok(answer) => {
                 assert!(answer.order_id == 1);
             }
@@ -573,7 +580,8 @@ mod tests {
         let _ = env_logger::try_init();
         account
             .test_market_sell_using_quote_quantity("BNBBTC", 0.002)
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_test_market_sell_using_quote_quantity.assert();
     }
@@ -593,7 +601,8 @@ mod tests {
         let _ = env_logger::try_init();
         let transaction: Transaction = account
             .stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_stop_limit_buy_order.assert();
 
@@ -633,7 +642,8 @@ mod tests {
         let _ = env_logger::try_init();
         account
             .test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_test_stop_limit_buy_order.assert();
     }
@@ -653,7 +663,8 @@ mod tests {
         let _ = env_logger::try_init();
         let transaction: Transaction = account
             .stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_stop_limit_sell_order.assert();
 
@@ -693,7 +704,8 @@ mod tests {
         let _ = env_logger::try_init();
         account
             .test_stop_limit_sell_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_test_stop_limit_sell_order.assert();
     }
@@ -722,7 +734,8 @@ mod tests {
                 TimeInForce::GTC,
                 Some("6gCrw2kRUAF9CvJDGP16IP".into()),
             )
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_custom_order.assert();
 
@@ -771,7 +784,8 @@ mod tests {
                 TimeInForce::GTC,
                 None,
             )
-            .await.unwrap();
+            .await
+            .unwrap();
 
         mock_test_custom_order.assert();
     }

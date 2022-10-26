@@ -67,7 +67,9 @@ impl Market {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(parameters);
-        self.client.get(API::Spot(Spot::AvgPrice), Some(request)).await
+        self.client
+            .get(API::Spot(Spot::AvgPrice), Some(request))
+            .await
     }
 
     // Symbols order book ticker
@@ -84,7 +86,9 @@ impl Market {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(parameters);
-        self.client.get(API::Spot(Spot::BookTicker), Some(request)).await
+        self.client
+            .get(API::Spot(Spot::BookTicker), Some(request))
+            .await
     }
 
     // 24hr ticker price change statistics
@@ -95,7 +99,9 @@ impl Market {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         let request = build_request(parameters);
-        self.client.get(API::Spot(Spot::Ticker24hr), Some(request)).await
+        self.client
+            .get(API::Spot(Spot::Ticker24hr), Some(request))
+            .await
     }
 
     // 24hr ticker price change statistics for all symbols
@@ -137,7 +143,9 @@ impl Market {
 
         let request = build_request(parameters);
 
-        self.client.get(API::Spot(Spot::AggTrades), Some(request)).await
+        self.client
+            .get(API::Spot(Spot::AggTrades), Some(request))
+            .await
     }
 
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
@@ -169,7 +177,10 @@ impl Market {
         }
 
         let request = build_request(parameters);
-        let data: Vec<Vec<Value>> = self.client.get(API::Spot(Spot::Klines), Some(request)).await?;
+        let data: Vec<Vec<Value>> = self
+            .client
+            .get(API::Spot(Spot::Klines), Some(request))
+            .await?;
 
         let klines = KlineSummaries::AllKlineSummaries(
             data.iter()

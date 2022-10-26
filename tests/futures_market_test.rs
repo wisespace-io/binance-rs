@@ -22,7 +22,8 @@ mod tests {
 
         let open_interest_hists = market
             .open_interest_statistics("BTCUSDT", "5m", 10, None, None)
-            .await.unwrap();
+            .await
+            .unwrap();
         mock_open_interest_statistics.assert();
 
         let expectation = vec![

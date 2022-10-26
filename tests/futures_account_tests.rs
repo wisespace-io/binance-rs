@@ -92,7 +92,10 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.stop_market_close_buy("SRMUSDT", 10.5).await.unwrap();
+        let transaction: Transaction = account
+            .stop_market_close_buy("SRMUSDT", 10.5)
+            .await
+            .unwrap();
 
         mock_stop_market_close_sell.assert();
 
@@ -116,7 +119,10 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let transaction: Transaction = account.stop_market_close_sell("SRMUSDT", 7.4).await.unwrap();
+        let transaction: Transaction = account
+            .stop_market_close_sell("SRMUSDT", 7.4)
+            .await
+            .unwrap();
 
         mock_stop_market_close_sell.assert();
 

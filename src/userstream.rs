@@ -18,11 +18,14 @@ impl UserStream {
 
     // Current open orders on a symbol
     pub async fn keep_alive(&self, listen_key: &str) -> Result<Success> {
-        self.client.put(API::Spot(Spot::UserDataStream), listen_key).await
+        self.client
+            .put(API::Spot(Spot::UserDataStream), listen_key)
+            .await
     }
 
     pub async fn close(&self, listen_key: &str) -> Result<Success> {
         self.client
-            .delete(API::Spot(Spot::UserDataStream), listen_key).await
+            .delete(API::Spot(Spot::UserDataStream), listen_key)
+            .await
     }
 }
