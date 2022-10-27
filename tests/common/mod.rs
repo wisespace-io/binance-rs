@@ -40,30 +40,29 @@ where
         }
     }
 
-    pub fn with_body_from_file(self, path: impl AsRef<Path>) -> (Mock, B)
+    fn setup(&mut self) -> B {
+        let _ = env_logger::try_init();
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(RECV_WINDOW);
+
+        Binance::new_with_config(None, None, &config)
+    }
+
+    pub fn with_body_from_file(mut self, path: impl AsRef<Path>) -> (Mock, B)
     where
         B: Binance,
     {
-        let _ = env_logger::try_init();
+        let client = self.setup();
         let mock = self.mock.with_body_from_file(path).create();
 
-        let config = Config::default()
-            .set_rest_api_endpoint(mockito::server_url())
-            .set_recv_window(RECV_WINDOW);
-
-        let client = Binance::new_with_config(None, None, &config);
         (mock, client)
     }
 
-    pub fn with_empty_body(self) -> (Mock, B) {
-        let _ = env_logger::try_init();
+    pub fn with_empty_body(mut self) -> (Mock, B) {
+        let client = self.setup();
         let mock = self.mock.with_body("{}").create();
 
-        let config = Config::default()
-            .set_rest_api_endpoint(mockito::server_url())
-            .set_recv_window(RECV_WINDOW);
-
-        let client = Binance::new_with_config(None, None, &config);
         (mock, client)
     }
 }
