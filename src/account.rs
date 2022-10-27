@@ -117,19 +117,14 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: HashMap<&'static str, String> = HashMap::new();
-        parameters.insert("symbol", symbol.into());
-
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request([("symbol", symbol.into())].into(), self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
     // All current open orders
     pub fn get_all_open_orders(&self) -> Result<Vec<Order>> {
-        let parameters: HashMap<&'static str, String> = HashMap::new();
-
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request(HashMap::new(), self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
@@ -139,9 +134,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: HashMap<&'static str, String> = HashMap::new();
-        parameters.insert("symbol", symbol.into());
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request([("symbol", symbol.into())].into(), self.recv_window)?;
         self.client
             .delete_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
@@ -151,9 +144,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: HashMap<&'static str, String> = HashMap::new();
-        parameters.insert("symbol", symbol.into());
-        parameters.insert("orderId", order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -167,9 +158,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: HashMap<&'static str, String> = HashMap::new();
-        parameters.insert("symbol", symbol.into());
-        parameters.insert("orderId", order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -668,9 +657,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: HashMap<&'static str, String> = HashMap::new();
-        parameters.insert("symbol", symbol.into());
-        parameters.insert("orderId", order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -698,9 +685,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: HashMap<&'static str, String> = HashMap::new();
-        parameters.insert("symbol", symbol.into());
-        parameters.insert("orderId", order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .delete_signed::<Empty>(API::Spot(Spot::OrderTest), Some(request))
