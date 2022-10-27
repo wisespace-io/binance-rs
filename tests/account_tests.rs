@@ -13,13 +13,11 @@ mod tests {
     fn get_account() {
         let mock_get_account = mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                    Matcher::Regex("signature=.*".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::Regex("signature=.*".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/get_account.json")
             .create();
 
@@ -57,13 +55,11 @@ mod tests {
     fn get_balance() {
         let mock_get_account = mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                    Matcher::Regex("signature=.*".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::Regex("signature=.*".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/get_account.json")
             .create();
 
@@ -85,13 +81,11 @@ mod tests {
     fn get_open_orders() {
         let mock_open_orders = mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/get_open_orders.json")
             .create();
 
@@ -131,12 +125,10 @@ mod tests {
     fn get_all_open_orders() {
         let mock_open_orders = mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/get_open_orders.json")
             .create();
 
@@ -176,13 +168,11 @@ mod tests {
     fn cancel_all_open_orders() {
         let mock_cancel_all_open_orders = mock("DELETE", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::UrlEncoded("symbol".to_string(), "BTCUSDT".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "BTCUSDT".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/cancel_all_open_orders.json")
             .create();
 
@@ -285,18 +275,16 @@ mod tests {
     fn limit_buy() {
         let mock_limit_buy = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
-                    Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
-                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
-                    Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
-                    Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
+                Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/limit_buy.json")
             .create();
 
@@ -351,18 +339,16 @@ mod tests {
     fn limit_sell() {
         let mock_limit_sell = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
-                    Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
-                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
-                    Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
-                    Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
+                Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/limit_sell.json")
             .create();
 
@@ -399,18 +385,16 @@ mod tests {
     fn test_limit_sell() {
         let mock_test_limit_sell = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(
-                Matcher::AllOf(vec![
-                    Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
-                    Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
-                    Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
-                    Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
-                    Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
-                    Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
-                    Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
-                    Matcher::Regex("timestamp=\\d+".to_string()),
-                ])
-            )
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("price".to_string(), "0.1".to_string()),
+                Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), "1234".to_string()),
+                Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "LIMIT".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+            ]))
             .with_body("{}")
             .create();
 
@@ -489,7 +473,15 @@ mod tests {
     fn market_buy_using_quote_quantity() {
         let mock_market_buy_using_quote_quantity = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=BUY&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+                Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "BNBBTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".into()),
+                Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
+                Matcher::Regex("signature=.*".into()),
+            ]))
             .with_body_from_file("tests/mocks/account/market_buy_using_quote_quantity.json")
             .create();
 
@@ -572,10 +564,14 @@ mod tests {
     fn test_market_sell() {
         let mock_test_market_sell = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex(
-                "quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
-                    .into(),
-            ))
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+                Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
+            ]))
             .with_body("{}")
             .create();
 
@@ -593,7 +589,15 @@ mod tests {
     fn market_sell_using_quote_quantity() {
         let mock_market_sell_using_quote_quantity = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=SELL&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+                Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "BNBBTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
+                Matcher::Regex("signature=.*".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/market_sell_using_quote_quantity.json")
             .create();
 
@@ -616,7 +620,15 @@ mod tests {
     fn test_market_sell_using_quote_quantity() {
         let mock_test_market_sell_using_quote_quantity = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quoteOrderQty=0.002&recvWindow=1234&side=SELL&symbol=BNBBTC&timestamp=\\d+&type=MARKET&signature=.*".into()))
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+                Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "BNBBTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
+                Matcher::Regex("signature=.*".to_string()),
+            ]))
             .with_body("{}")
             .create();
 
@@ -636,7 +648,17 @@ mod tests {
     fn stop_limit_buy_order() {
         let mock_stop_limit_buy_order = mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&stopPrice=0.09&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=STOP_LOSS_LIMIT".into()))
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("price".to_string(), 0.1.to_string()),
+                Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+                Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
+                Matcher::UrlEncoded("stopPrice".to_string(), 0.09.to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "STOP_LOSS_LIMIT".to_string()),
+            ]))
             .with_body_from_file("tests/mocks/account/stop_limit_buy.json")
             .create();
 
@@ -676,7 +698,17 @@ mod tests {
     fn test_stop_limit_buy_order() {
         let mock_test_stop_limit_buy_order = mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("price=0.1&quantity=1&recvWindow=1234&side=BUY&stopPrice=0.09&symbol=LTCBTC&timeInForce=GTC&timestamp=\\d+&type=STOP_LOSS_LIMIT".into()))
+            .match_query(Matcher::AllOf(vec![
+                Matcher::UrlEncoded("price".to_string(), 0.1.to_string()),
+                Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
+                Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+                Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
+                Matcher::UrlEncoded("stopPrice".to_string(), 0.09.to_string()),
+                Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+                Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
+                Matcher::Regex("timestamp=\\d+".to_string()),
+                Matcher::UrlEncoded("type".to_string(), "STOP_LOSS_LIMIT".to_string()),
+            ]))
             .with_body("{}")
             .create();
 
