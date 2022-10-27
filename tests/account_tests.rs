@@ -1,9 +1,6 @@
 use std::vec;
 
-use binance::api::Binance;
-use binance::config::Config;
 use binance::account::{Account, OrderSide, OrderType, TimeInForce};
-use binance::model::{OrderCanceled, Transaction};
 
 use mockito::{self, Matcher};
 use float_cmp::assert_approx_eq;
@@ -11,9 +8,6 @@ use float_cmp::assert_approx_eq;
 mod common;
 
 type TestBuilder = common::Builder<Account>;
-
-const CONTENT_TYPE: &str = "application/json;charset=UTF-8";
-const RECV_WINDOW: u64 = 1234;
 
 #[test]
 fn get_account() {
@@ -179,7 +173,7 @@ fn cancel_all_open_orders() {
         "pXLV6Hz6mprAcVYpVMTGgx"
     );
 
-    let second_order_cancelled: OrderCanceled = cancel_all_open_orders[1].clone();
+    let second_order_cancelled = cancel_all_open_orders[1].clone();
     assert_eq!(second_order_cancelled.symbol, symbol);
     assert_eq!(
         second_order_cancelled.orig_client_order_id.unwrap(),
@@ -433,7 +427,6 @@ fn market_buy_using_quote_quantity() {
         "/api/v3/order",
         vec![
             Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
             Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
             Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::Regex("timestamp=\\d+".into()),
@@ -454,31 +447,25 @@ fn market_buy_using_quote_quantity() {
 #[test]
 fn test_market_buy_using_quote_quantity() {
     let symbol = "BNBBTC";
-    let mock_test_market_buy_using_quote_quantity = mockito::mock("POST", "/api/v3/order/test")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
-            Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order/test",
+        vec![
             Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
             Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
             Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::Regex("timestamp=\\d+".into()),
             Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
             Matcher::Regex("signature=.*".into()),
-        ]))
-        .with_body("{}")
-        .create();
+        ],
+    )
+    .with_empty_body();
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let account: Account = Binance::new_with_config(None, None, &config);
-    let _ = env_logger::try_init();
-    account
+    client
         .test_market_buy_using_quote_quantity(symbol, 0.002)
         .unwrap();
 
-    mock_test_market_buy_using_quote_quantity.assert();
+    mock.assert();
 }
 
 #[test]
@@ -518,118 +505,100 @@ fn market_sell() {
 
 #[test]
 fn test_market_sell() {
-    let mock_test_market_sell = mockito::mock("POST", "/api/v3/order/test")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order/test",
+        vec![
             Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
             Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
             Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
-        ]))
-        .with_body("{}")
-        .create();
+        ],
+    )
+    .with_empty_body();
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let account: Account = Binance::new_with_config(None, None, &config);
-    let _ = env_logger::try_init();
-    account.test_market_sell("LTCBTC", 1).unwrap();
+    client.test_market_sell("LTCBTC", 1).unwrap();
 
-    mock_test_market_sell.assert();
+    mock.assert();
 }
 
 #[test]
 fn market_sell_using_quote_quantity() {
-    let mock_market_sell_using_quote_quantity = mockito::mock("POST", "/api/v3/order")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
-            Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
+    let symbol = "BNBBTC";
+    let quote_order_qty = 0.002;
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order",
+        vec![
+            Matcher::UrlEncoded("quoteOrderQty".to_string(), quote_order_qty.to_string()),
             Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
-            Matcher::UrlEncoded("symbol".to_string(), "BNBBTC".to_string()),
+            Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
             Matcher::Regex("signature=.*".to_string()),
-        ]))
-        .with_body_from_file("tests/mocks/account/market_sell_using_quote_quantity.json")
-        .create();
+        ],
+    )
+    .with_body_from_file("tests/mocks/account/market_sell_using_quote_quantity.json");
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let account: Account = Binance::new_with_config(None, None, &config);
-    let _ = env_logger::try_init();
-    match account.market_sell_using_quote_quantity("BNBBTC", 0.002) {
-        Ok(answer) => {
-            assert!(answer.order_id == 1);
-        }
-        Err(e) => panic!("Error: {}", e),
-    }
+    let transaction = client
+        .market_sell_using_quote_quantity(symbol, quote_order_qty)
+        .unwrap();
 
-    mock_market_sell_using_quote_quantity.assert();
+    assert!(transaction.order_id == 1);
+    mock.assert();
 }
 
 #[test]
 fn test_market_sell_using_quote_quantity() {
-    let mock_test_market_sell_using_quote_quantity = mockito::mock("POST", "/api/v3/order/test")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
+    let symbol = "BNBBTC";
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order/test",
+        vec![
             Matcher::UrlEncoded("quoteOrderQty".to_string(), 0.002.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
             Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
-            Matcher::UrlEncoded("symbol".to_string(), "BNBBTC".to_string()),
+            Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
             Matcher::Regex("signature=.*".to_string()),
-        ]))
-        .with_body("{}")
-        .create();
+        ],
+    )
+    .with_empty_body();
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let account: Account = Binance::new_with_config(None, None, &config);
-    let _ = env_logger::try_init();
-    account
-        .test_market_sell_using_quote_quantity("BNBBTC", 0.002)
+    client
+        .test_market_sell_using_quote_quantity(symbol, 0.002)
         .unwrap();
 
-    mock_test_market_sell_using_quote_quantity.assert();
+    mock.assert();
 }
 
 #[test]
 fn stop_limit_buy_order() {
-    let mock_stop_limit_buy_order = mockito::mock("POST", "/api/v3/order")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
+    let symbol = "LTCBTC";
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order",
+        vec![
             Matcher::UrlEncoded("price".to_string(), 0.1.to_string()),
             Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
             Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
             Matcher::UrlEncoded("stopPrice".to_string(), 0.09.to_string()),
-            Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
+            Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "STOP_LOSS_LIMIT".to_string()),
-        ]))
-        .with_body_from_file("tests/mocks/account/stop_limit_buy.json")
-        .create();
+        ],
+    )
+    .with_body_from_file("tests/mocks/account/stop_limit_buy.json");
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let account: Account = Binance::new_with_config(None, None, &config);
-    let _ = env_logger::try_init();
-    let transaction: Transaction = account
-        .stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
+    let transaction = client
+        .stop_limit_buy_order(symbol, 1, 0.1, 0.09, TimeInForce::GTC)
         .unwrap();
 
-    mock_stop_limit_buy_order.assert();
+    mock.assert();
 
-    assert_eq!(transaction.symbol, "LTCBTC");
+    assert_eq!(transaction.symbol, symbol);
     assert_eq!(transaction.order_id, 1);
     assert_eq!(transaction.order_list_id.unwrap(), -1);
     assert_eq!(transaction.client_order_id, "6gCrw2kRUAF9CvJDGP16IP");
@@ -647,32 +616,27 @@ fn stop_limit_buy_order() {
 
 #[test]
 fn test_stop_limit_buy_order() {
-    let mock_test_stop_limit_buy_order = mockito::mock("POST", "/api/v3/order/test")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order/test",
+        vec![
             Matcher::UrlEncoded("price".to_string(), 0.1.to_string()),
             Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
-            Matcher::UrlEncoded("recvWindow".to_string(), RECV_WINDOW.to_string()),
             Matcher::UrlEncoded("side".to_string(), "BUY".to_string()),
             Matcher::UrlEncoded("stopPrice".to_string(), 0.09.to_string()),
             Matcher::UrlEncoded("symbol".to_string(), "LTCBTC".to_string()),
             Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "STOP_LOSS_LIMIT".to_string()),
-        ]))
-        .with_body("{}")
-        .create();
+        ],
+    )
+    .with_empty_body();
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let account: Account = Binance::new_with_config(None, None, &config);
-    let _ = env_logger::try_init();
-    account
+    client
         .test_stop_limit_buy_order("LTCBTC", 1, 0.1, 0.09, TimeInForce::GTC)
         .unwrap();
 
-    mock_test_stop_limit_buy_order.assert();
+    mock.assert();
 }
 
 #[test]
@@ -683,8 +647,9 @@ fn stop_limit_sell_order() {
         "/api/v3/order",
         vec![
             Matcher::UrlEncoded("price".to_string(), 0.1.to_string()),
+            Matcher::UrlEncoded("quantity".to_string(), 1.to_string()),
             Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
-            Matcher::UrlEncoded("stopPrice".to_string(), 0.to_string()),
+            Matcher::UrlEncoded("stopPrice".to_string(), 0.09.to_string()),
             Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
@@ -719,10 +684,10 @@ fn stop_limit_sell_order() {
 fn test_stop_limit_sell_order() {
     let symbol = "LTCBTC";
     let stop_price = 0.09;
-    let mock = mockito::mock("POST", "/api/v3/order/test")
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(vec![
-            Matcher::UrlEncoded("recvWindow".to_string(), 1234.to_string()),
+    let (mock, client) = TestBuilder::new(
+        "POST",
+        "/api/v3/order/test",
+        vec![
             Matcher::UrlEncoded("price".to_string(), 0.1.to_string()),
             Matcher::UrlEncoded("side".to_string(), "SELL".to_string()),
             Matcher::UrlEncoded("stopPrice".to_string(), stop_price.to_string()),
@@ -730,14 +695,10 @@ fn test_stop_limit_sell_order() {
             Matcher::UrlEncoded("timeInForce".to_string(), "GTC".to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "STOP_LOSS_LIMIT".to_string()),
-        ]))
-        .with_body("{}")
-        .create();
+        ],
+    )
+    .with_empty_body();
 
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-    let client: Account = Binance::new_with_config(None, None, &config);
     client
         .test_stop_limit_sell_order(symbol, 1, 0.1, stop_price, TimeInForce::GTC)
         .unwrap();
@@ -834,7 +795,7 @@ fn test_custom_order() {
 
 #[test]
 fn cancel_order() {
-    let symbol = "BTCUSDT";
+    let symbol = "LTCBTC";
     let (mock, client) = TestBuilder::new(
         "DELETE",
         "/api/v3/order",
