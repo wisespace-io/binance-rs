@@ -67,30 +67,3 @@ where
         (mock, client)
     }
 }
-
-pub fn setup_mock_from_file<P, B>(
-    method: &str, path: P, extra_query_matchers: Vec<Matcher>, body: impl AsRef<Path>,
-) -> (Mock, B)
-where
-    P: Into<Matcher>,
-    B: Binance,
-{
-    let mut query_matchers = vec![Matcher::UrlEncoded(
-        "recvWindow".to_string(),
-        RECV_WINDOW.to_string(),
-    )];
-    query_matchers.extend(extra_query_matchers);
-
-    let mock = mockito::mock(method, path)
-        .with_header("content-type", CONTENT_TYPE)
-        .match_query(Matcher::AllOf(query_matchers))
-        .with_body_from_file(body)
-        .create();
-
-    let config = Config::default()
-        .set_rest_api_endpoint(mockito::server_url())
-        .set_recv_window(RECV_WINDOW);
-
-    let client = Binance::new_with_config(None, None, &config);
-    (mock, client)
-}

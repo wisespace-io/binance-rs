@@ -1,4 +1,3 @@
-use std::path::Path;
 use std::vec;
 
 use binance::api::Binance;
@@ -6,7 +5,7 @@ use binance::config::Config;
 use binance::account::{Account, OrderSide, OrderType, TimeInForce};
 use binance::model::{OrderCanceled, Transaction};
 
-use mockito::{self, Matcher, Mock};
+use mockito::{self, Matcher};
 use float_cmp::assert_approx_eq;
 
 mod common;
@@ -15,15 +14,6 @@ type TestBuilder = common::Builder<Account>;
 
 const CONTENT_TYPE: &str = "application/json;charset=UTF-8";
 const RECV_WINDOW: u64 = 1234;
-
-fn setup_mock_from_file<P>(
-    method: &str, path: P, extra_query_matchers: Vec<Matcher>, body: impl AsRef<Path>,
-) -> (Mock, Account)
-where
-    P: Into<Matcher>,
-{
-    common::setup_mock_from_file(method, path, extra_query_matchers, body)
-}
 
 #[test]
 fn get_account() {
@@ -438,7 +428,7 @@ fn test_market_buy() {
 #[test]
 fn market_buy_using_quote_quantity() {
     let symbol = "BNBBTC";
-    let (mock, client) = setup_mock_from_file(
+    let (mock, client) = TestBuilder::new(
         "POST",
         "/api/v3/order",
         vec![
@@ -450,8 +440,8 @@ fn market_buy_using_quote_quantity() {
             Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
             Matcher::Regex("signature=.*".into()),
         ],
-        "tests/mocks/account/market_buy_using_quote_quantity.json",
-    );
+    )
+    .with_body_from_file("tests/mocks/account/market_buy_using_quote_quantity.json");
 
     let transaction = client
         .market_buy_using_quote_quantity(symbol, 0.002)
@@ -494,7 +484,7 @@ fn test_market_buy_using_quote_quantity() {
 #[test]
 fn market_sell() {
     let symbol = "LTCBTC";
-    let (mock, client) = setup_mock_from_file(
+    let (mock, client) = TestBuilder::new(
         "POST",
         "/api/v3/order",
         vec![
@@ -504,8 +494,8 @@ fn market_sell() {
             Matcher::Regex("timestamp=\\d+".into()),
             Matcher::UrlEncoded("type".to_string(), "MARKET".to_string()),
         ],
-        "tests/mocks/account/market_sell.json",
-    );
+    )
+    .with_body_from_file("tests/mocks/account/market_sell.json");
 
     let transaction = client.market_sell(symbol, 1).unwrap();
 
@@ -688,7 +678,7 @@ fn test_stop_limit_buy_order() {
 #[test]
 fn stop_limit_sell_order() {
     let symbol = "LTCBTC";
-    let (mock, client) = setup_mock_from_file(
+    let (mock, client) = TestBuilder::new(
         "POST",
         "/api/v3/order",
         vec![
@@ -700,8 +690,8 @@ fn stop_limit_sell_order() {
             Matcher::Regex("timestamp=\\d+".to_string()),
             Matcher::UrlEncoded("type".to_string(), "STOP_LOSS_LIMIT".to_string()),
         ],
-        "tests/mocks/account/stop_limit_sell.json",
-    );
+    )
+    .with_body_from_file("tests/mocks/account/stop_limit_sell.json");
 
     let transaction = client
         .stop_limit_sell_order(symbol, 1, 0.1, 0.09, TimeInForce::GTC)
@@ -888,15 +878,15 @@ fn test_cancel_order() {
 #[test]
 fn trade_history() {
     let symbol = "BTCUSDT";
-    let (mock, client) = setup_mock_from_file(
+    let (mock, client) = TestBuilder::new(
         "GET",
         "/api/v3/myTrades",
         vec![
             Matcher::UrlEncoded("symbol".to_string(), symbol.to_string()),
             Matcher::Regex("timestamp=\\d+".to_string()),
         ],
-        "tests/mocks/account/trade_history.json",
-    );
+    )
+    .with_body_from_file("tests/mocks/account/trade_history.json");
 
     let histories = client.trade_history(symbol).unwrap();
 
