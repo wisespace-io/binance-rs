@@ -296,7 +296,7 @@ fn main() {
     if let Ok(answer) = user_stream.start() {
 	let listen_key = answer.listen_key;
 
-	let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+	let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
 	    match event {
 		WebsocketEvent::AccountUpdate(account_update) => {
 		    for balance in &account_update.balance {
@@ -333,8 +333,8 @@ use std::sync::atomic::{AtomicBool};
 
 fn main() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
-    let agg_trade: String = format!("!ticker@arr"); // All Symbols
-    let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+    let agg_trade = format!("!ticker@arr"); // All Symbols
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
 	match event {
         // 24hr rolling window ticker statistics for all symbols that changed in an array.
 	    WebsocketEvent::DayTickerAll(ticker_events) => {
@@ -371,8 +371,8 @@ use std::sync::atomic::{AtomicBool};
 
 fn main() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
-    let kline: String = format!("{}", "ethbtc@kline_1m");
-    let mut web_socket: WebSockets = WebSockets::new(|event: WebsocketEvent| {
+    let kline = format!("{}", "ethbtc@kline_1m");
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         match event {
             WebsocketEvent::Kline(kline_event) => {
                 println!("Symbol: {}, high: {}, low: {}", kline_event.kline.symbol, kline_event.kline.low, kline_event.kline.high);
@@ -402,15 +402,11 @@ use binance::websockets::*;
 use std::sync::atomic::{AtomicBool};
 
 fn main() {
-    let symbols: Vec<_> = vec!["ethbtc", "bnbeth"].into_iter().map(String::from).collect();
-    let mut endpoints: Vec<String> = Vec::new();
-
-    for symbol in symbols.iter() {
-        endpoints.push(format!("{}@depth@100ms", symbol.to_lowercase()));
-    }
+    let endpoints = ["ETHBTC", "BNBETH"]
+        .map(|symbol| format!("{}@depth@100ms", symbol.to_lowercase()));
 
     let keep_running = AtomicBool::new(true);
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         if let WebsocketEvent::DepthOrderBook(depth_order_book) = event {
             println!("{:?}", depth_order_book);
         }

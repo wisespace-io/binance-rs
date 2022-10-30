@@ -213,7 +213,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Sell,
             position_side: None,
@@ -269,7 +269,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Buy,
             position_side: None,
@@ -297,7 +297,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Sell,
             position_side: None,
@@ -321,7 +321,7 @@ impl FuturesAccount {
 
     // Custom order for for professional traders
     pub fn custom_order(&self, order_request: CustomOrderRequest) -> Result<Transaction> {
-        let order: OrderRequest = OrderRequest {
+        let order = OrderRequest {
             symbol: order_request.symbol,
             side: order_request.side,
             position_side: order_request.position_side,
