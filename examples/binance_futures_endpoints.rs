@@ -1,7 +1,9 @@
-use binance::api::*;
-use binance::futures::general::*;
-use binance::futures::market::*;
-use binance::futures::model::*;
+use binance::api::Binance;
+use binance::futures::general::FuturesGeneral;
+use binance::futures::market::FuturesMarket;
+use binance::futures::model::{
+    AggTrades, BookTickers, KlineSummaries, LiquidationOrders, MarkPrices, Trades,
+};
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
