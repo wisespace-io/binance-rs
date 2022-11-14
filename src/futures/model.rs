@@ -77,6 +77,30 @@ pub struct PriceStats {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TradeHistory {
+    pub buyer: bool,
+    #[serde(with = "string_or_float")]
+    pub commission: f64,
+    pub commission_asset: String,
+    pub id: u64,
+    pub maker: bool,
+    pub order_id: u64,
+    #[serde(with = "string_or_float")]
+    pub price: f64,
+    #[serde(with = "string_or_float")]
+    pub qty: f64,
+    #[serde(with = "string_or_float")]
+    pub quote_qty: f64,
+    #[serde(with = "string_or_float")]
+    pub realized_pnl: f64,
+    pub side: String,
+    pub position_side: String,
+    pub symbol: String,
+    pub time: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum Trades {
     AllTrades(Vec<Trade>),

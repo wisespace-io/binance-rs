@@ -7,6 +7,7 @@ use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
+use crate::futures::model::{Order, TradeHistory};
 use super::model::{
     ChangeLeverageResponse, Transaction, CanceledOrder, PositionRisk, AccountBalance,
     AccountInformation,
@@ -343,6 +344,57 @@ impl FuturesAccount {
             .post_signed(API::Futures(Futures::Order), request)
     }
 
+    pub fn get_all_orders<S, F, N>(&self, symbol: S, order_id: F, start_time: F, end_time: F, limit: N) -> Result<Vec<Order>>
+    where
+        S: Into<String>,
+        F: Into<Option<u64>>,
+        N: Into<Option<u16>>,
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        if let Some(order_id) = order_id.into() {
+            parameters.insert("orderId".into(), order_id.to_string());
+        }
+        if let Some(start_time) = start_time.into() {
+            parameters.insert("startTime".into(), start_time.to_string());
+        }
+        if let Some(end_time) = end_time.into() {
+            parameters.insert("endTime".into(), end_time.to_string());
+        }
+        if let Some(limit) = limit.into() {
+            parameters.insert("limit".into(), limit.to_string());
+        }
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::Futures(Futures::AllOrders), Some(request))
+    }
+    
+    pub fn get_user_trades<S, F, N>(&self, symbol: S, from_id: F, start_time: F, end_time: F, limit: N) -> Result<Vec<TradeHistory>>
+        where
+              S: Into<String>,
+              F: Into<Option<u64>>,
+              N: Into<Option<u16>>,
+    {
+        let mut parameters = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        if let Some(order_id) = from_id.into() {
+            parameters.insert("fromId".into(), order_id.to_string());
+        }
+        if let Some(start_time) = start_time.into() {
+            parameters.insert("startTime".into(), start_time.to_string());
+        }
+        if let Some(end_time) = end_time.into() {
+            parameters.insert("endTime".into(), end_time.to_string());
+        }
+        if let Some(limit) = limit.into() {
+            parameters.insert("limit".into(), limit.to_string());
+        }
+        
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::Futures(Futures::UserTrades), Some(request))
+    }
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), order.symbol);
