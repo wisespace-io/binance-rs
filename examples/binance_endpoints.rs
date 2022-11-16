@@ -1,9 +1,9 @@
-use binance::api::*;
-use binance::savings::*;
-use binance::config::*;
-use binance::general::*;
-use binance::account::*;
-use binance::market::*;
+use binance::api::Binance;
+use binance::savings::Savings;
+use binance::config::Config;
+use binance::general::General;
+use binance::account::Account;
+use binance::market::Market;
 use binance::model::KlineSummary;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 

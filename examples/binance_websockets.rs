@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use binance::api::*;
-use binance::userstream::*;
-use binance::websockets::*;
+use binance::api::Binance;
+use binance::userstream::UserStream;
+use binance::websockets::{WebSockets, WebsocketEvent};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 fn main() {

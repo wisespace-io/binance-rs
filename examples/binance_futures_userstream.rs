@@ -1,5 +1,5 @@
-use binance::api::*;
-use binance::futures::userstream::*;
+use binance::api::Binance;
+use binance::futures::userstream::FuturesUserStream;
 
 fn main() {
     user_stream();
