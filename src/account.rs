@@ -183,7 +183,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let buy = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -206,7 +206,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let buy = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -229,7 +229,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -252,7 +252,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -275,7 +275,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let buy = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -298,7 +298,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderRequest = OrderRequest {
+        let buy = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -323,7 +323,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let buy = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -347,7 +347,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let buy = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -369,7 +369,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -392,7 +392,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price: 0.0,
@@ -417,7 +417,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let sell = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -441,7 +441,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderQuoteQuantityRequest = OrderQuoteQuantityRequest {
+        let sell = OrderQuoteQuantityRequest {
             symbol: symbol.into(),
             quote_order_qty: quote_order_qty.into(),
             price: 0.0,
@@ -478,7 +478,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -516,7 +516,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -554,7 +554,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -592,7 +592,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -619,7 +619,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
@@ -646,7 +646,7 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             qty: qty.into(),
             price,
