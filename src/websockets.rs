@@ -25,12 +25,12 @@ enum WebsocketAPI {
 impl WebsocketAPI {
     fn params(self, subscription: &str) -> String {
         match self {
-            WebsocketAPI::Default => format!("wss://stream.binance.com:9443/ws/{}", subscription),
-            WebsocketAPI::MultiStream => format!(
+            Self::Default => format!("wss://stream.binance.com:9443/ws/{}", subscription),
+            Self::MultiStream => format!(
                 "wss://stream.binance.com:9443/stream?streams={}",
                 subscription
             ),
-            WebsocketAPI::Custom(url) => format!("{}/{}", url, subscription),
+            Self::Custom(url) => format!("{}/{}", url, subscription),
         }
     }
 }

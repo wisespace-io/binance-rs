@@ -37,13 +37,13 @@ impl FuturesWebsocketAPI {
         };
 
         match self {
-            FuturesWebsocketAPI::Default => {
+            Self::Default => {
                 format!("{}/ws/{}", baseurl, subscription)
             }
-            FuturesWebsocketAPI::MultiStream => {
+            Self::MultiStream => {
                 format!("{}/stream?streams={}", baseurl, subscription)
             }
-            FuturesWebsocketAPI::Custom(url) => url,
+            Self::Custom(url) => url,
         }
     }
 }
