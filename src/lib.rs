@@ -12,7 +12,8 @@
     clippy::manual_string_new,
     clippy::single_match_else,
     clippy::implicit_clone,
-    clippy::semicolon_if_nothing_returned
+    clippy::semicolon_if_nothing_returned,
+    clippy::use_self
 )]
 
 mod client;
