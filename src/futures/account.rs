@@ -6,7 +6,7 @@ use crate::errors::Result;
 use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
-use crate::account::{OrderSide, TimeInForce};
+use crate::account::OrderSide;
 use super::model::{
     ChangeLeverageResponse, Transaction, CanceledOrder, PositionRisk, AccountBalance,
     AccountInformation,
@@ -88,6 +88,25 @@ impl Display for WorkingType {
         match self {
             Self::MarkPrice => write!(f, "MARK_PRICE"),
             Self::ContractPrice => write!(f, "CONTRACT_PRICE"),
+        }
+    }
+}
+
+#[allow(clippy::all)]
+pub enum TimeInForce {
+    GTC,
+    IOC,
+    FOK,
+    GTX,
+}
+
+impl Display for TimeInForce {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::GTC => write!(f, "GTC"),
+            Self::IOC => write!(f, "IOC"),
+            Self::FOK => write!(f, "FOK"),
+            Self::GTX => write!(f, "GTX"),
         }
     }
 }
