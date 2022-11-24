@@ -39,6 +39,6 @@ mod tests {
             },
         ];
 
-        assert_eq!(open_interest_hists, expectation)
+        assert_eq!(open_interest_hists, expectation);
     }
 }

@@ -34,8 +34,8 @@ fn save_all_trades_websocket() {
     let local_wrt = csv::Writer::from_path(file_path).unwrap();
 
     let mut web_socket_handler = WebSocketHandler::new(local_wrt);
-    let agg_trade: String = String::from("!ticker@arr");
-    let mut web_socket: WebSockets<'_> = WebSockets::new(move |event: WebsocketEvent| {
+    let agg_trade = String::from("!ticker@arr");
+    let mut web_socket = WebSockets::new(move |event: WebsocketEvent| {
         if let WebsocketEvent::DayTickerAll(events) = event {
             // You can break the event_loop if some condition is met be setting keep_running to false
             // keep_running.store(false, Ordering::Relaxed);

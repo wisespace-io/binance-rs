@@ -84,7 +84,7 @@ fn user_stream_websocket() {
 
 fn market_websocket() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
-    let agg_trade: String = String::from("ethbtc@aggTrade");
+    let agg_trade = String::from("ethbtc@aggTrade");
     let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
         match event {
             WebsocketEvent::Trade(trade) => {
@@ -121,8 +121,8 @@ fn market_websocket() {
 
 fn all_trades_websocket() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
-    let agg_trade: String = String::from("!ticker@arr");
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+    let agg_trade = String::from("!ticker@arr");
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         if let WebsocketEvent::DayTickerAll(ticker_events) = event {
             for tick_event in ticker_events {
                 println!(
@@ -145,8 +145,8 @@ fn all_trades_websocket() {
 
 fn kline_websocket() {
     let keep_running = AtomicBool::new(true);
-    let kline: String = String::from("ethbtc@kline_1m");
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+    let kline = String::from("ethbtc@kline_1m");
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         if let WebsocketEvent::Kline(kline_event) = event {
             println!(
                 "Symbol: {}, high: {}, low: {}",
@@ -167,10 +167,10 @@ fn kline_websocket() {
 
 fn last_price_for_one_symbol() {
     let keep_running = AtomicBool::new(true);
-    let agg_trade: String = String::from("btcusdt@ticker");
+    let agg_trade = String::from("btcusdt@ticker");
     let mut btcusdt: f32 = "0".parse().unwrap();
 
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         if let WebsocketEvent::DayTicker(ticker_event) = event {
             btcusdt = ticker_event.average_price.parse().unwrap();
             let btcusdt_close: f32 = ticker_event.current_close.parse().unwrap();
@@ -194,18 +194,11 @@ fn last_price_for_one_symbol() {
 }
 
 fn multiple_streams() {
-    let symbols: Vec<_> = vec!["ethbtc", "bnbeth"]
-        .into_iter()
-        .map(String::from)
-        .collect();
-    let mut endpoints: Vec<String> = Vec::new();
-
-    for symbol in symbols.iter() {
-        endpoints.push(format!("{}@depth@100ms", symbol.to_lowercase()));
-    }
+    let endpoints =
+        ["ETHBTC", "BNBETH"].map(|symbol| format!("{}@depth@100ms", symbol.to_lowercase()));
 
     let keep_running = AtomicBool::new(true);
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
+    let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         if let WebsocketEvent::DepthOrderBook(depth_order_book) = event {
             println!("{:?}", depth_order_book);
         }

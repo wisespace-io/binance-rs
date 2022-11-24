@@ -222,7 +222,7 @@ fn market_data() {
                 if trade.maker { "SELL" } else { "BUY" },
                 trade.qty,
                 trade.price
-            )
+            );
         }
         Err(e) => println!("Error: {}", e),
     }
@@ -236,7 +236,7 @@ fn market_data() {
                     println!(
                         "Open: {}, High: {}, Low: {}",
                         kline.open, kline.high, kline.low
-                    )
+                    );
                 }
             }
         }

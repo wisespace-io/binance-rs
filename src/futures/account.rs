@@ -8,6 +8,7 @@ use crate::api::{API, Futures};
 use crate::model::Empty;
 use crate::account::{OrderSide, TimeInForce};
 use crate::futures::model::{Order, TradeHistory};
+
 use super::model::{
     ChangeLeverageResponse, Transaction, CanceledOrder, PositionRisk, AccountBalance,
     AccountInformation,
@@ -89,6 +90,25 @@ impl Display for WorkingType {
         match self {
             Self::MarkPrice => write!(f, "MARK_PRICE"),
             Self::ContractPrice => write!(f, "CONTRACT_PRICE"),
+        }
+    }
+}
+
+#[allow(clippy::all)]
+pub enum TimeInForce {
+    GTC,
+    IOC,
+    FOK,
+    GTX,
+}
+
+impl Display for TimeInForce {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::GTC => write!(f, "GTC"),
+            Self::IOC => write!(f, "IOC"),
+            Self::FOK => write!(f, "FOK"),
+            Self::GTX => write!(f, "GTX"),
         }
     }
 }
@@ -214,7 +234,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Sell,
             position_side: None,
@@ -270,7 +290,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Buy,
             position_side: None,
@@ -298,7 +318,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell: OrderRequest = OrderRequest {
+        let sell = OrderRequest {
             symbol: symbol.into(),
             side: OrderSide::Sell,
             position_side: None,
@@ -322,7 +342,7 @@ impl FuturesAccount {
 
     // Custom order for for professional traders
     pub fn custom_order(&self, order_request: CustomOrderRequest) -> Result<Transaction> {
-        let order: OrderRequest = OrderRequest {
+        let order = OrderRequest {
             symbol: order_request.symbol,
             side: order_request.side,
             position_side: order_request.position_side,
