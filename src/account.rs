@@ -6,7 +6,7 @@ use crate::model::{
 };
 use crate::client::Client;
 use crate::errors::Result;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::fmt::Display;
 use crate::api::API;
 use crate::api::Spot;
@@ -88,7 +88,7 @@ impl Display for TimeInForce {
 impl Account {
     // Account Information
     pub fn get_account(&self) -> Result<AccountInformation> {
-        let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
+        let request = build_signed_request(HashMap::new(), self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::Account), Some(request))
     }
@@ -117,19 +117,14 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request([("symbol", symbol.into())].into(), self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
     // All current open orders
     pub fn get_all_open_orders(&self) -> Result<Vec<Order>> {
-        let parameters: BTreeMap<String, String> = BTreeMap::new();
-
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request(HashMap::new(), self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
@@ -139,9 +134,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request = build_signed_request([("symbol", symbol.into())].into(), self.recv_window)?;
         self.client
             .delete_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
@@ -151,9 +144,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("orderId".into(), order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -167,9 +158,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("orderId".into(), order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -668,9 +657,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("orderId".into(), order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -683,9 +670,9 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("origClientOrderId".into(), orig_client_order_id);
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("origClientOrderId", orig_client_order_id);
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -698,9 +685,7 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("orderId".into(), order_id.to_string());
+        let parameters = [("symbol", symbol.into()), ("orderId", order_id.to_string())].into();
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .delete_signed::<Empty>(API::Spot(Spot::OrderTest), Some(request))
@@ -712,33 +697,33 @@ impl Account {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::MyTrades), Some(request))
     }
 
-    fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
-        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+    fn build_order(&self, order: OrderRequest) -> HashMap<&'static str, String> {
+        let mut order_parameters = HashMap::new();
 
-        order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side.to_string());
-        order_parameters.insert("type".into(), order.order_type.to_string());
-        order_parameters.insert("quantity".into(), order.qty.to_string());
+        order_parameters.insert("symbol", order.symbol);
+        order_parameters.insert("side", order.order_side.to_string());
+        order_parameters.insert("type", order.order_type.to_string());
+        order_parameters.insert("quantity", order.qty.to_string());
 
         if let Some(stop_price) = order.stop_price {
-            order_parameters.insert("stopPrice".into(), stop_price.to_string());
+            order_parameters.insert("stopPrice", stop_price.to_string());
         }
 
         if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force.to_string());
+            order_parameters.insert("price", order.price.to_string());
+            order_parameters.insert("timeInForce", order.time_in_force.to_string());
         }
 
         if let Some(client_order_id) = order.new_client_order_id {
-            order_parameters.insert("newClientOrderId".into(), client_order_id);
+            order_parameters.insert("newClientOrderId", client_order_id);
         }
 
         order_parameters
@@ -746,21 +731,21 @@ impl Account {
 
     fn build_quote_quantity_order(
         &self, order: OrderQuoteQuantityRequest,
-    ) -> BTreeMap<String, String> {
-        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+    ) -> HashMap<&'static str, String> {
+        let mut order_parameters = HashMap::new();
 
-        order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side.to_string());
-        order_parameters.insert("type".into(), order.order_type.to_string());
-        order_parameters.insert("quoteOrderQty".into(), order.quote_order_qty.to_string());
+        order_parameters.insert("symbol", order.symbol);
+        order_parameters.insert("side", order.order_side.to_string());
+        order_parameters.insert("type", order.order_type.to_string());
+        order_parameters.insert("quoteOrderQty", order.quote_order_qty.to_string());
 
         if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force.to_string());
+            order_parameters.insert("price", order.price.to_string());
+            order_parameters.insert("timeInForce", order.time_in_force.to_string());
         }
 
         if let Some(client_order_id) = order.new_client_order_id {
-            order_parameters.insert("newClientOrderId".into(), client_order_id);
+            order_parameters.insert("newClientOrderId", client_order_id);
         }
 
         order_parameters

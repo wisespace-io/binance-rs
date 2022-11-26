@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::fmt::Display;
 
 use crate::util::build_signed_request;
@@ -258,9 +258,9 @@ impl FuturesAccount {
     where
         S: Into<String>,
     {
-        let mut parameters = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("orderId".into(), order_id.to_string());
+        let mut parameters = HashMap::new();
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("orderId", order_id.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -273,9 +273,9 @@ impl FuturesAccount {
     where
         S: Into<String>,
     {
-        let mut parameters = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("origClientOrderId".into(), orig_client_order_id);
+        let mut parameters = HashMap::new();
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("origClientOrderId", orig_client_order_id);
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -362,50 +362,44 @@ impl FuturesAccount {
             .post_signed(API::Futures(Futures::Order), request)
     }
 
-    fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
-        let mut parameters = BTreeMap::new();
-        parameters.insert("symbol".into(), order.symbol);
-        parameters.insert("side".into(), order.side.to_string());
-        parameters.insert("type".into(), order.order_type.to_string());
+    fn build_order(&self, order: OrderRequest) -> HashMap<&'static str, String> {
+        let mut parameters = HashMap::new();
+        parameters.insert("symbol", order.symbol);
+        parameters.insert("side", order.side.to_string());
+        parameters.insert("type", order.order_type.to_string());
 
         if let Some(position_side) = order.position_side {
-            parameters.insert("positionSide".into(), position_side.to_string());
+            parameters.insert("positionSide", position_side.to_string());
         }
         if let Some(time_in_force) = order.time_in_force {
-            parameters.insert("timeInForce".into(), time_in_force.to_string());
+            parameters.insert("timeInForce", time_in_force.to_string());
         }
         if let Some(qty) = order.qty {
-            parameters.insert("quantity".into(), qty.to_string());
+            parameters.insert("quantity", qty.to_string());
         }
         if let Some(reduce_only) = order.reduce_only {
-            parameters.insert("reduceOnly".into(), reduce_only.to_string().to_uppercase());
+            parameters.insert("reduceOnly", reduce_only.to_string().to_uppercase());
         }
         if let Some(price) = order.price {
-            parameters.insert("price".into(), price.to_string());
+            parameters.insert("price", price.to_string());
         }
         if let Some(stop_price) = order.stop_price {
-            parameters.insert("stopPrice".into(), stop_price.to_string());
+            parameters.insert("stopPrice", stop_price.to_string());
         }
         if let Some(close_position) = order.close_position {
-            parameters.insert(
-                "closePosition".into(),
-                close_position.to_string().to_uppercase(),
-            );
+            parameters.insert("closePosition", close_position.to_string().to_uppercase());
         }
         if let Some(activation_price) = order.activation_price {
-            parameters.insert("activationPrice".into(), activation_price.to_string());
+            parameters.insert("activationPrice", activation_price.to_string());
         }
         if let Some(callback_rate) = order.callback_rate {
-            parameters.insert("callbackRate".into(), callback_rate.to_string());
+            parameters.insert("callbackRate", callback_rate.to_string());
         }
         if let Some(working_type) = order.working_type {
-            parameters.insert("workingType".into(), working_type.to_string());
+            parameters.insert("workingType", working_type.to_string());
         }
         if let Some(price_protect) = order.price_protect {
-            parameters.insert(
-                "priceProtect".into(),
-                price_protect.to_string().to_uppercase(),
-            );
+            parameters.insert("priceProtect", price_protect.to_string().to_uppercase());
         }
 
         parameters
@@ -415,8 +409,8 @@ impl FuturesAccount {
     where
         S: Into<String>,
     {
-        let mut parameters = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters = HashMap::new();
+        parameters.insert("symbol", symbol.into());
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -424,7 +418,7 @@ impl FuturesAccount {
     }
 
     pub fn account_information(&self) -> Result<AccountInformation> {
-        let parameters = BTreeMap::new();
+        let parameters = HashMap::new();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -432,7 +426,7 @@ impl FuturesAccount {
     }
 
     pub fn account_balance(&self) -> Result<Vec<AccountBalance>> {
-        let parameters = BTreeMap::new();
+        let parameters = HashMap::new();
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -445,9 +439,9 @@ impl FuturesAccount {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("leverage".into(), leverage.to_string());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("leverage", leverage.to_string());
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -455,9 +449,9 @@ impl FuturesAccount {
     }
 
     pub fn change_position_mode(&self, dual_side_position: bool) -> Result<()> {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
         let dual_side = if dual_side_position { "true" } else { "false" };
-        parameters.insert("dualSidePosition".into(), dual_side.into());
+        parameters.insert("dualSidePosition", dual_side.into());
 
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
@@ -469,8 +463,8 @@ impl FuturesAccount {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .delete_signed::<Empty>(API::Futures(Futures::AllOpenOrders), Some(request))
@@ -481,8 +475,8 @@ impl FuturesAccount {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Futures(Futures::OpenOrders), Some(request))

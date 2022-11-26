@@ -27,10 +27,10 @@ use crate::futures::model::{
 };
 use crate::client::Client;
 use crate::errors::Result;
-use std::collections::BTreeMap;
 use serde_json::Value;
 use crate::api::API;
 use crate::api::Futures;
+use std::collections::HashMap;
 use std::convert::TryInto;
 
 // TODO
@@ -50,9 +50,9 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters = HashMap::new();
 
-        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("symbol", symbol.into());
         let request = build_request(parameters);
 
         self.client.get(API::Futures(Futures::Depth), Some(request))
@@ -64,9 +64,9 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("limit".into(), depth.to_string());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("limit", depth.to_string());
         let request = build_request(parameters);
         self.client.get(API::Futures(Futures::Depth), Some(request))
     }
@@ -75,8 +75,8 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
         let request = build_request(parameters);
         self.client
             .get(API::Futures(Futures::Trades), Some(request))
@@ -91,16 +91,16 @@ impl FuturesMarket {
         S2: Into<Option<u64>>,
         S3: Into<Option<u16>>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
 
-        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("symbol", symbol.into());
 
         // Add three optional parameters
         if let Some(lt) = limit.into() {
-            parameters.insert("limit".into(), format!("{}", lt));
+            parameters.insert("limit", format!("{}", lt));
         }
         if let Some(fi) = from_id.into() {
-            parameters.insert("fromId".into(), format!("{}", fi));
+            parameters.insert("fromId", format!("{}", fi));
         }
 
         let request = build_signed_request(parameters, self.recv_window)?;
@@ -119,22 +119,22 @@ impl FuturesMarket {
         S4: Into<Option<u64>>,
         S5: Into<Option<u16>>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
 
-        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("symbol", symbol.into());
 
         // Add three optional parameters
         if let Some(lt) = limit.into() {
-            parameters.insert("limit".into(), format!("{}", lt));
+            parameters.insert("limit", format!("{}", lt));
         }
         if let Some(st) = start_time.into() {
-            parameters.insert("startTime".into(), format!("{}", st));
+            parameters.insert("startTime", format!("{}", st));
         }
         if let Some(et) = end_time.into() {
-            parameters.insert("endTime".into(), format!("{}", et));
+            parameters.insert("endTime", format!("{}", et));
         }
         if let Some(fi) = from_id.into() {
-            parameters.insert("fromId".into(), format!("{}", fi));
+            parameters.insert("fromId", format!("{}", fi));
         }
 
         let request = build_request(parameters);
@@ -155,20 +155,20 @@ impl FuturesMarket {
         S4: Into<Option<u64>>,
         S5: Into<Option<u64>>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
 
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("interval".into(), interval.into());
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("interval", interval.into());
 
         // Add three optional parameters
         if let Some(lt) = limit.into() {
-            parameters.insert("limit".into(), format!("{}", lt));
+            parameters.insert("limit", format!("{}", lt));
         }
         if let Some(st) = start_time.into() {
-            parameters.insert("startTime".into(), format!("{}", st));
+            parameters.insert("startTime", format!("{}", st));
         }
         if let Some(et) = end_time.into() {
-            parameters.insert("endTime".into(), format!("{}", et));
+            parameters.insert("endTime", format!("{}", et));
         }
 
         let request = build_request(parameters);
@@ -191,9 +191,9 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
 
-        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("symbol", symbol.into());
         let request = build_request(parameters);
 
         self.client
@@ -210,9 +210,9 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
 
-        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("symbol", symbol.into());
         let request = build_request(parameters);
 
         self.client
@@ -235,8 +235,8 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
         let request = build_request(parameters);
         self.client
             .get(API::Futures(Futures::BookTicker), Some(request))
@@ -254,8 +254,8 @@ impl FuturesMarket {
     where
         S: Into<String>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
         let request = build_request(parameters);
         self.client
             .get(API::Futures(Futures::OpenInterest), Some(request))
@@ -271,18 +271,18 @@ impl FuturesMarket {
         S4: Into<Option<u64>>,
         S5: Into<Option<u64>>,
     {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("period".into(), period.into());
+        let mut parameters: HashMap<&'static str, String> = HashMap::new();
+        parameters.insert("symbol", symbol.into());
+        parameters.insert("period", period.into());
 
         if let Some(lt) = limit.into() {
-            parameters.insert("limit".into(), format!("{}", lt));
+            parameters.insert("limit", format!("{}", lt));
         }
         if let Some(st) = start_time.into() {
-            parameters.insert("startTime".into(), format!("{}", st));
+            parameters.insert("startTime", format!("{}", st));
         }
         if let Some(et) = end_time.into() {
-            parameters.insert("endTime".into(), format!("{}", et));
+            parameters.insert("endTime", format!("{}", et));
         }
 
         let request = build_request(parameters);
