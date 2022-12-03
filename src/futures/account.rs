@@ -6,7 +6,7 @@ use crate::errors::Result;
 use crate::client::Client;
 use crate::api::{API, Futures};
 use crate::model::Empty;
-use crate::account::{OrderSide, TimeInForce};
+use crate::account::OrderSide;
 use crate::futures::model::{Order, TradeHistory};
 
 use super::model::{
@@ -364,7 +364,9 @@ impl FuturesAccount {
             .post_signed(API::Futures(Futures::Order), request)
     }
 
-    pub fn get_all_orders<S, F, N>(&self, symbol: S, order_id: F, start_time: F, end_time: F, limit: N) -> Result<Vec<Order>>
+    pub fn get_all_orders<S, F, N>(
+        &self, symbol: S, order_id: F, start_time: F, end_time: F, limit: N,
+    ) -> Result<Vec<Order>>
     where
         S: Into<String>,
         F: Into<Option<u64>>,
@@ -389,12 +391,14 @@ impl FuturesAccount {
         self.client
             .get_signed(API::Futures(Futures::AllOrders), Some(request))
     }
-    
-    pub fn get_user_trades<S, F, N>(&self, symbol: S, from_id: F, start_time: F, end_time: F, limit: N) -> Result<Vec<TradeHistory>>
-        where
-              S: Into<String>,
-              F: Into<Option<u64>>,
-              N: Into<Option<u16>>,
+
+    pub fn get_user_trades<S, F, N>(
+        &self, symbol: S, from_id: F, start_time: F, end_time: F, limit: N,
+    ) -> Result<Vec<TradeHistory>>
+    where
+        S: Into<String>,
+        F: Into<Option<u64>>,
+        N: Into<Option<u16>>,
     {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -410,7 +414,7 @@ impl FuturesAccount {
         if let Some(limit) = limit.into() {
             parameters.insert("limit".into(), limit.to_string());
         }
-        
+
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Futures(Futures::UserTrades), Some(request))

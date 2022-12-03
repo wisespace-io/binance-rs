@@ -48,8 +48,10 @@ impl Savings {
         self.client
             .get_signed(API::Savings(Sapi::DepositAddress), Some(request))
     }
-    
-    pub fn transfer_funds<S>(&self,   asset: S , amount: f64, transfer_type: SpotFuturesTransferType) -> Result<TransactionId>
+
+    pub fn transfer_funds<S>(
+        &self, asset: S, amount: f64, transfer_type: SpotFuturesTransferType,
+    ) -> Result<TransactionId>
     where
         S: Into<String>,
     {

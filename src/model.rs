@@ -197,7 +197,6 @@ pub struct TransactionId {
     pub tran_id: u64,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
@@ -969,7 +968,7 @@ pub struct KlineSummary {
 fn get_value(row: &[Value], index: usize, name: &'static str) -> Result<Value> {
     Ok(row
         .get(index)
-        .ok_or_else(|| ErrorKind::KlineValueMissingError(index, name))?
+        .ok_or(ErrorKind::KlineValueMissingError(index, name))?
         .clone())
 }
 
