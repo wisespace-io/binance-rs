@@ -50,6 +50,7 @@ pub enum Sapi {
     AllCoins,
     AssetDetail,
     DepositAddress,
+    SpotFuturesTransfer,
 }
 
 pub enum Futures {
@@ -71,6 +72,8 @@ pub enum Futures {
     BookTicker,
     AllForceOrders,
     AllOpenOrders,
+    AllOrders,
+    UserTrades,
     Order,
     PositionRisk,
     Balance,
@@ -121,6 +124,7 @@ impl From<API> for String {
                 Sapi::AllCoins => "/sapi/v1/capital/config/getall",
                 Sapi::AssetDetail => "/sapi/v1/asset/assetDetail",
                 Sapi::DepositAddress => "/sapi/v1/capital/deposit/address",
+                Sapi::SpotFuturesTransfer => "/sapi/v1/futures/transfer",
             },
             API::Futures(route) => match route {
                 Futures::Ping => "/fapi/v1/ping",
@@ -141,6 +145,8 @@ impl From<API> for String {
                 Futures::BookTicker => "/fapi/v1/ticker/bookTicker",
                 Futures::AllForceOrders => "/fapi/v1/allForceOrders",
                 Futures::AllOpenOrders => "/fapi/v1/allOpenOrders",
+                Futures::AllOrders => "/fapi/v1/allOrders",
+                Futures::UserTrades => "/fapi/v1/userTrades",
                 Futures::PositionSide => "/fapi/v1/positionSide/dual",
                 Futures::Order => "/fapi/v1/order",
                 Futures::PositionRisk => "/fapi/v2/positionRisk",

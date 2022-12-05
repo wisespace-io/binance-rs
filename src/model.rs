@@ -182,6 +182,20 @@ pub struct OrderCanceled {
     pub order_id: Option<u64>,
     pub client_order_id: Option<String>,
 }
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum SpotFuturesTransferType {
+    SpotToUsdtFutures = 1,
+    UsdtFuturesToSpot = 2,
+    SpotToCoinFutures = 3,
+    CoinFuturesToSpot = 4,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TransactionId {
+    pub tran_id: u64,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
