@@ -90,6 +90,7 @@ pub enum Futures {
     Account,
     OpenOrders,
     UserDataStream,
+    Income,
 }
 
 impl From<API> for String {
@@ -163,6 +164,7 @@ impl From<API> for String {
                 Futures::Account => "/fapi/v2/account",
                 Futures::OpenOrders => "/fapi/v1/openOrders",
                 Futures::UserDataStream => "/fapi/v1/listenKey",
+                Futures::Income => "/fapi/v1/income",
             },
         })
     }
