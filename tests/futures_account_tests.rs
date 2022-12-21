@@ -172,8 +172,7 @@ mod tests {
         let mock = mock("GET", "/fapi/v1/income")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("endTime=12345678910&incomeType=TRANSFER&limit=10\
-                &recvWindow=1234&startTime=12345678910&symbol=BTCUSDT&timestamp=\\d+".into(),
-            ))
+                &recvWindow=1234&startTime=12345678910&symbol=BTCUSDT&timestamp=\\d+".into()))
             .with_body_from_file("tests/mocks/futures/account/get_income_history.json")
             .create();
 
