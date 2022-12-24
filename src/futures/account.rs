@@ -157,10 +157,25 @@ pub struct IncomeRequest {
 
 #[allow(non_camel_case_types)]
 pub enum IncomeType {
-    TRANSFER, WELCOME_BONUS, REALIZED_PNL,  FUNDING_FEE, COMMISSION, INSURANCE_CLEAR,
-    REFERRAL_KICKBACK, COMMISSION_REBATE, API_REBATE, CONTEST_REWARD, CROSS_COLLATERAL_TRANSFER,
-    OPTIONS_PREMIUM_FEE, OPTIONS_SETTLE_PROFIT, INTERNAL_TRANSFER, AUTO_EXCHANGE,
-    DELIVERED_SETTELMENT, COIN_SWAP_DEPOSIT, COIN_SWAP_WITHDRAW, POSITION_LIMIT_INCREASE_FEE
+    TRANSFER,
+    WELCOME_BONUS,
+    REALIZED_PNL,
+    FUNDING_FEE,
+    COMMISSION,
+    INSURANCE_CLEAR,
+    REFERRAL_KICKBACK,
+    COMMISSION_REBATE,
+    API_REBATE,
+    CONTEST_REWARD,
+    CROSS_COLLATERAL_TRANSFER,
+    OPTIONS_PREMIUM_FEE,
+    OPTIONS_SETTLE_PROFIT,
+    INTERNAL_TRANSFER,
+    AUTO_EXCHANGE,
+    DELIVERED_SETTELMENT,
+    COIN_SWAP_DEPOSIT,
+    COIN_SWAP_WITHDRAW,
+    POSITION_LIMIT_INCREASE_FEE,
 }
 
 impl Display for IncomeType {
@@ -244,9 +259,9 @@ impl FuturesAccount {
 
     // Place a MARKET order - BUY
     pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
-    where
-        S: Into<String>,
-        F: Into<f64>,
+        where
+            S: Into<String>,
+            F: Into<f64>,
     {
         let buy = OrderRequest {
             symbol: symbol.into(),
@@ -272,9 +287,9 @@ impl FuturesAccount {
 
     // Place a MARKET order - SELL
     pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
-    where
-        S: Into<String>,
-        F: Into<f64>,
+        where
+            S: Into<String>,
+            F: Into<f64>,
     {
         let sell = OrderRequest {
             symbol: symbol.into(),
@@ -299,8 +314,8 @@ impl FuturesAccount {
     }
 
     pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<CanceledOrder>
-    where
-        S: Into<String>,
+        where
+            S: Into<String>,
     {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -314,8 +329,8 @@ impl FuturesAccount {
     pub fn cancel_order_with_client_id<S>(
         &self, symbol: S, orig_client_order_id: String,
     ) -> Result<CanceledOrder>
-    where
-        S: Into<String>,
+        where
+            S: Into<String>,
     {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -328,9 +343,9 @@ impl FuturesAccount {
 
     // Place a STOP_MARKET close - BUY
     pub fn stop_market_close_buy<S, F>(&self, symbol: S, stop_price: F) -> Result<Transaction>
-    where
-        S: Into<String>,
-        F: Into<f64>,
+        where
+            S: Into<String>,
+            F: Into<f64>,
     {
         let sell = OrderRequest {
             symbol: symbol.into(),
@@ -356,9 +371,9 @@ impl FuturesAccount {
 
     // Place a STOP_MARKET close - SELL
     pub fn stop_market_close_sell<S, F>(&self, symbol: S, stop_price: F) -> Result<Transaction>
-    where
-        S: Into<String>,
-        F: Into<f64>,
+        where
+            S: Into<String>,
+            F: Into<f64>,
     {
         let sell = OrderRequest {
             symbol: symbol.into(),
@@ -409,10 +424,10 @@ impl FuturesAccount {
     pub fn get_all_orders<S, F, N>(
         &self, symbol: S, order_id: F, start_time: F, end_time: F, limit: N,
     ) -> Result<Vec<Order>>
-    where
-        S: Into<String>,
-        F: Into<Option<u64>>,
-        N: Into<Option<u16>>,
+        where
+            S: Into<String>,
+            F: Into<Option<u64>>,
+            N: Into<Option<u16>>,
     {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -437,10 +452,10 @@ impl FuturesAccount {
     pub fn get_user_trades<S, F, N>(
         &self, symbol: S, from_id: F, start_time: F, end_time: F, limit: N,
     ) -> Result<Vec<TradeHistory>>
-    where
-        S: Into<String>,
-        F: Into<Option<u64>>,
-        N: Into<Option<u16>>,
+        where
+            S: Into<String>,
+            F: Into<Option<u64>>,
+            N: Into<Option<u16>>,
     {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -511,8 +526,8 @@ impl FuturesAccount {
     }
 
     pub fn position_information<S>(&self, symbol: S) -> Result<Vec<PositionRisk>>
-    where
-        S: Into<String>,
+        where
+            S: Into<String>,
     {
         let mut parameters = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -541,8 +556,8 @@ impl FuturesAccount {
     pub fn change_initial_leverage<S>(
         &self, symbol: S, leverage: u8,
     ) -> Result<ChangeLeverageResponse>
-    where
-        S: Into<String>,
+        where
+            S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -565,8 +580,8 @@ impl FuturesAccount {
     }
 
     pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<()>
-    where
-        S: Into<String>,
+        where
+            S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -577,8 +592,8 @@ impl FuturesAccount {
     }
 
     pub fn get_all_open_orders<S>(&self, symbol: S) -> Result<Vec<crate::futures::model::Order>>
-    where
-        S: Into<String>,
+        where
+            S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
@@ -587,11 +602,13 @@ impl FuturesAccount {
             .get_signed(API::Futures(Futures::OpenOrders), Some(request))
     }
 
-    pub fn get_income(&self, income_request: IncomeRequest) -> Result<Vec<crate::futures::model::Income>>
+    pub fn get_income(
+        &self, income_request: IncomeRequest,
+    ) -> Result<Vec<crate::futures::model::Income>>
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         if let Some(symbol) = income_request.symbol {
-            parameters.insert("symbol".into(), symbol.to_string());
+            parameters.insert("symbol".into(), symbol);
         }
         if let Some(income_type) = income_request.income_type {
             parameters.insert("incomeType".into(), income_type.to_string());

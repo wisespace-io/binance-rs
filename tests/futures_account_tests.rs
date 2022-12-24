@@ -171,8 +171,11 @@ mod tests {
     fn get_income() {
         let mock = mock("GET", "/fapi/v1/income")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("endTime=12345678910&incomeType=TRANSFER&limit=10\
-                &recvWindow=1234&startTime=12345678910&symbol=BTCUSDT&timestamp=\\d+".into()))
+            .match_query(Matcher::Regex(
+                "endTime=12345678910&incomeType=TRANSFER&limit=10\
+                &recvWindow=1234&startTime=12345678910&symbol=BTCUSDT&timestamp=\\d+"
+                    .into(),
+            ))
             .with_body_from_file("tests/mocks/futures/account/get_income_history.json")
             .create();
 
@@ -186,7 +189,7 @@ mod tests {
             income_type: Some(IncomeType::TRANSFER),
             start_time: Some(12345678910),
             end_time: Some(12345678910),
-            limit: Some(10)
+            limit: Some(10),
         };
         account.get_income(income_request).unwrap();
 
