@@ -1,6 +1,6 @@
 [package]
 name = "binance"
-version = "0.20.1"
+version = "0.20.2"
 license = "MIT OR Apache-2.0"
 authors = ["Flavio Oliveira <flavio@wisespace.io>"]
 edition = "2018"
