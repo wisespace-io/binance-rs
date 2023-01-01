@@ -166,4 +166,33 @@ mod tests {
         assert!(transaction.close_position);
         assert!(approx_eq!(f64, transaction.stop_price, 7.4, ulps = 2));
     }
+
+    #[test]
+    fn get_income() {
+        let mock = mock("GET", "/fapi/v1/income")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex(
+                "endTime=12345678910&incomeType=TRANSFER&limit=10\
+                &recvWindow=1234&startTime=12345678910&symbol=BTCUSDT&timestamp=\\d+"
+                    .into(),
+            ))
+            .with_body_from_file("tests/mocks/futures/account/get_income_history.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        let income_request = IncomeRequest {
+            symbol: Some("BTCUSDT".into()),
+            income_type: Some(IncomeType::TRANSFER),
+            start_time: Some(12345678910),
+            end_time: Some(12345678910),
+            limit: Some(10),
+        };
+        account.get_income(income_request).unwrap();
+
+        mock.assert();
+    }
 }

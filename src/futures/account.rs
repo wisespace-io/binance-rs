@@ -147,6 +147,63 @@ pub struct CustomOrderRequest {
     pub price_protect: Option<f64>,
 }
 
+pub struct IncomeRequest {
+    pub symbol: Option<String>,
+    pub income_type: Option<IncomeType>,
+    pub start_time: Option<u64>,
+    pub end_time: Option<u64>,
+    pub limit: Option<u32>,
+}
+
+#[allow(non_camel_case_types)]
+pub enum IncomeType {
+    TRANSFER,
+    WELCOME_BONUS,
+    REALIZED_PNL,
+    FUNDING_FEE,
+    COMMISSION,
+    INSURANCE_CLEAR,
+    REFERRAL_KICKBACK,
+    COMMISSION_REBATE,
+    API_REBATE,
+    CONTEST_REWARD,
+    CROSS_COLLATERAL_TRANSFER,
+    OPTIONS_PREMIUM_FEE,
+    OPTIONS_SETTLE_PROFIT,
+    INTERNAL_TRANSFER,
+    AUTO_EXCHANGE,
+    DELIVERED_SETTELMENT,
+    COIN_SWAP_DEPOSIT,
+    COIN_SWAP_WITHDRAW,
+    POSITION_LIMIT_INCREASE_FEE,
+}
+
+impl Display for IncomeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::TRANSFER => write!(f, "TRANSFER"),
+            Self::WELCOME_BONUS => write!(f, "WELCOME_BONUS"),
+            Self::REALIZED_PNL => write!(f, "REALIZED_PNL"),
+            Self::FUNDING_FEE => write!(f, "FUNDING_FEE"),
+            Self::COMMISSION => write!(f, "COMMISSION"),
+            Self::INSURANCE_CLEAR => write!(f, "INSURANCE_CLEAR"),
+            Self::REFERRAL_KICKBACK => write!(f, "REFERRAL_KICKBACK"),
+            Self::COMMISSION_REBATE => write!(f, "COMMISSION_REBATE"),
+            Self::API_REBATE => write!(f, "API_REBATE"),
+            Self::CONTEST_REWARD => write!(f, "CONTEST_REWARD"),
+            Self::CROSS_COLLATERAL_TRANSFER => write!(f, "CROSS_COLLATERAL_TRANSFER"),
+            Self::OPTIONS_PREMIUM_FEE => write!(f, "OPTIONS_PREMIUM_FEE"),
+            Self::OPTIONS_SETTLE_PROFIT => write!(f, "OPTIONS_SETTLE_PROFIT"),
+            Self::INTERNAL_TRANSFER => write!(f, "INTERNAL_TRANSFER"),
+            Self::AUTO_EXCHANGE => write!(f, "AUTO_EXCHANGE"),
+            Self::DELIVERED_SETTELMENT => write!(f, "DELIVERED_SETTELMENT"),
+            Self::COIN_SWAP_DEPOSIT => write!(f, "COIN_SWAP_DEPOSIT"),
+            Self::COIN_SWAP_WITHDRAW => write!(f, "COIN_SWAP_WITHDRAW"),
+            Self::POSITION_LIMIT_INCREASE_FEE => write!(f, "POSITION_LIMIT_INCREASE_FEE"),
+        }
+    }
+}
+
 impl FuturesAccount {
     pub fn limit_buy(
         &self, symbol: impl Into<String>, qty: impl Into<f64>, price: f64,
@@ -543,5 +600,31 @@ impl FuturesAccount {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Futures(Futures::OpenOrders), Some(request))
+    }
+
+    pub fn get_income(
+        &self, income_request: IncomeRequest,
+    ) -> Result<Vec<crate::futures::model::Income>> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        if let Some(symbol) = income_request.symbol {
+            parameters.insert("symbol".into(), symbol);
+        }
+        if let Some(income_type) = income_request.income_type {
+            parameters.insert("incomeType".into(), income_type.to_string());
+        }
+        if let Some(start_time) = income_request.start_time {
+            parameters.insert("startTime".into(), start_time.to_string());
+        }
+        if let Some(end_time) = income_request.end_time {
+            parameters.insert("endTime".into(), end_time.to_string());
+        }
+        if let Some(limit) = income_request.limit {
+            parameters.insert("limit".into(), limit.to_string());
+        }
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        println!("{}", request);
+        self.client
+            .get_signed(API::Futures(Futures::Income), Some(request))
     }
 }
