@@ -1,5 +1,8 @@
 use crate::util::build_signed_request;
-use crate::model::{AssetDetail, CoinInfo, DepositAddress, SpotFuturesTransferType, TradeFees, TransactionId, WithdrawResponse};
+use crate::model::{
+    AssetDetail, CoinInfo, DepositAddress, SpotFuturesTransferType, TradeFees, TransactionId,
+    WithdrawResponse,
+};
 use crate::client::Client;
 use crate::errors::Result;
 use std::collections::BTreeMap;
@@ -35,7 +38,8 @@ impl Savings {
     pub fn get_trade_fees(&self) -> Result<TradeFees> {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.get_signed(API::Savings(Sapi::TradeFee), Some(request))
+        self.client
+            .get_signed(API::Savings(Sapi::TradeFee), Some(request))
     }
 
     /// Fetch deposit address with network.
@@ -71,8 +75,10 @@ impl Savings {
             .post_signed(API::Savings(Sapi::SpotFuturesTransfer), request)
     }
 
-    // Withdraw currency 
-    pub fn withdraw_currency<S>(&self, asset: S, address: S, address_tag: Option<u64>, amount: f64) -> Result<WithdrawResponse>
+    // Withdraw currency
+    pub fn withdraw_currency<S>(
+        &self, asset: S, address: S, address_tag: Option<u64>, amount: f64,
+    ) -> Result<WithdrawResponse>
     where
         S: Into<String>,
     {
@@ -84,6 +90,7 @@ impl Savings {
         }
         parameters.insert("amount".into(), amount.to_string());
         let request = build_signed_request(parameters, self.recv_window)?;
-        self.client.get_signed(API::Savings(Sapi::Withdraw), Some(request))
-    }  
+        self.client
+            .get_signed(API::Savings(Sapi::Withdraw), Some(request))
+    }
 }
