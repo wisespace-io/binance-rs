@@ -4,6 +4,7 @@ use binance::config::*;
 use binance::general::*;
 use binance::account::*;
 use binance::market::*;
+use binance::withdraw::*;
 use binance::model::KlineSummary;
 use binance::errors::ErrorKind as BinanceLibErrorKind;
 
@@ -16,10 +17,11 @@ fn main() {
     // The market data API endpoint
     market_data();
 
-    // The account data API and savings API endpoint examples need an API key. Change those lines locally
+    // The account data, withdrawal, and savings API endpoint examples need an API key. Change those lines locally
     // and uncomment the line below (and do not commit your api key :)).
     //account();
     //savings();
+    //withdrawal()
 }
 
 fn general(use_testnet: bool) {
@@ -154,6 +156,24 @@ fn savings() {
         Ok(answer) => println!("{:#?}", answer),
         Err(e) => println!("Error: {:?}", e),
     }
+}
+
+#[allow(dead_code)]
+fn withdrawal() {
+    let api_key = Some("YOUR_API_KEY".into());
+    let secret_key = Some("YOUR_SECRET_KEY".into());
+
+    let wapi: Withdraw = Binance::new(api_key, secret_key);
+
+    match wapi.get_trade_fees() {
+        Ok(answer) => println!("{:#?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }    
+
+    match wapi.get_asset_details() {
+        Ok(answer) => println!("{:#?}", answer),
+        Err(e) => println!("Error: {}", e),
+    }  
 }
 
 #[allow(dead_code)]
