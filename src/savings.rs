@@ -79,8 +79,8 @@ impl Savings {
         let mut parameters = BTreeMap::new();
         parameters.insert("asset".into(), asset.into());
         parameters.insert("address".into(), address.into());
-        if address_tag.is_some() {
-            parameters.insert("addressTag".into(), address_tag.unwrap().to_string());
+        if let Some(address_tag) = address_tag {
+            parameters.insert("addressTag".into(), address_tag.to_string());
         }
         parameters.insert("amount".into(), amount.to_string());
         let request = build_signed_request(parameters, self.recv_window)?;
