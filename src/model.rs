@@ -1320,11 +1320,42 @@ pub struct AssetDetail {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetDetails {
+    pub success: bool,
+    #[serde(rename = "assetDetail")]
+    pub asset_details: std::collections::HashMap<String, AssetDetail>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DepositAddress {
     pub address: String,
     pub coin: String,
     pub tag: String,
     pub url: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct WithdrawResponse {
+    pub msg: String,
+    pub success: bool,
+    pub id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TradeFee {
+    pub symbol: String,
+    pub maker: f64,
+    pub taker: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TradeFees {
+    #[serde(rename = "tradeFee")]
+    pub fees: Vec<TradeFee>,
+    pub success: bool,
 }
 
 pub(crate) mod string_or_float {
