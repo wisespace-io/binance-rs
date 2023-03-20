@@ -29,6 +29,5 @@ pub mod market;
 pub mod savings;
 pub mod userstream;
 pub mod websockets;
-pub mod withdraw;
 
 pub mod futures;
