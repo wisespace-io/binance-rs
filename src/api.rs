@@ -9,14 +9,12 @@ use crate::general::General;
 use crate::market::Market;
 use crate::userstream::UserStream;
 use crate::savings::Savings;
-use crate::withdraw::Withdraw;
 
 #[allow(clippy::all)]
 pub enum API {
     Spot(Spot),
     Savings(Sapi),
     Futures(Futures),
-    Withdraw(Wapi),
 }
 
 /// Endpoint for production and test orders.
@@ -53,6 +51,8 @@ pub enum Sapi {
     AssetDetail,
     DepositAddress,
     SpotFuturesTransfer,
+    TradeFee,
+    Withdraw,
 }
 
 pub enum Futures {
@@ -97,13 +97,6 @@ pub enum Futures {
     Income,
 }
 
-pub enum Wapi {
-    TradeFee,
-    AssetDetail,
-    DepositAddress,
-    Withdraw,
-}
-
 impl From<API> for String {
     fn from(item: API) -> Self {
         String::from(match item {
@@ -137,6 +130,8 @@ impl From<API> for String {
                 Sapi::AssetDetail => "/sapi/v1/asset/assetDetail",
                 Sapi::DepositAddress => "/sapi/v1/capital/deposit/address",
                 Sapi::SpotFuturesTransfer => "/sapi/v1/futures/transfer",
+                Sapi::TradeFee => "/sapi/v1/asset/tradeFee",
+                Sapi::Withdraw => "/sapi/v1/capital/withdraw/apply",
             },
             API::Futures(route) => match route {
                 Futures::Ping => "/fapi/v1/ping",
@@ -178,12 +173,6 @@ impl From<API> for String {
                 Futures::OpenOrders => "/fapi/v1/openOrders",
                 Futures::UserDataStream => "/fapi/v1/listenKey",
                 Futures::Income => "/fapi/v1/income",
-            },
-            API::Withdraw(route) => match route {
-                Wapi::TradeFee => "/wapi/v3/tradeFee",
-                Wapi::AssetDetail => "/wapi/v3/assetDetail",
-                Wapi::DepositAddress => "/wapi/v3/depositAddress",
-                Wapi::Withdraw => "/wapi/v3/withdraw",
             },
         })
     }
@@ -264,21 +253,6 @@ impl Binance for UserStream {
         api_key: Option<String>, secret_key: Option<String>, config: &Config,
     ) -> UserStream {
         UserStream {
-            client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
-            recv_window: config.recv_window,
-        }
-    }
-}
-
-impl Binance for Withdraw {
-    fn new(api_key: Option<String>, secret_key: Option<String>) -> Withdraw {
-        Self::new_with_config(api_key, secret_key, &Config::default())
-    }
-
-    fn new_with_config(
-        api_key: Option<String>, secret_key: Option<String>, config: &Config,
-    ) -> Withdraw {
-        Withdraw {
             client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
             recv_window: config.recv_window,
         }
