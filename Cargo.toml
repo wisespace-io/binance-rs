@@ -1,49 +1,43 @@
 [package]
-name = "binance-async"
-version = "0.2.0"
-edition = "2015"
-license = "MIT OR Apache-2.0"
-authors = ["Flavio Oliveira <flavio@wisespace.io>", "Weiyüen Wu <doomsplayer@gmail.com>"]
-
+authors = ["Flavio Oliveira <flavio@wisespace.io>", "Weiyuan Wu <weiyuan@crows.land>"]
 description = "Rust Library for the Binance API (Async)"
-keywords = ["cryptocurrency", "trading", "binance", "async"]
 documentation = "https://docs.rs/crate/binance-async"
-repository = "https://github.com/dovahcrow/binance-async-rs"
+edition = "2018"
+keywords = ["cryptocurrency", "trading", "binance", "async"]
+license = "MIT OR Apache-2.0"
+name = "binance-async"
 readme = "README.md"
+repository = "https://github.com/dovahcrow/binance-async-rs"
+version = "0.2.0"
 
 [badges]
-travis-ci = { repository = "dovahcrow/binance-async-rs" }
+travis-ci = {repository = "dovahcrow/binance-async-rs"}
 
 [lib]
 name = "binance_async"
 path = "src/lib.rs"
 
 [dependencies]
-failure = "0.1"
+anyhow = "1"
+chrono = {version = "0.4", features = ["serde"]}
+fehler = "1"
+futures = "0.3"
+hex = "0.4"
+hmac = "0.12"
 log = "0.4"
+reqwest = "0.11"
 result = "1"
-sugar = "0.2"
-
-hyper = "0.12"
-hyper-tls = "0.3"
-tungstenite = "0.6"
-tokio-tungstenite = "0.6"
-
-url = "1"
-futures = "0.1"
-tokio = "0.1"
-
-chrono = { version = "0.4", features = ["serde"] }
-
-serde = "1"
-serde_json = "1"
 serde_derive = "1"
-
-hex = "0.3"
-sha2 = "0.8"
-hmac = "0.7"
+serde_json = "1"
+sha2 = "0.10"
+sugar = "0.2"
+thiserror = "1"
+tokio = "1"
+tokio-tungstenite = "0.18"
+tungstenite = "0.18"
+url = "2"
 
 [dev-dependencies]
 csv = "1"
-dotenv = "0.13"
-env_logger = "0.5"
+dotenv = "0.15"
+env_logger = "0.10"

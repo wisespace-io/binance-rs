@@ -1,12 +1,13 @@
+use anyhow::Error;
+use client::Binance;
+use error::BinanceError;
 use failure::{Error, Fallible};
+use fehler::throws;
 use futures::Future;
+use model::{AccountInformation, Balance, Order, OrderCanceled, TradeHistory, Transaction};
 use serde_json::json;
 use std::collections::HashMap;
 use sugar::{convert_args, hashmap};
-
-use client::Binance;
-use error::BinanceError;
-use model::{AccountInformation, Balance, Order, OrderCanceled, TradeHistory, Transaction};
 
 static ORDER_TYPE_LIMIT: &'static str = "LIMIT";
 static ORDER_TYPE_MARKET: &'static str = "MARKET";
@@ -27,7 +28,8 @@ struct OrderRequest {
 
 impl Binance {
     // Account Information
-    pub fn get_account(&self) -> Fallible<impl Future<Item = AccountInformation, Error = Error>> {
+    #[throws(Error)]
+    pub async fn get_account(&self) -> AccountInformation {
         let account_info = self
             .transport
             .signed_get::<_, ()>("/api/v3/account", None)?;
@@ -35,21 +37,22 @@ impl Binance {
     }
 
     // Balance for ONE Asset
-    pub fn get_balance(&self, asset: &str) -> Fallible<impl Future<Item = Balance, Error = Error>> {
+    #[throws(Error)]
+    pub async fn get_balance(&self, asset: &str) -> Balance {
         let asset = asset.to_string();
-        let search = move |account: AccountInformation| -> Fallible<Balance> {
-            let balance = account
-                .balances
-                .into_iter()
-                .find(|balance| balance.asset == asset);
-            Ok(balance.ok_or(BinanceError::AssetsNotFound)?)
-        };
 
-        let balance = self.get_account()?.and_then(search);
+        let account = self.get_account().await?;
+        let balance = account
+            .balances
+            .into_iter()
+            .find(|balance| balance.asset == asset)
+            .ok_or(BinanceError::AssetsNotFound)?;
+
         Ok(balance)
     }
 
     // Current open orders for ONE symbol
+    #[throws(Error)]
     pub fn get_open_orders(
         &self,
         symbol: &str,
@@ -62,6 +65,7 @@ impl Binance {
     }
 
     // All current open orders
+    #[throws(Error)]
     pub fn get_all_open_orders(&self) -> Fallible<impl Future<Item = Vec<Order>, Error = Error>> {
         let orders = self
             .transport
@@ -70,6 +74,7 @@ impl Binance {
     }
 
     // Check an order's status
+    #[throws(Error)]
     pub fn order_status(
         &self,
         symbol: &str,
@@ -82,6 +87,7 @@ impl Binance {
     }
 
     // Place a LIMIT order - BUY
+    #[throws(Error)]
     pub fn limit_buy(
         &self,
         symbol: &str,
@@ -104,6 +110,7 @@ impl Binance {
     }
 
     // Place a LIMIT order - SELL
+    #[throws(Error)]
     pub fn limit_sell(
         &self,
         symbol: &str,
@@ -125,6 +132,7 @@ impl Binance {
     }
 
     // Place a MARKET order - BUY
+    #[throws(Error)]
     pub fn market_buy(
         &self,
         symbol: &str,
@@ -145,6 +153,7 @@ impl Binance {
     }
 
     // Place a MARKET order - SELL
+    #[throws(Error)]
     pub fn market_sell(
         &self,
         symbol: &str,
@@ -164,6 +173,7 @@ impl Binance {
     }
 
     // Check an order's status
+    #[throws(Error)]
     pub fn cancel_order(
         &self,
         symbol: &str,
@@ -175,6 +185,7 @@ impl Binance {
     }
 
     // Trade history
+    #[throws(Error)]
     pub fn trade_history(
         &self,
         symbol: &str,

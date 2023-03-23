@@ -1,7 +1,8 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-#[derive(Deserialize, Serialize, Debug, Clone, Fail)]
-#[fail(display = "Binance returns error: {}", msg)]
+#[derive(Deserialize, Serialize, Debug, Clone, Error)]
+#[error("Binance returns error: {.msg}")]
 pub struct BinanceResponseError {
     pub code: i64,
     pub msg: String,
@@ -23,14 +24,14 @@ impl<T: for<'a> Deserialize<'a>> BinanceResponse<T> {
     }
 }
 
-#[derive(Debug, Fail, Serialize, Deserialize, Clone)]
+#[derive(Debug, Error, Serialize, Deserialize, Clone)]
 pub enum BinanceError {
-    #[fail(display = "Assets not found")]
+    #[error("Assets not found")]
     AssetsNotFound,
-    #[fail(display = "Symbol not found")]
+    #[error("Symbol not found")]
     SymbolNotFound,
-    #[fail(display = "No Api key set for private api")]
+    #[error("No Api key set for private api")]
     NoApiKeySet,
-    #[fail(display = "No stream is subscribed")]
+    #[error("No stream is subscribed")]
     NoStreamSubscribed,
 }
