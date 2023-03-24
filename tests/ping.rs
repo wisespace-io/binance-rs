@@ -1,24 +1,13 @@
-extern crate binance_async as binance;
-extern crate dotenv;
-extern crate env_logger;
-extern crate failure;
-extern crate tokio;
+use anyhow::Error;
+use binance_async::{rest::PingRequest, Binance};
+use fehler::throws;
 
-use failure::Fallible;
-use tokio::runtime::Runtime;
+#[throws(Error)]
+#[tokio::test]
+async fn ping() {
+    env_logger::init();
 
-use binance::Binance;
-
-#[test]
-fn ping() -> Fallible<()> {
-    ::dotenv::dotenv().ok();
-    ::env_logger::init();
-
-    let mut rt = Runtime::new()?;
     let binance = Binance::new();
-
-    let fut = binance.ping()?;
-
-    let _ = rt.block_on(fut)?;
-    Ok(())
+    let ai = binance.request(PingRequest {}).await?;
+    println!("{ai:?}");
 }

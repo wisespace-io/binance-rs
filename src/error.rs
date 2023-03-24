@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[derive(Deserialize, Serialize, Debug, Clone, Error)]
-#[error("Binance returns error: {.msg}")]
+#[error("Binance returns error: {msg}")]
 pub struct BinanceResponseError {
     pub code: i64,
     pub msg: String,
@@ -18,8 +18,8 @@ pub enum BinanceResponse<T> {
 impl<T: for<'a> Deserialize<'a>> BinanceResponse<T> {
     pub fn to_result(self) -> Result<T, BinanceResponseError> {
         match self {
-            BinanceResponse::Success(t) => Result::Ok(t),
-            BinanceResponse::Error(e) => Result::Err(e),
+            BinanceResponse::Success(t) => Ok(t),
+            BinanceResponse::Error(e) => Err(e),
         }
     }
 }
@@ -34,4 +34,6 @@ pub enum BinanceError {
     NoApiKeySet,
     #[error("No stream is subscribed")]
     NoStreamSubscribed,
+    #[error("Websocket is closed")]
+    WebsocketClosed,
 }

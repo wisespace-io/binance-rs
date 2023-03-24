@@ -1,4 +1,9 @@
+mod order;
 pub mod websocket;
+
+pub use self::order::{FillInfo, OrderInfo, OrderSide, OrderType};
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -16,6 +21,18 @@ pub struct ExchangeInformation {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum AccountType {
+    Spot,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum Permission {
+    Spot,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountInformation {
     pub maker_commission: f32,
@@ -25,6 +42,11 @@ pub struct AccountInformation {
     pub can_trade: bool,
     pub can_withdraw: bool,
     pub can_deposit: bool,
+    pub brokered: bool,
+    pub require_self_trade_prevention: bool,
+    pub update_time: u64,
+    pub account_type: AccountType,
+    pub permissions: Vec<Permission>,
     pub balances: Vec<Balance>,
 }
 
@@ -32,47 +54,10 @@ pub struct AccountInformation {
 #[serde(rename_all = "camelCase")]
 pub struct Balance {
     pub asset: String,
-    pub free: String,
-    pub locked: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Order {
-    pub symbol: String,
-    pub order_id: u64,
-    pub client_order_id: String,
-    #[serde(with = "string_or_float")]
-    pub price: f64,
-    pub orig_qty: String,
-    pub executed_qty: String,
-    pub status: String,
-    pub time_in_force: String,
-    #[serde(rename = "type")]
-    pub type_name: String,
-    pub side: String,
-    #[serde(with = "string_or_float")]
-    pub stop_price: f64,
-    pub iceberg_qty: String,
-    pub time: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct OrderCanceled {
-    pub symbol: String,
-    pub orig_client_order_id: String,
-    pub order_id: u64,
-    pub client_order_id: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Transaction {
-    pub symbol: String,
-    pub order_id: u64,
-    pub client_order_id: String,
-    pub transact_time: u64,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub free: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub locked: Decimal,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -83,8 +68,8 @@ pub struct Bids {
     pub qty: f64,
 
     // Never serialized.
-    #[serde(skip_serializing)]
-    ignore: Vec<String>,
+    #[serde(skip_serializing, rename = "ignore")]
+    _ignore: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -95,8 +80,8 @@ pub struct Asks {
     pub qty: f64,
 
     // Never serialized.
-    #[serde(skip_serializing)]
-    ignore: Vec<String>,
+    #[serde(skip_serializing, rename = "ignore")]
+    _ignore: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -439,22 +424,16 @@ pub enum Side {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum OrderType {
-    Market,
-    Limit,
-    StopLoss,
-    StopLossLimit,
-    TakeProfit,
-    TakeProfitLimit,
-    LimitMaker,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum TimeInForce {
     GTC,
     IOC,
     FOK,
+}
+
+impl Default for TimeInForce {
+    fn default() -> Self {
+        Self::GTC
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

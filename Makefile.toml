@@ -1,0 +1,17 @@
+env_files = [
+  {path = "./.env"},
+]
+
+[config]
+default_to_workspace = false
+
+[env]
+RUST_BACKTRACE = "1"
+RUST_LOG = "info"
+
+[tasks.test]
+clear = true
+script = "cargo test ${@}"
+
+[tasks.run]
+script = "cargo run ${@}"

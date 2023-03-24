@@ -25,10 +25,12 @@ futures = "0.3"
 hex = "0.4"
 hmac = "0.12"
 log = "0.4"
-reqwest = "0.11"
+reqwest = {version = "0.11", features = ["json"]}
 result = "1"
-serde_derive = "1"
+rust_decimal = {version = "1", features = ["serde-with-str"]}
+serde = {version = "1", features = ["derive"]}
 serde_json = "1"
+serde_qs = "0.12"
 sha2 = "0.10"
 sugar = "0.2"
 thiserror = "1"
@@ -38,6 +40,5 @@ tungstenite = "0.18"
 url = "2"
 
 [dev-dependencies]
-csv = "1"
-dotenv = "0.15"
 env_logger = "0.10"
+tokio = {version = "1", features = ["rt", "macros"]}

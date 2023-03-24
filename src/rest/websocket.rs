@@ -1,19 +1,26 @@
-use std::collections::HashMap;
-
-use failure::{Error, Fallible};
-use futures::stream::{SplitStream, Stream};
-use futures::{Future, Poll};
+use crate::{
+    error::BinanceError::*,
+    model::websocket::{AccountUpdate, BinanceWebsocketMessage, Subscription, UserOrderUpdate},
+    rest::Binance,
+};
+use anyhow::Error;
+use fehler::{throw, throws};
+use futures::{
+    stream::{SplitStream, Stream},
+    StreamExt,
+};
+use log::trace;
+use serde::{Deserialize, Serialize};
 use serde_json::from_str;
+use std::{
+    collections::HashMap,
+    pin::Pin,
+    task::{Context, Poll},
+};
 use tokio::net::TcpStream;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 use url::Url;
-
-use crate::client::Binance;
-use crate::error::BinanceError;
-use crate::model::websocket::{
-    AccountUpdate, BinanceWebsocketMessage, Subscription, UserOrderUpdate,
-};
 
 const WS_URL: &'static str = "wss://stream.binance.com:9443/ws";
 
@@ -33,10 +40,8 @@ pub struct BinanceWebsocket {
 }
 
 impl BinanceWebsocket {
-    pub fn subscribe(
-        mut self,
-        subscription: Subscription,
-    ) -> impl Future<Item = Self, Error = Error> {
+    #[throws(Error)]
+    pub async fn subscribe(mut self, subscription: Subscription) -> Self {
         let sub = match subscription {
             Subscription::AggregateTrade(ref symbol) => format!("{}@aggTrade", symbol),
             Subscription::Candlestick(ref symbol, ref interval) => {
@@ -55,14 +60,10 @@ impl BinanceWebsocket {
         trace!("[Websocket] Subscribing to '{:?}'", subscription);
 
         let endpoint = Url::parse(&format!("{}/{}", WS_URL, sub)).unwrap();
-        connect_async(endpoint)
-            .map(|(stream, _)| stream)
-            .map(|s| s.split().1)
-            .map(|stream| {
-                self.subscriptions.insert(subscription, stream);
-                self
-            })
-            .from_err()
+        let (stream, _) = connect_async(endpoint).await?;
+        let stream = stream.split().1;
+        self.subscriptions.insert(subscription, stream);
+        self
     }
 
     pub fn unsubscribe(&mut self, subscription: &Subscription) -> Option<SplitStream<WSStream>> {
@@ -71,42 +72,38 @@ impl BinanceWebsocket {
 }
 
 impl Stream for BinanceWebsocket {
-    type Item = BinanceWebsocketMessage;
-    type Error = Error;
+    type Item = Result<BinanceWebsocketMessage, Error>;
 
-    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
-        let streams: Vec<_> = self
-            .subscriptions
-            .iter_mut()
-            .map(|(sub, stream)| {
-                stream
-                    .from_err()
-                    .and_then(move |msg| parse_message(sub.clone(), msg))
-            })
-            .collect();
-
-        let streams = streams.into_iter().fold(
-            None,
-            |acc: Option<Box<Stream<Item = BinanceWebsocketMessage, Error = Error>>>, elem| {
-                match acc {
-                    Some(stream) => Some(Box::new(stream.select(elem.from_err()))),
-                    None => Some(Box::new(elem.from_err())),
-                }
-            },
-        );
-        match streams {
-            Some(mut streams) => streams.poll(),
-            None => Err(BinanceError::NoStreamSubscribed)?,
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
+        if self.subscriptions.is_empty() {
+            return Poll::Ready(None);
         }
+
+        for (sub, stream) in &mut self.subscriptions {
+            let c = match stream.poll_next_unpin(cx) {
+                Poll::Ready(Some(Ok(c))) => c,
+                Poll::Ready(Some(Err(e))) => return Poll::Ready(Some(Err(e.into()))),
+                Poll::Pending => continue,
+                Poll::Ready(None) => continue,
+            };
+            if let Some(msg) = parse_message(sub.clone(), c)? {
+                return Poll::Ready(Some(Ok(msg)));
+            }
+        }
+
+        return Poll::Pending;
     }
 }
 
-fn parse_message(sub: Subscription, msg: Message) -> Fallible<BinanceWebsocketMessage> {
+#[throws(Error)]
+fn parse_message(sub: Subscription, msg: Message) -> Option<BinanceWebsocketMessage> {
     let msg = match msg {
         Message::Text(msg) => msg,
-        Message::Binary(b) => return Ok(BinanceWebsocketMessage::Binary(b)),
-        Message::Pong(..) => return Ok(BinanceWebsocketMessage::Pong),
-        Message::Ping(..) => return Ok(BinanceWebsocketMessage::Ping),
+        Message::Binary(_) => return None,
+        Message::Pong(..) => return Some(BinanceWebsocketMessage::Pong),
+        Message::Ping(..) => return Some(BinanceWebsocketMessage::Ping),
+        Message::Close(_) => throw!(WebsocketClosed),
+        Message::Frame(_) => return None,
     };
 
     trace!("Incoming websocket message {}", msg);
@@ -130,7 +127,7 @@ fn parse_message(sub: Subscription, msg: Message) -> Fallible<BinanceWebsocketMe
             }
         }
     };
-    Ok(message)
+    Some(message)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
