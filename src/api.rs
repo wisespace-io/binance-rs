@@ -14,6 +14,7 @@ use crate::savings::Savings;
 pub enum API {
     Spot(Spot),
     Savings(Sapi),
+    Convert(Convert),
     Futures(Futures),
 }
 
@@ -51,6 +52,10 @@ pub enum Sapi {
     AssetDetail,
     DepositAddress,
     SpotFuturesTransfer,
+}
+
+pub enum Convert {
+    QuoteRequest,
 }
 
 pub enum Futures {
@@ -126,6 +131,9 @@ impl From<API> for String {
                 Sapi::AssetDetail => "/sapi/v1/asset/assetDetail",
                 Sapi::DepositAddress => "/sapi/v1/capital/deposit/address",
                 Sapi::SpotFuturesTransfer => "/sapi/v1/futures/transfer",
+            },
+            API::Convert(route) => match route {
+                Convert::QuoteRequest => "/sapi/v1/convert/getQuote",
             },
             API::Futures(route) => match route {
                 Futures::Ping => "/fapi/v1/ping",

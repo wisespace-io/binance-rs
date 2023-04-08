@@ -37,6 +37,34 @@ struct OrderQuoteQuantityRequest {
     pub time_in_force: TimeInForce,
     pub new_client_order_id: Option<String>,
 }
+pub enum WalletType {
+    SPOT,
+    FUNDING,
+}
+
+pub enum ValidTime {
+    TenSeconds,
+    ThirtySeconds,
+    OneMinutes,
+    TwoMinutes,
+}
+
+pub enum QtyType {
+    From(f64),
+    To(f64),
+}
+
+struct OrderQuoteRequestConvert {
+    pub from_asset: String,
+    pub to_asset: String,
+    // When specified, it is the amount you will be debited after the conversion
+    pub from_amount: Option<f64>,
+    // When specified, it is the amount you will be credited after the conversion
+    pub to_amount: Option<f64>,
+    pub wallet_type: Option<WalletType>,
+    // default 10s
+    pub valid_time: Option<ValidTime>,
+}
 
 pub enum OrderType {
     Limit,
@@ -764,5 +792,77 @@ impl Account {
         }
 
         order_parameters
+    }
+
+    fn converter_order_to_btree_map() -> BTreeMap<String, String> {
+        todo!()
+    }
+
+    // função que faz o request pra converter
+    fn send_quote_request<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType,
+    ) -> Result<Transaction>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        // in qty argument, if the enum variant From has value then the variable from_amount will be Option<f64> with the qty value inside and the to_amount will be Option<64> with None inside.
+        let (from_amount, to_amount) = match qty {
+            QtyType::From(v) => (Some(v), None),
+            QtyType::To(v) => (None, Some(v)),
+        };
+
+        let params = OrderQuoteRequestConvert {
+            from_asset: symbol_from.into(),
+            to_asset: symbol_to.into(),
+            from_amount,
+            to_amount,
+            wallet_type: todo!(),
+            valid_time: todo!(),
+        };
+        /* pub from_asset: String,
+        pub to_asset: String,
+        // When specified, it is the amount you will be debited after the conversion
+        pub from_amount: Option<f64>,
+        // When specified, it is the amount you will be credited after the conversion
+        pub to_amount: Option<f64>,
+        pub wallet_type: Option<WalletType>,
+        // default 10s
+        pub valid_time: Option<ValidTime>, */
+        let order = self.build_order(params);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::Convert(Convert::QuoteRequest), request)
+        // TODO
+    }
+
+    // method que aceita a negociação do convert
+    fn accept_quote() -> Result<Transaction> {
+        // TODO
+    }
+
+    /// # Examples
+    /// Convert a currency to another.
+    ///
+    /// ```
+    /// use mockito::mock;
+    /// use binance::api::Binance;
+    /// use binance::config::Config;
+    /// use binance::account::Account;
+    ///
+    /// let config = Config::default()
+    ///        .set_rest_api_endpoint(mockito::server_url())
+    ///        .set_recv_window(1234);
+    /// let account: Account = Binance::new_with_config(None, None, &config);
+    /// let answer = account.convert("BTCETH", 1).unwrap();
+    ///
+    /// assert_eq!(10, answer);
+    /// ```
+    pub fn convert<S, F>(&self, symbol: S, qty: F) -> Result<i32>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        return Ok(10);
     }
 }

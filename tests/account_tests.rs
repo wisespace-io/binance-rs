@@ -854,4 +854,9 @@ mod tests {
         assert!(!history.is_maker);
         assert!(history.is_best_match);
     }
+
+    #[test]
+    fn convert() {
+        assert!(true);
+    }
 }

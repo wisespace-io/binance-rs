@@ -59,4 +59,10 @@ mod tests {
             ulps = 2
         ));
     }
+
+    #[test]
+    fn test_print() {
+        println!("bosta");
+        assert_eq!(1, 1);
+    }
 }
