@@ -794,13 +794,57 @@ impl Account {
         order_parameters
     }
 
-    fn converter_order_to_btree_map() -> BTreeMap<String, String> {
-        todo!()
+    fn converter_order_to_btree_map(
+        &self, order: OrderQuoteRequestConvert,
+    ) -> BTreeMap<String, String> {
+        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        order_parameters.insert("fromAsset".into(), order.from_asset.to_string());
+        order_parameters.insert("toAsset".into(), order.to_asset.to_string());
+
+        if let Some(qty) = order.from_amount {
+            order_parameters.insert("fromAmount".into(), qty.to_string());
+        } else {
+            // i wanted to use the qty from the if let but its not in scope here
+            order_parameters.insert("toAmount".into(), order.to_asset.to_string());
+        }
+
+        if let Some(wallet_type) = order.wallet_type {
+            match wallet_type {
+                WalletType::SPOT => {
+                    order_parameters.insert("walletType".into(), "SPOT".to_string());
+                }
+                WalletType::FUNDING => {
+                    order_parameters.insert("walletType".into(), "FUNDING".to_string());
+                }
+            }
+        }
+
+        if let Some(time) = order.valid_time {
+            order_parameters.insert("validTime".into(), "FUNDING".to_string());
+            match time {
+                ValidTime::TenSeconds => {
+                    order_parameters.insert("validTime".into(), "10s".to_string());
+                }
+                ValidTime::ThirtySeconds => {
+                    order_parameters.insert("validTime".into(), "30s".to_string());
+                }
+                ValidTime::OneMinutes => {
+                    order_parameters.insert("validTime".into(), "1m".to_string());
+                }
+                ValidTime::TwoMinutes => {
+                    order_parameters.insert("validTime".into(), "2m".to_string());
+                }
+            }
+        }
+
+        order_parameters
     }
 
     // função que faz o request pra converter
     fn send_quote_request<S, F>(
-        &self, symbol_from: S, symbol_to: S, qty: QtyType,
+        &self, symbol_from: S, symbol_to: S, qty: QtyType, wallet_type: Option<WalletType>,
+        valid_time: Option<ValidTime>,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -817,19 +861,11 @@ impl Account {
             to_asset: symbol_to.into(),
             from_amount,
             to_amount,
-            wallet_type: todo!(),
-            valid_time: todo!(),
+            wallet_type,
+            valid_time,
         };
-        /* pub from_asset: String,
-        pub to_asset: String,
-        // When specified, it is the amount you will be debited after the conversion
-        pub from_amount: Option<f64>,
-        // When specified, it is the amount you will be credited after the conversion
-        pub to_amount: Option<f64>,
-        pub wallet_type: Option<WalletType>,
-        // default 10s
-        pub valid_time: Option<ValidTime>, */
-        let order = self.build_order(params);
+
+        let order = self.converter_order_to_btree_map(params);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
             .post_signed(API::Convert(Convert::QuoteRequest), request)
