@@ -56,6 +56,7 @@ pub enum Sapi {
 
 pub enum Convert {
     QuoteRequest,
+    AcceptQuote,
 }
 
 pub enum Futures {
@@ -134,6 +135,7 @@ impl From<API> for String {
             },
             API::Convert(route) => match route {
                 Convert::QuoteRequest => "/sapi/v1/convert/getQuote",
+                Convert::AcceptQuote => "/sapi/v1/convert/acceptQuote",
             },
             API::Futures(route) => match route {
                 Futures::Ping => "/fapi/v1/ping",

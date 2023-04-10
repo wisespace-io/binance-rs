@@ -1438,3 +1438,27 @@ fn test_account_update_event() {
     assert_eq!(format!("{:?}", v), res);
     //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
 }
+
+// Quote from the convert api
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Quote {
+    pub quote_id: u64,
+    #[serde(with = "string_or_float")]
+    pub ration: f64,
+    #[serde(with = "string_or_float")]
+    pub inverse_ratio: f64,
+    pub valid_timestamp: u64,
+    #[serde(with = "string_or_float")]
+    pub to_amount: f64,
+    #[serde(with = "string_or_float")]
+    pub from_amount: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct QuoteResponse {
+    pub order_id: u64,
+    pub create_time: u64,
+    pub order_status: String,
+}

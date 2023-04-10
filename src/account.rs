@@ -2,7 +2,8 @@ use error_chain::bail;
 
 use crate::util::build_signed_request;
 use crate::model::{
-    AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction,
+    AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction, Quote,
+    QuoteResponse,
 };
 use crate::client::Client;
 use crate::errors::Result;
@@ -10,6 +11,7 @@ use std::collections::BTreeMap;
 use std::fmt::Display;
 use crate::api::API;
 use crate::api::Spot;
+use crate::api::Convert;
 
 #[derive(Clone)]
 pub struct Account {
@@ -49,17 +51,17 @@ pub enum ValidTime {
     TwoMinutes,
 }
 
+///* "From" When specified, it is the amount you will be debited after the conversion
+///* "To" When specified, it is the amount you will be credited after the conversion
 pub enum QtyType {
     From(f64),
     To(f64),
 }
 
-struct OrderQuoteRequestConvert {
+struct OrderQuoteRequest {
     pub from_asset: String,
     pub to_asset: String,
-    // When specified, it is the amount you will be debited after the conversion
     pub from_amount: Option<f64>,
-    // When specified, it is the amount you will be credited after the conversion
     pub to_amount: Option<f64>,
     pub wallet_type: Option<WalletType>,
     // default 10s
@@ -794,9 +796,7 @@ impl Account {
         order_parameters
     }
 
-    fn converter_order_to_btree_map(
-        &self, order: OrderQuoteRequestConvert,
-    ) -> BTreeMap<String, String> {
+    fn converter_order_to_btree_map(&self, order: OrderQuoteRequest) -> BTreeMap<String, String> {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("fromAsset".into(), order.from_asset.to_string());
@@ -842,21 +842,20 @@ impl Account {
     }
 
     // função que faz o request pra converter
-    fn send_quote_request<S, F>(
+    fn send_quote_request<S>(
         &self, symbol_from: S, symbol_to: S, qty: QtyType, wallet_type: Option<WalletType>,
         valid_time: Option<ValidTime>,
-    ) -> Result<Transaction>
+    ) -> Result<Quote>
     where
         S: Into<String>,
-        F: Into<f64>,
     {
-        // in qty argument, if the enum variant From has value then the variable from_amount will be Option<f64> with the qty value inside and the to_amount will be Option<64> with None inside.
+        // in qty argument, if the enum variant From has any value then the variable from_amount will be Some(qty) and the to_amount will be None.
         let (from_amount, to_amount) = match qty {
             QtyType::From(v) => (Some(v), None),
             QtyType::To(v) => (None, Some(v)),
         };
 
-        let params = OrderQuoteRequestConvert {
+        let params = OrderQuoteRequest {
             from_asset: symbol_from.into(),
             to_asset: symbol_to.into(),
             from_amount,
@@ -869,12 +868,18 @@ impl Account {
         let request = build_signed_request(order, self.recv_window)?;
         self.client
             .post_signed(API::Convert(Convert::QuoteRequest), request)
-        // TODO
     }
 
     // method que aceita a negociação do convert
-    fn accept_quote() -> Result<Transaction> {
-        // TODO
+    fn accept_quote(&self, quote: Result<Quote>) -> Result<QuoteResponse> {
+        let quote = quote?;
+        let mut params: BTreeMap<String, String> = BTreeMap::new();
+
+        params.insert("quoteId".into(), quote.quote_id.to_string());
+
+        let request: String = build_signed_request(params, self.recv_window)?;
+        self.client
+            .post_signed(API::Convert(Convert::AcceptQuote), request)
     }
 
     /// # Examples
@@ -894,11 +899,22 @@ impl Account {
     ///
     /// assert_eq!(10, answer);
     /// ```
-    pub fn convert<S, F>(&self, symbol: S, qty: F) -> Result<i32>
+    pub fn convert<S, F>(&self, symbol_from: S, symbol_to: S, qty: F) -> Result<QuoteResponse>
     where
         S: Into<String>,
         F: Into<f64>,
     {
-        return Ok(10);
+        let qty = qty.into();
+        let qty = QtyType::From(qty);
+
+        let quote = self.send_quote_request(
+            symbol_from,
+            symbol_to,
+            qty,
+            None,
+            Some(ValidTime::TenSeconds),
+        );
+
+        self.accept_quote(quote)
     }
 }
