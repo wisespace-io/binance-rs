@@ -53,16 +53,15 @@ pub enum ValidTime {
 
 ///* "From" When specified, it is the amount you will be debited after the conversion
 ///* "To" When specified, it is the amount you will be credited after the conversion
-pub enum QtyType {
-    From(f64),
-    To(f64),
+pub enum QtyType<T: Into<f64>> {
+    From(T),
+    To(T),
 }
 
-struct OrderQuoteRequest {
+struct OrderQuoteRequest<T: Into<f64>> {
     pub from_asset: String,
     pub to_asset: String,
-    pub from_amount: Option<f64>,
-    pub to_amount: Option<f64>,
+    pub from_or_to_amount: QtyType<T>,
     pub wallet_type: Option<WalletType>,
     // default 10s
     pub valid_time: Option<ValidTime>,
@@ -796,18 +795,24 @@ impl Account {
         order_parameters
     }
 
-    fn converter_order_to_btree_map(&self, order: OrderQuoteRequest) -> BTreeMap<String, String> {
+    fn converter_order_to_btree_map<T: Into<f64>>(
+        &self, order: OrderQuoteRequest<T>,
+    ) -> BTreeMap<String, String> {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("fromAsset".into(), order.from_asset.to_string());
         order_parameters.insert("toAsset".into(), order.to_asset.to_string());
 
-        if let Some(qty) = order.from_amount {
-            order_parameters.insert("fromAmount".into(), qty.to_string());
-        } else {
-            // i wanted to use the qty from the if let but its not in scope here
-            order_parameters.insert("toAmount".into(), order.to_asset.to_string());
-        }
+        match order.from_or_to_amount {
+            QtyType::From(v) => {
+                let qty: f64 = v.into();
+                order_parameters.insert("fromAmount".into(), qty.to_string());
+            }
+            QtyType::To(v) => {
+                let qty: f64 = v.into();
+                order_parameters.insert("toAmount".into(), qty.to_string());
+            }
+        };
 
         if let Some(wallet_type) = order.wallet_type {
             match wallet_type {
@@ -821,7 +826,6 @@ impl Account {
         }
 
         if let Some(time) = order.valid_time {
-            order_parameters.insert("validTime".into(), "FUNDING".to_string());
             match time {
                 ValidTime::TenSeconds => {
                     order_parameters.insert("validTime".into(), "10s".to_string());
@@ -842,24 +846,18 @@ impl Account {
     }
 
     // função que faz o request pra converter
-    fn send_quote_request<S>(
-        &self, symbol_from: S, symbol_to: S, qty: QtyType, wallet_type: Option<WalletType>,
+    fn send_quote_request<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>, wallet_type: Option<WalletType>,
         valid_time: Option<ValidTime>,
     ) -> Result<Quote>
     where
         S: Into<String>,
+        F: Into<f64>,
     {
-        // in qty argument, if the enum variant From has any value then the variable from_amount will be Some(qty) and the to_amount will be None.
-        let (from_amount, to_amount) = match qty {
-            QtyType::From(v) => (Some(v), None),
-            QtyType::To(v) => (None, Some(v)),
-        };
-
         let params = OrderQuoteRequest {
             from_asset: symbol_from.into(),
             to_asset: symbol_to.into(),
-            from_amount,
-            to_amount,
+            from_or_to_amount: qty,
             wallet_type,
             valid_time,
         };
@@ -882,7 +880,7 @@ impl Account {
             .post_signed(API::Convert(Convert::AcceptQuote), request)
     }
 
-    /// # Examples
+    /// # Example
     /// Convert a currency to another.
     ///
     /// ```
@@ -899,14 +897,13 @@ impl Account {
     ///
     /// assert_eq!(10, answer);
     /// ```
-    pub fn convert<S, F>(&self, symbol_from: S, symbol_to: S, qty: F) -> Result<QuoteResponse>
+    pub fn convert<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>,
+    ) -> Result<QuoteResponse>
     where
         S: Into<String>,
         F: Into<f64>,
     {
-        let qty = qty.into();
-        let qty = QtyType::From(qty);
-
         let quote = self.send_quote_request(
             symbol_from,
             symbol_to,

@@ -1439,13 +1439,56 @@ fn test_account_update_event() {
     //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
 }
 
+// chatgpt code, i just copied
+pub(crate) mod string_or_u64 {
+    use std::fmt;
+
+    use serde::{de, Serializer, Deserialize, Deserializer};
+
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: fmt::Display,
+        S: Serializer,
+    {
+        if let Ok(v) = value.to_string().parse::<u64>() {
+            serializer.serialize_u64(v)
+        } else {
+            serializer.serialize_str(&value.to_string())
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum StringOrU64 {
+            String(String),
+            U64(u64),
+        }
+
+        match StringOrU64::deserialize(deserializer)? {
+            StringOrU64::String(s) => {
+                if s == "INF" {
+                    Ok(u64::MAX)
+                } else {
+                    s.parse().map_err(de::Error::custom)
+                }
+            }
+            StringOrU64::U64(i) => Ok(i),
+        }
+    }
+}
+
 // Quote from the convert api
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Quote {
+    #[serde(with = "string_or_u64")]
     pub quote_id: u64,
     #[serde(with = "string_or_float")]
-    pub ration: f64,
+    pub ratio: f64,
     #[serde(with = "string_or_float")]
     pub inverse_ratio: f64,
     pub valid_timestamp: u64,
@@ -1458,6 +1501,7 @@ pub struct Quote {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct QuoteResponse {
+    #[serde(with = "string_or_u64")]
     pub order_id: u64,
     pub create_time: u64,
     pub order_status: String,
