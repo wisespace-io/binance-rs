@@ -861,6 +861,7 @@ mod tests {
         // Set up the first mock server to respond to the quote request
         let mock_quote = mock("POST", "/sapi/v1/convert/getQuote")
             .with_header("content-type", "application/json;charset=UTF-8")
+            // the test only works with this parameters 
             .match_query(Matcher::Regex("fromAmount=1&fromAsset=BTC&recvWindow=1234&timestamp=\\d+&toAsset=ETH&validTime=10s".into()))
             .with_body_from_file("tests/mocks/account/quote.json")
             .create();

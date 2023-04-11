@@ -58,11 +58,10 @@ pub enum QtyType<T: Into<f64>> {
     To(T),
 }
 
-struct OrderQuoteRequest {
+struct OrderQuoteRequest<T: Into<f64>> {
     pub from_asset: String,
     pub to_asset: String,
-    pub from_amount: Option<f64>,
-    pub to_amount: Option<f64>,
+    pub from_or_to_amount: QtyType<T>,
     pub wallet_type: Option<WalletType>,
     // default 10s
     pub valid_time: Option<ValidTime>,
@@ -796,18 +795,24 @@ impl Account {
         order_parameters
     }
 
-    fn converter_order_to_btree_map(&self, order: OrderQuoteRequest) -> BTreeMap<String, String> {
+    fn converter_order_to_btree_map<T: Into<f64>>(
+        &self, order: OrderQuoteRequest<T>,
+    ) -> BTreeMap<String, String> {
         let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
 
         order_parameters.insert("fromAsset".into(), order.from_asset.to_string());
         order_parameters.insert("toAsset".into(), order.to_asset.to_string());
 
-        if let Some(qty) = order.from_amount {
-            order_parameters.insert("fromAmount".into(), qty.to_string());
-        } else {
-            // i wanted to use the qty from the if let but its not in scope here
-            order_parameters.insert("toAmount".into(), order.to_asset.to_string());
-        }
+        match order.from_or_to_amount {
+            QtyType::From(v) => {
+                let qty: f64 = v.into();
+                order_parameters.insert("fromAmount".into(), qty.to_string());
+            }
+            QtyType::To(v) => {
+                let qty: f64 = v.into();
+                order_parameters.insert("toAmount".into(), qty.to_string());
+            }
+        };
 
         if let Some(wallet_type) = order.wallet_type {
             match wallet_type {
@@ -849,17 +854,10 @@ impl Account {
         S: Into<String>,
         F: Into<f64>,
     {
-        // in qty argument, if the enum variant From has any value then the variable from_amount will be Some(qty) and the to_amount will be None.
-        let (from_amount, to_amount) = match qty {
-            QtyType::From(v) => (Some(v.into()), None),
-            QtyType::To(v) => (None, Some(v.into())),
-        };
-
         let params = OrderQuoteRequest {
             from_asset: symbol_from.into(),
             to_asset: symbol_to.into(),
-            from_amount,
-            to_amount,
+            from_or_to_amount: qty,
             wallet_type,
             valid_time,
         };
