@@ -53,9 +53,9 @@ pub enum ValidTime {
 
 ///* "From" When specified, it is the amount you will be debited after the conversion
 ///* "To" When specified, it is the amount you will be credited after the conversion
-pub enum QtyType {
-    From(f64),
-    To(f64),
+pub enum QtyType<T: Into<f64>> {
+    From(T),
+    To(T),
 }
 
 struct OrderQuoteRequest {
@@ -841,17 +841,18 @@ impl Account {
     }
 
     // função que faz o request pra converter
-    fn send_quote_request<S>(
-        &self, symbol_from: S, symbol_to: S, qty: QtyType, wallet_type: Option<WalletType>,
+    fn send_quote_request<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>, wallet_type: Option<WalletType>,
         valid_time: Option<ValidTime>,
     ) -> Result<Quote>
     where
         S: Into<String>,
+        F: Into<f64>,
     {
         // in qty argument, if the enum variant From has any value then the variable from_amount will be Some(qty) and the to_amount will be None.
         let (from_amount, to_amount) = match qty {
-            QtyType::From(v) => (Some(v), None),
-            QtyType::To(v) => (None, Some(v)),
+            QtyType::From(v) => (Some(v.into()), None),
+            QtyType::To(v) => (None, Some(v.into())),
         };
 
         let params = OrderQuoteRequest {
@@ -898,14 +899,13 @@ impl Account {
     ///
     /// assert_eq!(10, answer);
     /// ```
-    pub fn convert<S, F>(&self, symbol_from: S, symbol_to: S, qty: F) -> Result<QuoteResponse>
+    pub fn convert<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>,
+    ) -> Result<QuoteResponse>
     where
         S: Into<String>,
         F: Into<f64>,
     {
-        let qty = qty.into();
-        let qty = QtyType::From(qty);
-
         let quote = self.send_quote_request(
             symbol_from,
             symbol_to,

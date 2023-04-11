@@ -6,7 +6,7 @@ use binance::model::*;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use binance::errors::{ResultExt, BinanceContentError};
+
     use mockito::{mock, Matcher};
     use float_cmp::*;
 
@@ -882,7 +882,7 @@ mod tests {
         let _ = env_logger::try_init();
 
         // Call the convert function and assert that the returned QuoteResponse object matches the expected values
-        let convert_response = account.convert("BTC", "ETH", 1.0).unwrap();
+        let convert_response = account.convert("BTC", "ETH", QtyType::From(1)).unwrap();
 
         assert_eq!(convert_response.order_status, "PROCESS");
 
