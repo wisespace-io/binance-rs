@@ -821,7 +821,6 @@ impl Account {
         }
 
         if let Some(time) = order.valid_time {
-            order_parameters.insert("validTime".into(), "FUNDING".to_string());
             match time {
                 ValidTime::TenSeconds => {
                     order_parameters.insert("validTime".into(), "10s".to_string());
@@ -882,7 +881,7 @@ impl Account {
             .post_signed(API::Convert(Convert::AcceptQuote), request)
     }
 
-    /// # Examples
+    /// # Example
     /// Convert a currency to another.
     ///
     /// ```

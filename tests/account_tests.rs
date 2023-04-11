@@ -6,6 +6,7 @@ use binance::model::*;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use binance::errors::{ResultExt, BinanceContentError};
     use mockito::{mock, Matcher};
     use float_cmp::*;
 
@@ -856,7 +857,37 @@ mod tests {
     }
 
     #[test]
-    fn convert() {
-        assert!(true);
+    fn test_convert() {
+        // Set up the first mock server to respond to the quote request
+        let mock_quote = mock("POST", "/sapi/v1/convert/getQuote")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex("fromAmount=1&fromAsset=BTC&recvWindow=1234&timestamp=\\d+&toAsset=ETH&validTime=10s".into()))
+            .with_body_from_file("tests/mocks/account/quote.json")
+            .create();
+
+        // Set up the second mock server to respond to the accept quote request
+        let mock_accept_quote = mock("POST", "/sapi/v1/convert/acceptQuote")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex("quoteId=\\d+".into()))
+            .with_body_from_file("tests/mocks/account/accept_quote.json")
+            .create();
+
+        // Configure the Binance API client with the mock server's URL
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(1234);
+
+        // Create a new Binance API client using the mock server's URL
+        let account: Account = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+
+        // Call the convert function and assert that the returned QuoteResponse object matches the expected values
+        let convert_response = account.convert("BTC", "ETH", 1.0).unwrap();
+
+        assert_eq!(convert_response.order_status, "PROCESS");
+
+        // Assert that the mock servers were called as expected
+        mock_quote.assert();
+        mock_accept_quote.assert();
     }
 }
