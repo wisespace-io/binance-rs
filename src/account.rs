@@ -884,18 +884,11 @@ impl Account {
     /// Convert a currency to another.
     ///
     /// ```
-    /// use mockito::mock;
-    /// use binance::api::Binance;
-    /// use binance::config::Config;
-    /// use binance::account::Account;
-    ///
-    /// let config = Config::default()
-    ///        .set_rest_api_endpoint(mockito::server_url())
-    ///        .set_recv_window(1234);
     /// let account: Account = Binance::new_with_config(None, None, &config);
-    /// let answer = account.convert("BTCETH", 1).unwrap();
     ///
-    /// assert_eq!(10, answer);
+    /// // QtyType::From reduces the value of the first symbol in this case "BTC"
+    /// // QtyType::To reduces the value of the second symbol in this case "USDT"
+    /// let answer = account.convert("BTC", "USDT", QtyType::From(0.0001)).unwrap();
     /// ```
     pub fn convert<S, F>(
         &self, symbol_from: S, symbol_to: S, qty: QtyType<F>,
