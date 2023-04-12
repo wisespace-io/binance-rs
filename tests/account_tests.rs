@@ -869,7 +869,7 @@ mod tests {
         // Set up the second mock server to respond to the accept quote request
         let mock_accept_quote = mock("POST", "/sapi/v1/convert/acceptQuote")
             .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("quoteId=\\d+".into()))
+            .match_query(Matcher::Regex("quoteId=12415572564".into()))
             .with_body_from_file("tests/mocks/account/accept_quote.json")
             .create();
 
