@@ -871,9 +871,15 @@ impl Account {
     // method que aceita a negociação do convert
     fn accept_quote(&self, quote: Result<Quote>) -> Result<QuoteResponse> {
         let quote = quote?;
+
+        //let quote = quote?;
         let mut params: BTreeMap<String, String> = BTreeMap::new();
 
-        params.insert("quoteId".into(), quote.quote_id.to_string());
+        if let Some(quote_id) = quote.quote_id {
+            params.insert("quoteId".into(), quote_id);
+        } else {
+            bail!("Not enough funds")
+        }
 
         let request: String = build_signed_request(params, self.recv_window)?;
         self.client

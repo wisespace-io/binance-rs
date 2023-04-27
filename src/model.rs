@@ -197,6 +197,23 @@ pub struct TransactionId {
     pub tran_id: u64,
 }
 
+/* {
+  "symbol": "BTCUSDT",
+  "orderId": 28,
+  "orderListId": -1, //Unless OCO, value will be -1
+  "clientOrderId": "6gCrw2kRUAF9CvJDGP16IP",
+  "transactTime": 1507725176595,
+  "price": "0.00000000",
+  "origQty": "10.00000000",
+  "executedQty": "10.00000000",
+  "cummulativeQuoteQty": "10.00000000",
+  "status": "FILLED",
+  "timeInForce": "GTC",
+  "type": "MARKET",
+  "side": "SELL",
+  "workingTime": 1507725176595,
+  "selfTradePreventionMode": "NONE"
+} */
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
@@ -1439,54 +1456,19 @@ fn test_account_update_event() {
     //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
 }
 
-// chatgpt code, i just copied
-pub(crate) mod string_or_u64 {
-    use std::fmt;
-
-    use serde::{de, Serializer, Deserialize, Deserializer};
-
-    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        T: fmt::Display,
-        S: Serializer,
-    {
-        if let Ok(v) = value.to_string().parse::<u64>() {
-            serializer.serialize_u64(v)
-        } else {
-            serializer.serialize_str(&value.to_string())
-        }
-    }
-
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        #[derive(Deserialize)]
-        #[serde(untagged)]
-        enum StringOrU64 {
-            String(String),
-            U64(u64),
-        }
-
-        match StringOrU64::deserialize(deserializer)? {
-            StringOrU64::String(s) => {
-                if s == "INF" {
-                    Ok(u64::MAX)
-                } else {
-                    s.parse().map_err(de::Error::custom)
-                }
-            }
-            StringOrU64::U64(i) => Ok(i),
-        }
-    }
-}
-
+/* {
+   "quoteId":"12415572564",
+   "ratio":"38163.7",
+   "inverseRatio":"0.0000262",
+   "validTimestamp":1623319461670,
+   "toAmount":"3816.37",
+   "fromAmount":"0.1"
+}  */
 // Quote from the convert api
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Quote {
-    #[serde(with = "string_or_u64")]
-    pub quote_id: u64,
+    pub quote_id: Option<String>,
     #[serde(with = "string_or_float")]
     pub ratio: f64,
     #[serde(with = "string_or_float")]
@@ -1498,11 +1480,15 @@ pub struct Quote {
     pub from_amount: f64,
 }
 
+/* {
+  "orderId":"933256278426274426",
+  "createTime":1623381330472,
+  "orderStatus":"PROCESS" //PROCESS/ACCEPT_SUCCESS/SUCCESS/FAIL
+}   */
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct QuoteResponse {
-    #[serde(with = "string_or_u64")]
-    pub order_id: u64,
+    pub order_id: String,
     pub create_time: u64,
     pub order_status: String,
 }
