@@ -1492,3 +1492,28 @@ pub struct QuoteResponse {
     pub create_time: u64,
     pub order_status: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountSnapshot {
+    pub code: u16,
+    // error message
+    pub msg: String,
+    pub snapshot_vos: Vec<SnapshotVo>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotVo {
+    pub data: Data,
+    #[serde(rename = "type")]
+    pub account_type: String,
+    pub update_time: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Data {
+    pub balances: Vec<Balance>,
+    pub total_asset_of_btc: String,
+}

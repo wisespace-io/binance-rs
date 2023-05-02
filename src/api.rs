@@ -52,6 +52,7 @@ pub enum Sapi {
     AssetDetail,
     DepositAddress,
     SpotFuturesTransfer,
+    AccountSnapshot,
 }
 
 pub enum Convert {
@@ -132,6 +133,7 @@ impl From<API> for String {
                 Sapi::AssetDetail => "/sapi/v1/asset/assetDetail",
                 Sapi::DepositAddress => "/sapi/v1/capital/deposit/address",
                 Sapi::SpotFuturesTransfer => "/sapi/v1/futures/transfer",
+                Sapi::AccountSnapshot => "/sapi/v1/accountSnapshot",
             },
             API::Convert(route) => match route {
                 Convert::QuoteRequest => "/sapi/v1/convert/getQuote",

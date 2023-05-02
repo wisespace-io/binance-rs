@@ -891,4 +891,35 @@ mod tests {
         mock_quote.assert();
         mock_accept_quote.assert();
     }
+
+    #[test]
+    fn test_daily_account_snapshot() {
+        let mock_server: mockito::Mock = mock("GET", "/sapi/v1/accountSnapshot")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            // the test only works with this parameters
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&timestamp=\\d+&type=SPOT".into(),
+            ))
+            .with_body_from_file("tests/mocks/account/daily_account_snapshot.json")
+            .create();
+
+        // config of mock server's URL
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url())
+            .set_recv_window(1234);
+
+        // binance client using the mock server's URL
+        let account: Account = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+
+        let convert_response = account.daily_account_snapshot().expect("erro merda");
+
+        assert_eq!(
+            convert_response.snapshot_vos[0].data.total_asset_of_btc,
+            "0.09942700"
+        );
+
+        // assert that the mock servers were called
+        mock_server.assert();
+    }
 }

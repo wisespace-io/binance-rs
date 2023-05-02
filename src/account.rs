@@ -3,15 +3,13 @@ use error_chain::bail;
 use crate::util::build_signed_request;
 use crate::model::{
     AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction, Quote,
-    QuoteResponse,
+    QuoteResponse, AccountSnapshot,
 };
 use crate::client::Client;
 use crate::errors::Result;
 use std::collections::BTreeMap;
 use std::fmt::Display;
-use crate::api::API;
-use crate::api::Spot;
-use crate::api::Convert;
+use crate::api::{API, Spot, Convert, Sapi};
 
 #[derive(Clone)]
 pub struct Account {
@@ -65,6 +63,15 @@ struct OrderQuoteRequest<T: Into<f64>> {
     pub wallet_type: Option<WalletType>,
     // default 10s
     pub valid_time: Option<ValidTime>,
+}
+
+struct AccountSnapshotRequest {
+    // "SPOT", "MARGIN", "FUTURES"
+    pub type_: String,
+    pub start_time: Option<u64>,
+    pub end_time: Option<u64>,
+    // min 7, max 30, default 7
+    pub limit: Option<u16>,
 }
 
 pub enum OrderType {
@@ -890,7 +897,7 @@ impl Account {
     /// Convert a currency to another.
     ///
     /// ```
-    /// let account: Account = Binance::new_with_config(None, None, &config);
+    /// let account: Account = Binance::new_with_config("API_KEY", "SECRET_KEY");
     ///
     /// // QtyType::From reduces the value of the first symbol in this case "BTC"
     /// // QtyType::To reduces the value of the second symbol in this case "USDT"
@@ -912,5 +919,52 @@ impl Account {
         );
 
         self.accept_quote(quote)
+    }
+
+    fn daily_account_snapshot_to_btree_map(
+        &self, params: AccountSnapshotRequest,
+    ) -> BTreeMap<String, String> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("type".into(), params.type_);
+
+        if let Some(start_time) = params.start_time {
+            parameters.insert("startTime".into(), start_time.to_string());
+        }
+
+        if let Some(end_time) = params.end_time {
+            parameters.insert("endTime".into(), end_time.to_string());
+        }
+
+        if let Some(limit) = params.limit {
+            parameters.insert("limit".into(), limit.to_string());
+        }
+
+        parameters
+    }
+
+    /// # Example
+    /// Get the daily account snapshot.
+    ///
+    /// ```
+    /// let account: Account = Binance::new_with_config("API_KEY", "SECRET_KEY");
+    /// let answer = account.daily_account_snapshot().unwrap();
+    /// ```
+    pub fn daily_account_snapshot(&self) -> Result<AccountSnapshot> {
+        let params = AccountSnapshotRequest {
+            type_: "SPOT".to_string(),
+            start_time: None,
+            end_time: None,
+            limit: None,
+        };
+        let btree_params = self.daily_account_snapshot_to_btree_map(params);
+
+        // this gets the timestamp and recv_windows to the btreemap
+        let request = build_signed_request(btree_params, self.recv_window)?;
+
+        eprintln!("{:#?}", request);
+
+        self.client
+            .get_signed(API::Savings(Sapi::AccountSnapshot), Some(request))
     }
 }
