@@ -25,6 +25,7 @@ pub struct Symbol {
     pub required_margin_percent: String,
     pub base_asset: String,
     pub quote_asset: String,
+    pub onboard_date: u128,
     pub price_precision: u16,
     pub quantity_precision: u16,
     pub base_asset_precision: u64,
