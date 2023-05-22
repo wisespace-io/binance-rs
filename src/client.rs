@@ -19,7 +19,7 @@ pub struct Client {
 
 impl Client {
     pub fn new(api_key: Option<String>, secret_key: Option<String>, host: String) -> Self {
-        Client {
+        Self {
             api_key: api_key.unwrap_or_default(),
             secret_key: secret_key.unwrap_or_default(),
             host,

@@ -31,11 +31,11 @@ pub enum ContractType {
 impl From<ContractType> for String {
     fn from(item: ContractType) -> Self {
         match item {
-            ContractType::Perpetual => String::from("PERPETUAL"),
-            ContractType::CurrentMonth => String::from("CURRENT_MONTH"),
-            ContractType::NextMonth => String::from("NEXT_MONTH"),
-            ContractType::CurrentQuarter => String::from("CURRENT_QUARTER"),
-            ContractType::NextQuarter => String::from("NEXT_QUARTER"),
+            ContractType::Perpetual => Self::from("PERPETUAL"),
+            ContractType::CurrentMonth => Self::from("CURRENT_MONTH"),
+            ContractType::NextMonth => Self::from("NEXT_MONTH"),
+            ContractType::CurrentQuarter => Self::from("CURRENT_QUARTER"),
+            ContractType::NextQuarter => Self::from("NEXT_QUARTER"),
         }
     }
 }

@@ -17,7 +17,7 @@ fn save_all_trades_websocket() {
 
     impl WebSocketHandler {
         pub fn new(local_wrt: Writer<File>) -> Self {
-            WebSocketHandler { wrt: local_wrt }
+            Self { wrt: local_wrt }
         }
 
         // serialize DayTickerEvent as CSV records

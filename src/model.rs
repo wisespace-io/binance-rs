@@ -264,8 +264,8 @@ pub struct Bids {
 }
 
 impl Bids {
-    pub fn new(price: f64, qty: f64) -> Bids {
-        Bids { price, qty }
+    pub fn new(price: f64, qty: f64) -> Self {
+        Self { price, qty }
     }
 }
 
