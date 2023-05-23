@@ -896,13 +896,13 @@ impl Account {
     /// # Example
     /// Convert a currency to another.
     ///
-    /// ```
+    ///
     /// let account: Account = Binance::new_with_config("API_KEY", "SECRET_KEY");
     ///
     /// // QtyType::From reduces the value of the first symbol in this case "BTC"
     /// // QtyType::To reduces the value of the second symbol in this case "USDT"
     /// let answer = account.convert("BTC", "USDT", QtyType::From(0.0001)).unwrap();
-    /// ```
+    ///
     pub fn convert<S, F>(
         &self, symbol_from: S, symbol_to: S, qty: QtyType<F>,
     ) -> Result<QuoteResponse>
@@ -946,10 +946,10 @@ impl Account {
     /// # Example
     /// Get the daily account snapshot.
     ///
-    /// ```
+    ///
     /// let account: Account = Binance::new_with_config("API_KEY", "SECRET_KEY");
     /// let answer = account.daily_account_snapshot().unwrap();
-    /// ```
+    ///
     pub fn daily_account_snapshot(&self) -> Result<AccountSnapshot> {
         let params = AccountSnapshotRequest {
             type_: "SPOT".to_string(),
