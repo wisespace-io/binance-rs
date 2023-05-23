@@ -30,7 +30,7 @@ jobs:
         include:
           - build: msrv
             os: ubuntu-latest
-            rust: 1.56.1
+            rust: 1.59
           - build: stable
             os: ubuntu-latest
             rust: stable
