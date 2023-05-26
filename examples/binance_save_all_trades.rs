@@ -1,10 +1,10 @@
+use csv::Writer;
 use std::error::Error;
 use std::fs::File;
-use csv::Writer;
-use std::sync::atomic::{AtomicBool};
+use std::sync::atomic::AtomicBool;
 
+use binance::model::DayTickerEvent;
 use binance::websockets::*;
-use binance::model::{DayTickerEvent};
 
 fn main() {
     save_all_trades_websocket();
@@ -21,7 +21,10 @@ fn save_all_trades_websocket() {
         }
 
         // serialize DayTickerEvent as CSV records
-        pub fn write_to_file(&mut self, events: Vec<DayTickerEvent>) -> Result<(), Box<dyn Error>> {
+        pub fn write_to_file(
+            &mut self,
+            events: Vec<DayTickerEvent>,
+        ) -> Result<(), Box<dyn Error>> {
             for event in events {
                 self.wrt.serialize(event)?;
             }
@@ -35,17 +38,20 @@ fn save_all_trades_websocket() {
 
     let mut web_socket_handler = WebSocketHandler::new(local_wrt);
     let agg_trade = String::from("!ticker@arr");
-    let mut web_socket = WebSockets::new(move |event: WebsocketEvent| {
-        if let WebsocketEvent::DayTickerAll(events) = event {
-            // You can break the event_loop if some condition is met be setting keep_running to false
-            // keep_running.store(false, Ordering::Relaxed);
-            if let Err(error) = web_socket_handler.write_to_file(events) {
-                println!("{}", error);
+    let mut web_socket =
+        WebSockets::new(move |event: WebsocketEvent| {
+            if let WebsocketEvent::DayTickerAll(events) = event {
+                // You can break the event_loop if some condition is met be setting keep_running to false
+                // keep_running.store(false, Ordering::Relaxed);
+                if let Err(error) =
+                    web_socket_handler.write_to_file(events)
+                {
+                    println!("{}", error);
+                }
             }
-        }
 
-        Ok(())
-    });
+            Ok(())
+        });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
     if let Err(e) = web_socket.event_loop(&keep_running) {

@@ -1,19 +1,20 @@
-use crate::errors::Result;
 use crate::config::Config;
+use crate::errors::Result;
 use crate::model::{
-    AccountUpdateEvent, AggrTradesEvent, BalanceUpdateEvent, BookTickerEvent, DayTickerEvent,
-    DepthOrderBookEvent, KlineEvent, OrderBook, OrderTradeEvent, TradeEvent,
+    AccountUpdateEvent, AggrTradesEvent, BalanceUpdateEvent,
+    BookTickerEvent, DayTickerEvent, DepthOrderBookEvent, KlineEvent,
+    OrderBook, OrderTradeEvent, TradeEvent,
 };
 use error_chain::bail;
-use url::Url;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::net::TcpStream;
-use tungstenite::{connect, Message};
+use std::sync::atomic::{AtomicBool, Ordering};
+use tungstenite::handshake::client::Response;
 use tungstenite::protocol::WebSocket;
 use tungstenite::stream::MaybeTlsStream;
-use tungstenite::handshake::client::Response;
+use tungstenite::{connect, Message};
 
 #[allow(clippy::all)]
 enum WebsocketAPI {
@@ -25,12 +26,17 @@ enum WebsocketAPI {
 impl WebsocketAPI {
     fn params(self, subscription: &str) -> String {
         match self {
-            WebsocketAPI::Default => format!("wss://stream.binance.com:9443/ws/{}", subscription),
+            WebsocketAPI::Default => format!(
+                "wss://stream.binance.com:9443/ws/{}",
+                subscription
+            ),
             WebsocketAPI::MultiStream => format!(
                 "wss://stream.binance.com:9443/stream?streams={}",
                 subscription
             ),
-            WebsocketAPI::Custom(url) => format!("{}/{}", url, subscription),
+            WebsocketAPI::Custom(url) => {
+                format!("{}/{}", url, subscription)
+            }
         }
     }
 }
@@ -52,7 +58,8 @@ pub enum WebsocketEvent {
 }
 
 pub struct WebSockets<'a> {
-    pub socket: Option<(WebSocket<MaybeTlsStream<TcpStream>>, Response)>,
+    pub socket:
+        Option<(WebSocket<MaybeTlsStream<TcpStream>>, Response)>,
     handler: Box<dyn FnMut(WebsocketEvent) -> Result<()> + 'a>,
 }
 
@@ -87,12 +94,24 @@ impl<'a> WebSockets<'a> {
         self.connect_wss(&WebsocketAPI::Default.params(subscription))
     }
 
-    pub fn connect_with_config(&mut self, subscription: &str, config: &Config) -> Result<()> {
-        self.connect_wss(&WebsocketAPI::Custom(config.ws_endpoint.clone()).params(subscription))
+    pub fn connect_with_config(
+        &mut self,
+        subscription: &str,
+        config: &Config,
+    ) -> Result<()> {
+        self.connect_wss(
+            &WebsocketAPI::Custom(config.ws_endpoint.clone())
+                .params(subscription),
+        )
     }
 
-    pub fn connect_multiple_streams(&mut self, endpoints: &[String]) -> Result<()> {
-        self.connect_wss(&WebsocketAPI::MultiStream.params(&endpoints.join("/")))
+    pub fn connect_multiple_streams(
+        &mut self,
+        endpoints: &[String],
+    ) -> Result<()> {
+        self.connect_wss(
+            &WebsocketAPI::MultiStream.params(&endpoints.join("/")),
+        )
     }
 
     fn connect_wss(&mut self, wss: &str) -> Result<()> {
@@ -129,16 +148,30 @@ impl<'a> WebSockets<'a> {
         if let Ok(events) = serde_json::from_value::<Events>(value) {
             let action = match events {
                 Events::Vec(v) => WebsocketEvent::DayTickerAll(v),
-                Events::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
-                Events::BalanceUpdateEvent(v) => WebsocketEvent::BalanceUpdate(v),
-                Events::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
-                Events::OrderTradeEvent(v) => WebsocketEvent::OrderTrade(v),
-                Events::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
+                Events::BookTickerEvent(v) => {
+                    WebsocketEvent::BookTicker(v)
+                }
+                Events::BalanceUpdateEvent(v) => {
+                    WebsocketEvent::BalanceUpdate(v)
+                }
+                Events::AccountUpdateEvent(v) => {
+                    WebsocketEvent::AccountUpdate(v)
+                }
+                Events::OrderTradeEvent(v) => {
+                    WebsocketEvent::OrderTrade(v)
+                }
+                Events::AggrTradesEvent(v) => {
+                    WebsocketEvent::AggrTrades(v)
+                }
                 Events::TradeEvent(v) => WebsocketEvent::Trade(v),
-                Events::DayTickerEvent(v) => WebsocketEvent::DayTicker(v),
+                Events::DayTickerEvent(v) => {
+                    WebsocketEvent::DayTicker(v)
+                }
                 Events::KlineEvent(v) => WebsocketEvent::Kline(v),
                 Events::OrderBook(v) => WebsocketEvent::OrderBook(v),
-                Events::DepthOrderBookEvent(v) => WebsocketEvent::DepthOrderBook(v),
+                Events::DepthOrderBookEvent(v) => {
+                    WebsocketEvent::DepthOrderBook(v)
+                }
             };
             (self.handler)(action)?;
         }
@@ -152,14 +185,24 @@ impl<'a> WebSockets<'a> {
                 match message {
                     Message::Text(msg) => {
                         if let Err(e) = self.handle_msg(&msg) {
-                            bail!(format!("Error on handling stream message: {}", e));
+                            bail!(format!(
+                                "Error on handling stream message: {}",
+                                e
+                            ));
                         }
                     }
                     Message::Ping(_) => {
-                        socket.0.write_message(Message::Pong(vec![])).unwrap();
+                        socket
+                            .0
+                            .write_message(Message::Pong(vec![]))
+                            .unwrap();
                     }
-                    Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
+                    Message::Pong(_)
+                    | Message::Binary(_)
+                    | Message::Frame(_) => (),
+                    Message::Close(e) => {
+                        bail!(format!("Disconnected {:?}", e))
+                    }
                 }
             }
         }

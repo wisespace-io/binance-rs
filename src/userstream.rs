@@ -1,8 +1,8 @@
-use crate::model::{Success, UserDataStream};
+use crate::api::Spot;
+use crate::api::API;
 use crate::client::Client;
 use crate::errors::Result;
-use crate::api::API;
-use crate::api::Spot;
+use crate::model::{Success, UserDataStream};
 
 #[derive(Clone)]
 pub struct UserStream {

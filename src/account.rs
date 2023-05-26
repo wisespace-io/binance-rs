@@ -1,15 +1,15 @@
 use error_chain::bail;
 
-use crate::util::build_signed_request;
-use crate::model::{
-    AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction, Quote,
-    QuoteResponse, AccountSnapshot,
-};
+use crate::api::{Convert, Sapi, Spot, API};
 use crate::client::Client;
 use crate::errors::Result;
+use crate::model::{
+    AccountInformation, AccountSnapshot, Balance, Empty, Order,
+    OrderCanceled, Quote, QuoteResponse, TradeHistory, Transaction,
+};
+use crate::util::build_signed_request;
 use std::collections::BTreeMap;
 use std::fmt::Display;
-use crate::api::{API, Spot, Convert, Sapi};
 
 #[derive(Clone)]
 pub struct Account {
@@ -124,7 +124,8 @@ impl Display for TimeInForce {
 impl Account {
     // Account Information
     pub fn get_account(&self) -> Result<AccountInformation> {
-        let request = build_signed_request(BTreeMap::new(), self.recv_window)?;
+        let request =
+            build_signed_request(BTreeMap::new(), self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::Account), Some(request))
     }
@@ -156,7 +157,8 @@ impl Account {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
@@ -165,25 +167,34 @@ impl Account {
     pub fn get_all_open_orders(&self) -> Result<Vec<Order>> {
         let parameters: BTreeMap<String, String> = BTreeMap::new();
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
     // Cancel all open orders for a single symbol
-    pub fn cancel_all_open_orders<S>(&self, symbol: S) -> Result<Vec<OrderCanceled>>
+    pub fn cancel_all_open_orders<S>(
+        &self,
+        symbol: S,
+    ) -> Result<Vec<OrderCanceled>>
     where
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
             .delete_signed(API::Spot(Spot::OpenOrders), Some(request))
     }
 
     // Check an order's status
-    pub fn order_status<S>(&self, symbol: S, order_id: u64) -> Result<Order>
+    pub fn order_status<S>(
+        &self,
+        symbol: S,
+        order_id: u64,
+    ) -> Result<Order>
     where
         S: Into<String>,
     {
@@ -191,7 +202,8 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::Order), Some(request))
     }
@@ -199,7 +211,11 @@ impl Account {
     /// Place a test status order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_order_status<S>(&self, symbol: S, order_id: u64) -> Result<()>
+    pub fn test_order_status<S>(
+        &self,
+        symbol: S,
+        order_id: u64,
+    ) -> Result<()>
     where
         S: Into<String>,
     {
@@ -207,14 +223,23 @@ impl Account {
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
-            .get_signed::<Empty>(API::Spot(Spot::OrderTest), Some(request))
+            .get_signed::<Empty>(
+                API::Spot(Spot::OrderTest),
+                Some(request),
+            )
             .map(|_| ())
     }
 
     // Place a LIMIT order - BUY
-    pub fn limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<Transaction>
+    pub fn limit_buy<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+    ) -> Result<Transaction>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -237,7 +262,12 @@ impl Account {
     /// Place a test limit order - BUY
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_limit_buy<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<()>
+    pub fn test_limit_buy<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+    ) -> Result<()>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -260,7 +290,12 @@ impl Account {
     }
 
     // Place a LIMIT order - SELL
-    pub fn limit_sell<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<Transaction>
+    pub fn limit_sell<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+    ) -> Result<Transaction>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -283,7 +318,12 @@ impl Account {
     /// Place a test LIMIT order - SELL
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_limit_sell<S, F>(&self, symbol: S, qty: F, price: f64) -> Result<()>
+    pub fn test_limit_sell<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+    ) -> Result<()>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -306,7 +346,11 @@ impl Account {
     }
 
     // Place a MARKET order - BUY
-    pub fn market_buy<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
+    pub fn market_buy<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+    ) -> Result<Transaction>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -353,7 +397,9 @@ impl Account {
 
     // Place a MARKET order with quote quantity - BUY
     pub fn market_buy_using_quote_quantity<S, F>(
-        &self, symbol: S, quote_order_qty: F,
+        &self,
+        symbol: S,
+        quote_order_qty: F,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -377,7 +423,9 @@ impl Account {
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     pub fn test_market_buy_using_quote_quantity<S, F>(
-        &self, symbol: S, quote_order_qty: F,
+        &self,
+        symbol: S,
+        quote_order_qty: F,
     ) -> Result<()>
     where
         S: Into<String>,
@@ -400,7 +448,11 @@ impl Account {
     }
 
     // Place a MARKET order - SELL
-    pub fn market_sell<S, F>(&self, symbol: S, qty: F) -> Result<Transaction>
+    pub fn market_sell<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+    ) -> Result<Transaction>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -423,7 +475,11 @@ impl Account {
     /// Place a test MARKET order - SELL
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_market_sell<S, F>(&self, symbol: S, qty: F) -> Result<()>
+    pub fn test_market_sell<S, F>(
+        &self,
+        symbol: S,
+        qty: F,
+    ) -> Result<()>
     where
         S: Into<String>,
         F: Into<f64>,
@@ -447,7 +503,9 @@ impl Account {
 
     // Place a MARKET order with quote quantity - SELL
     pub fn market_sell_using_quote_quantity<S, F>(
-        &self, symbol: S, quote_order_qty: F,
+        &self,
+        symbol: S,
+        quote_order_qty: F,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -471,7 +529,9 @@ impl Account {
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     pub fn test_market_sell_using_quote_quantity<S, F>(
-        &self, symbol: S, quote_order_qty: F,
+        &self,
+        symbol: S,
+        quote_order_qty: F,
     ) -> Result<()>
     where
         S: Into<String>,
@@ -508,7 +568,12 @@ impl Account {
     /// }
     /// ```
     pub fn stop_limit_buy_order<S, F>(
-        &self, symbol: S, qty: F, price: f64, stop_price: f64, time_in_force: TimeInForce,
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -546,7 +611,12 @@ impl Account {
     /// }
     /// ```
     pub fn test_stop_limit_buy_order<S, F>(
-        &self, symbol: S, qty: F, price: f64, stop_price: f64, time_in_force: TimeInForce,
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
     ) -> Result<()>
     where
         S: Into<String>,
@@ -584,7 +654,12 @@ impl Account {
     /// }
     /// ```
     pub fn stop_limit_sell_order<S, F>(
-        &self, symbol: S, qty: F, price: f64, stop_price: f64, time_in_force: TimeInForce,
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -622,7 +697,12 @@ impl Account {
     /// }
     /// ```
     pub fn test_stop_limit_sell_order<S, F>(
-        &self, symbol: S, qty: F, price: f64, stop_price: f64, time_in_force: TimeInForce,
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: f64,
+        time_in_force: TimeInForce,
     ) -> Result<()>
     where
         S: Into<String>,
@@ -648,8 +728,15 @@ impl Account {
     /// Place a custom order
     #[allow(clippy::too_many_arguments)]
     pub fn custom_order<S, F>(
-        &self, symbol: S, qty: F, price: f64, stop_price: Option<f64>, order_side: OrderSide,
-        order_type: OrderType, time_in_force: TimeInForce, new_client_order_id: Option<String>,
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: Option<f64>,
+        order_side: OrderSide,
+        order_type: OrderType,
+        time_in_force: TimeInForce,
+        new_client_order_id: Option<String>,
     ) -> Result<Transaction>
     where
         S: Into<String>,
@@ -675,8 +762,15 @@ impl Account {
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
     #[allow(clippy::too_many_arguments)]
     pub fn test_custom_order<S, F>(
-        &self, symbol: S, qty: F, price: f64, stop_price: Option<f64>, order_side: OrderSide,
-        order_type: OrderType, time_in_force: TimeInForce, new_client_order_id: Option<String>,
+        &self,
+        symbol: S,
+        qty: F,
+        price: f64,
+        stop_price: Option<f64>,
+        order_side: OrderSide,
+        order_type: OrderType,
+        time_in_force: TimeInForce,
+        new_client_order_id: Option<String>,
     ) -> Result<()>
     where
         S: Into<String>,
@@ -700,134 +794,192 @@ impl Account {
     }
 
     // Check an order's status
-    pub fn cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<OrderCanceled>
-    where
-        S: Into<String>,
-    {
-        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
-        parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("orderId".into(), order_id.to_string());
-
-        let request = build_signed_request(parameters, self.recv_window)?;
-        self.client
-            .delete_signed(API::Spot(Spot::Order), Some(request))
-    }
-
-    pub fn cancel_order_with_client_id<S>(
-        &self, symbol: S, orig_client_order_id: String,
+    pub fn cancel_order<S>(
+        &self,
+        symbol: S,
+        order_id: u64,
     ) -> Result<OrderCanceled>
     where
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
-        parameters.insert("origClientOrderId".into(), orig_client_order_id);
+        parameters.insert("orderId".into(), order_id.to_string());
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .delete_signed(API::Spot(Spot::Order), Some(request))
+    }
+
+    pub fn cancel_order_with_client_id<S>(
+        &self,
+        symbol: S,
+        orig_client_order_id: String,
+    ) -> Result<OrderCanceled>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters
+            .insert("origClientOrderId".into(), orig_client_order_id);
+
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
             .delete_signed(API::Spot(Spot::Order), Some(request))
     }
     /// Place a test cancel order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.
-    pub fn test_cancel_order<S>(&self, symbol: S, order_id: u64) -> Result<()>
+    pub fn test_cancel_order<S>(
+        &self,
+        symbol: S,
+        order_id: u64,
+    ) -> Result<()>
     where
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
         parameters.insert("orderId".into(), order_id.to_string());
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
-            .delete_signed::<Empty>(API::Spot(Spot::OrderTest), Some(request))
+            .delete_signed::<Empty>(
+                API::Spot(Spot::OrderTest),
+                Some(request),
+            )
             .map(|_| ())
     }
 
     // Trade history
-    pub fn trade_history<S>(&self, symbol: S) -> Result<Vec<TradeHistory>>
+    pub fn trade_history<S>(
+        &self,
+        symbol: S,
+    ) -> Result<Vec<TradeHistory>>
     where
         S: Into<String>,
     {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
         parameters.insert("symbol".into(), symbol.into());
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::MyTrades), Some(request))
     }
 
-    fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
-        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+    fn build_order(
+        &self,
+        order: OrderRequest,
+    ) -> BTreeMap<String, String> {
+        let mut order_parameters: BTreeMap<String, String> =
+            BTreeMap::new();
 
         order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side.to_string());
-        order_parameters.insert("type".into(), order.order_type.to_string());
-        order_parameters.insert("quantity".into(), order.qty.to_string());
+        order_parameters
+            .insert("side".into(), order.order_side.to_string());
+        order_parameters
+            .insert("type".into(), order.order_type.to_string());
+        order_parameters
+            .insert("quantity".into(), order.qty.to_string());
 
         if let Some(stop_price) = order.stop_price {
-            order_parameters.insert("stopPrice".into(), stop_price.to_string());
+            order_parameters
+                .insert("stopPrice".into(), stop_price.to_string());
         }
 
         if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force.to_string());
+            order_parameters
+                .insert("price".into(), order.price.to_string());
+            order_parameters.insert(
+                "timeInForce".into(),
+                order.time_in_force.to_string(),
+            );
         }
 
         if let Some(client_order_id) = order.new_client_order_id {
-            order_parameters.insert("newClientOrderId".into(), client_order_id);
+            order_parameters
+                .insert("newClientOrderId".into(), client_order_id);
         }
 
         order_parameters
     }
 
     fn build_quote_quantity_order(
-        &self, order: OrderQuoteQuantityRequest,
+        &self,
+        order: OrderQuoteQuantityRequest,
     ) -> BTreeMap<String, String> {
-        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut order_parameters: BTreeMap<String, String> =
+            BTreeMap::new();
 
         order_parameters.insert("symbol".into(), order.symbol);
-        order_parameters.insert("side".into(), order.order_side.to_string());
-        order_parameters.insert("type".into(), order.order_type.to_string());
-        order_parameters.insert("quoteOrderQty".into(), order.quote_order_qty.to_string());
+        order_parameters
+            .insert("side".into(), order.order_side.to_string());
+        order_parameters
+            .insert("type".into(), order.order_type.to_string());
+        order_parameters.insert(
+            "quoteOrderQty".into(),
+            order.quote_order_qty.to_string(),
+        );
 
         if order.price != 0.0 {
-            order_parameters.insert("price".into(), order.price.to_string());
-            order_parameters.insert("timeInForce".into(), order.time_in_force.to_string());
+            order_parameters
+                .insert("price".into(), order.price.to_string());
+            order_parameters.insert(
+                "timeInForce".into(),
+                order.time_in_force.to_string(),
+            );
         }
 
         if let Some(client_order_id) = order.new_client_order_id {
-            order_parameters.insert("newClientOrderId".into(), client_order_id);
+            order_parameters
+                .insert("newClientOrderId".into(), client_order_id);
         }
 
         order_parameters
     }
 
     fn converter_order_to_btree_map<T: Into<f64>>(
-        &self, order: OrderQuoteRequest<T>,
+        &self,
+        order: OrderQuoteRequest<T>,
     ) -> BTreeMap<String, String> {
-        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+        let mut order_parameters: BTreeMap<String, String> =
+            BTreeMap::new();
 
-        order_parameters.insert("fromAsset".into(), order.from_asset.to_string());
-        order_parameters.insert("toAsset".into(), order.to_asset.to_string());
+        order_parameters
+            .insert("fromAsset".into(), order.from_asset.to_string());
+        order_parameters
+            .insert("toAsset".into(), order.to_asset.to_string());
 
         match order.from_or_to_amount {
             QtyType::From(v) => {
                 let qty: f64 = v.into();
-                order_parameters.insert("fromAmount".into(), qty.to_string());
+                order_parameters
+                    .insert("fromAmount".into(), qty.to_string());
             }
             QtyType::To(v) => {
                 let qty: f64 = v.into();
-                order_parameters.insert("toAmount".into(), qty.to_string());
+                order_parameters
+                    .insert("toAmount".into(), qty.to_string());
             }
         };
 
         if let Some(wallet_type) = order.wallet_type {
             match wallet_type {
                 WalletType::SPOT => {
-                    order_parameters.insert("walletType".into(), "SPOT".to_string());
+                    order_parameters.insert(
+                        "walletType".into(),
+                        "SPOT".to_string(),
+                    );
                 }
                 WalletType::FUNDING => {
-                    order_parameters.insert("walletType".into(), "FUNDING".to_string());
+                    order_parameters.insert(
+                        "walletType".into(),
+                        "FUNDING".to_string(),
+                    );
                 }
             }
         }
@@ -835,16 +987,20 @@ impl Account {
         if let Some(time) = order.valid_time {
             match time {
                 ValidTime::TenSeconds => {
-                    order_parameters.insert("validTime".into(), "10s".to_string());
+                    order_parameters
+                        .insert("validTime".into(), "10s".to_string());
                 }
                 ValidTime::ThirtySeconds => {
-                    order_parameters.insert("validTime".into(), "30s".to_string());
+                    order_parameters
+                        .insert("validTime".into(), "30s".to_string());
                 }
                 ValidTime::OneMinutes => {
-                    order_parameters.insert("validTime".into(), "1m".to_string());
+                    order_parameters
+                        .insert("validTime".into(), "1m".to_string());
                 }
                 ValidTime::TwoMinutes => {
-                    order_parameters.insert("validTime".into(), "2m".to_string());
+                    order_parameters
+                        .insert("validTime".into(), "2m".to_string());
                 }
             }
         }
@@ -854,7 +1010,11 @@ impl Account {
 
     // função que faz o request pra converter
     fn send_quote_request<S, F>(
-        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>, wallet_type: Option<WalletType>,
+        &self,
+        symbol_from: S,
+        symbol_to: S,
+        qty: QtyType<F>,
+        wallet_type: Option<WalletType>,
         valid_time: Option<ValidTime>,
     ) -> Result<Quote>
     where
@@ -876,7 +1036,10 @@ impl Account {
     }
 
     // method que aceita a negociação do convert
-    fn accept_quote(&self, quote: Result<Quote>) -> Result<QuoteResponse> {
+    fn accept_quote(
+        &self,
+        quote: Result<Quote>,
+    ) -> Result<QuoteResponse> {
         let quote = quote?;
 
         //let quote = quote?;
@@ -888,7 +1051,8 @@ impl Account {
             bail!("Not enough funds")
         }
 
-        let request: String = build_signed_request(params, self.recv_window)?;
+        let request: String =
+            build_signed_request(params, self.recv_window)?;
         self.client
             .post_signed(API::Convert(Convert::AcceptQuote), request)
     }
@@ -904,7 +1068,10 @@ impl Account {
     /// let answer = account.convert("BTC", "USDT", QtyType::From(0.0001)).unwrap();
     ///
     pub fn convert<S, F>(
-        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>,
+        &self,
+        symbol_from: S,
+        symbol_to: S,
+        qty: QtyType<F>,
     ) -> Result<QuoteResponse>
     where
         S: Into<String>,
@@ -922,14 +1089,16 @@ impl Account {
     }
 
     fn daily_account_snapshot_to_btree_map(
-        &self, params: AccountSnapshotRequest,
+        &self,
+        params: AccountSnapshotRequest,
     ) -> BTreeMap<String, String> {
         let mut parameters: BTreeMap<String, String> = BTreeMap::new();
 
         parameters.insert("type".into(), params.type_);
 
         if let Some(start_time) = params.start_time {
-            parameters.insert("startTime".into(), start_time.to_string());
+            parameters
+                .insert("startTime".into(), start_time.to_string());
         }
 
         if let Some(end_time) = params.end_time {
@@ -957,14 +1126,18 @@ impl Account {
             end_time: None,
             limit: None,
         };
-        let btree_params = self.daily_account_snapshot_to_btree_map(params);
+        let btree_params =
+            self.daily_account_snapshot_to_btree_map(params);
 
         // this gets the timestamp and recv_windows to the btreemap
-        let request = build_signed_request(btree_params, self.recv_window)?;
+        let request =
+            build_signed_request(btree_params, self.recv_window)?;
 
         eprintln!("{:#?}", request);
 
-        self.client
-            .get_signed(API::Savings(Sapi::AccountSnapshot), Some(request))
+        self.client.get_signed(
+            API::Savings(Sapi::AccountSnapshot),
+            Some(request),
+        )
     }
 }

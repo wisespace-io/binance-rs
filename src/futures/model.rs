@@ -1,9 +1,11 @@
+use crate::model::{
+    string_or_bool, string_or_float, string_or_float_opt,
+};
 use serde::{Deserialize, Serialize};
-use crate::model::{string_or_float, string_or_float_opt, string_or_bool};
 
 pub use crate::model::{
-    Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
-    SymbolPrice, Tickers,
+    Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary,
+    RateLimit, ServerTime, SymbolPrice, Tickers,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -234,7 +236,10 @@ pub struct Order {
     #[serde(rename = "type")]
     pub order_type: String,
     pub orig_type: String,
-    #[serde(with = "string_or_float", default = "default_activation_price")]
+    #[serde(
+        with = "string_or_float",
+        default = "default_activation_price"
+    )]
     pub activation_price: f64,
     #[serde(with = "string_or_float", default = "default_price_rate")]
     pub price_rate: f64,

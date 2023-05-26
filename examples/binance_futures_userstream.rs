@@ -7,14 +7,17 @@ fn main() {
 
 fn user_stream() {
     let api_key_user = Some("YOUR_API_KEY".into());
-    let user_stream: FuturesUserStream = Binance::new(api_key_user, None);
+    let user_stream: FuturesUserStream =
+        Binance::new(api_key_user, None);
 
     if let Ok(answer) = user_stream.start() {
         println!("Data Stream Started ...");
         let listen_key = answer.listen_key;
 
         match user_stream.keep_alive(&listen_key) {
-            Ok(msg) => println!("Keepalive user data stream: {:?}", msg),
+            Ok(msg) => {
+                println!("Keepalive user data stream: {:?}", msg)
+            }
             Err(e) => println!("Error: {}", e),
         }
 
@@ -23,6 +26,8 @@ fn user_stream() {
             Err(e) => println!("Error: {}", e),
         }
     } else {
-        println!("Not able to start an User Stream (Check your API_KEY)");
+        println!(
+            "Not able to start an User Stream (Check your API_KEY)"
+        );
     }
 }
