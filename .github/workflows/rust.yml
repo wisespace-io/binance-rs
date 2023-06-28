@@ -20,6 +20,11 @@ jobs:
           override: true
           components: clippy
       - run: cargo clippy --all-targets
+#      - name: Clean Cargo cache and reinstall dependencies
+#        run: |
+#          cargo clean
+#          cargo update -p openssl-src
+
 
   test:
     name: test
@@ -30,7 +35,7 @@ jobs:
         include:
           - build: msrv
             os: ubuntu-latest
-            rust: 1.60.0
+            rust: 1.56.1
           - build: stable
             os: ubuntu-latest
             rust: stable
