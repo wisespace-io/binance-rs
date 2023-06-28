@@ -1,5 +1,5 @@
-use serde::Deserialize;
 use error_chain::error_chain;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct BinanceContentError {

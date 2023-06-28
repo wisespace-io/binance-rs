@@ -1,11 +1,11 @@
-use binance::api::*;
-use binance::savings::*;
-use binance::config::*;
-use binance::general::*;
 use binance::account::*;
+use binance::api::*;
+use binance::config::*;
+use binance::errors::ErrorKind as BinanceLibErrorKind;
+use binance::general::*;
 use binance::market::*;
 use binance::model::KlineSummary;
-use binance::errors::ErrorKind as BinanceLibErrorKind;
+use binance::savings::*;
 
 fn main() {
     // The general spot API endpoints; shown with
@@ -24,7 +24,8 @@ fn main() {
 
 fn general(use_testnet: bool) {
     let general: General = if use_testnet {
-        let config = Config::default().set_rest_api_endpoint("https://testnet.binance.vision");
+        let config = Config::default()
+            .set_rest_api_endpoint("https://testnet.binance.vision");
         Binance::new_with_config(None, None, &config)
     } else {
         Binance::new(None, None)
@@ -231,7 +232,9 @@ fn market_data() {
     match market.get_klines("BNBETH", "5m", 10, None, None) {
         Ok(klines) => {
             match klines {
-                binance::model::KlineSummaries::AllKlineSummaries(klines) => {
+                binance::model::KlineSummaries::AllKlineSummaries(
+                    klines,
+                ) => {
                     let kline: KlineSummary = klines[0].clone(); // You need to iterate over the klines
                     println!(
                         "Open: {}, High: {}, Low: {}",

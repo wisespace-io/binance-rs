@@ -27,19 +27,21 @@ serde = { version = "1.0.126", features = ["derive"] }
 serde_json = "1.0"
 error-chain = { version = "0.12.4", default-features = false }
 reqwest = { version = "0.11.4", features = ["blocking", "json"] }
-tungstenite = { version = "0.18.0", features = ["native-tls"] }
+tungstenite = { version = "0.19.0", features = ["native-tls"] }
 url = "2.2.2"
 
 [features]
-vendored-tls = ["reqwest/native-tls-vendored", "tungstenite/native-tls-vendored"]
+vendored-tls = [
+    "reqwest/native-tls-vendored",
+    "tungstenite/native-tls-vendored",
+]
 
 [dev-dependencies]
-csv ="1.1.6"
-mockito = "0.31.0"
+csv = "1.1.6"
+mockito = "0.32.5"
 env_logger = "0.9.0"
 criterion = "0.3"
 float-cmp = "0.9.0"
-serde_json = "1.0"
 
 [[bench]]
 name = "websocket_benchmark"

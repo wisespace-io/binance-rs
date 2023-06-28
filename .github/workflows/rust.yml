@@ -20,6 +20,11 @@ jobs:
           override: true
           components: clippy
       - run: cargo clippy --all-targets
+#      - name: Clean Cargo cache and reinstall dependencies
+#        run: |
+#          cargo clean
+#          cargo update -p openssl-src
+
 
   test:
     name: test

@@ -24,7 +24,9 @@ fn user_stream() {
         let listen_key = answer.listen_key;
 
         match user_stream.keep_alive(&listen_key) {
-            Ok(msg) => println!("Keepalive user data stream: {:?}", msg),
+            Ok(msg) => {
+                println!("Keepalive user data stream: {:?}", msg)
+            }
             Err(e) => println!("Error: {}", e),
         }
 
@@ -33,7 +35,9 @@ fn user_stream() {
             Err(e) => println!("Error: {}", e),
         }
     } else {
-        println!("Not able to start an User Stream (Check your API_KEY)");
+        println!(
+            "Not able to start an User Stream (Check your API_KEY)"
+        );
     }
 }
 
@@ -45,30 +49,32 @@ fn user_stream_websocket() {
     if let Ok(answer) = user_stream.start() {
         let listen_key = answer.listen_key;
 
-        let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
-            match event {
-                WebsocketEvent::AccountUpdate(account_update) => {
-                    for balance in &account_update.data.balances {
-                        println!(
+        let mut web_socket: WebSockets<'_> = WebSockets::new(
+            |event: WebsocketEvent| {
+                match event {
+                    WebsocketEvent::AccountUpdate(account_update) => {
+                        for balance in &account_update.data.balances {
+                            println!(
                             "Asset: {}, wallet_balance: {}, cross_wallet_balance: {}, balance: {}",
                             balance.asset,
                             balance.wallet_balance,
                             balance.cross_wallet_balance,
                             balance.balance_change
                         );
+                        }
                     }
-                }
-                WebsocketEvent::OrderTrade(trade) => {
-                    println!(
+                    WebsocketEvent::OrderTrade(trade) => {
+                        println!(
                         "Symbol: {}, Side: {}, Price: {}, Execution Type: {}",
                         trade.symbol, trade.side, trade.price, trade.execution_type
                     );
-                }
-                _ => (),
-            };
+                    }
+                    _ => (),
+                };
 
-            Ok(())
-        });
+                Ok(())
+            },
+        );
 
         web_socket.connect(&listen_key).unwrap(); // check error
         if let Err(e) = web_socket.event_loop(&keep_running) {
@@ -78,38 +84,45 @@ fn user_stream_websocket() {
         web_socket.disconnect().unwrap();
         println!("Userstrem closed and disconnected");
     } else {
-        println!("Not able to start an User Stream (Check your API_KEY)");
+        println!(
+            "Not able to start an User Stream (Check your API_KEY)"
+        );
     }
 }
 
 fn market_websocket() {
     let keep_running = AtomicBool::new(true); // Used to control the event loop
     let agg_trade = String::from("ethbtc@aggTrade");
-    let mut web_socket: WebSockets<'_> = WebSockets::new(|event: WebsocketEvent| {
-        match event {
-            WebsocketEvent::Trade(trade) => {
-                println!(
-                    "Symbol: {}, price: {}, qty: {}",
-                    trade.symbol, trade.price, trade.qty
-                );
-            }
-            WebsocketEvent::DepthOrderBook(depth_order_book) => {
-                println!(
-                    "Symbol: {}, Bids: {:?}, Ask: {:?}",
-                    depth_order_book.symbol, depth_order_book.bids, depth_order_book.asks
-                );
-            }
-            WebsocketEvent::OrderBook(order_book) => {
-                println!(
-                    "last_update_id: {}, Bids: {:?}, Ask: {:?}",
-                    order_book.last_update_id, order_book.bids, order_book.asks
-                );
-            }
-            _ => (),
-        };
+    let mut web_socket: WebSockets<'_> =
+        WebSockets::new(|event: WebsocketEvent| {
+            match event {
+                WebsocketEvent::Trade(trade) => {
+                    println!(
+                        "Symbol: {}, price: {}, qty: {}",
+                        trade.symbol, trade.price, trade.qty
+                    );
+                }
+                WebsocketEvent::DepthOrderBook(depth_order_book) => {
+                    println!(
+                        "Symbol: {}, Bids: {:?}, Ask: {:?}",
+                        depth_order_book.symbol,
+                        depth_order_book.bids,
+                        depth_order_book.asks
+                    );
+                }
+                WebsocketEvent::OrderBook(order_book) => {
+                    println!(
+                        "last_update_id: {}, Bids: {:?}, Ask: {:?}",
+                        order_book.last_update_id,
+                        order_book.bids,
+                        order_book.asks
+                    );
+                }
+                _ => (),
+            };
 
-        Ok(())
-    });
+            Ok(())
+        });
 
     web_socket.connect(&agg_trade).unwrap(); // check error
     if let Err(e) = web_socket.event_loop(&keep_running) {
@@ -127,7 +140,9 @@ fn all_trades_websocket() {
             for tick_event in ticker_events {
                 println!(
                     "Symbol: {}, price: {}, qty: {}",
-                    tick_event.symbol, tick_event.best_bid, tick_event.best_bid_qty
+                    tick_event.symbol,
+                    tick_event.best_bid,
+                    tick_event.best_bid_qty
                 );
             }
         }
@@ -150,7 +165,9 @@ fn kline_websocket() {
         if let WebsocketEvent::Kline(kline_event) = event {
             println!(
                 "Symbol: {}, high: {}, low: {}",
-                kline_event.kline.symbol, kline_event.kline.low, kline_event.kline.high
+                kline_event.kline.symbol,
+                kline_event.kline.low,
+                kline_event.kline.high
             );
         }
 
@@ -173,7 +190,8 @@ fn last_price_for_one_symbol() {
     let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
         if let WebsocketEvent::DayTicker(ticker_event) = event {
             btcusdt = ticker_event.average_price.parse().unwrap();
-            let btcusdt_close: f32 = ticker_event.current_close.parse().unwrap();
+            let btcusdt_close: f32 =
+                ticker_event.current_close.parse().unwrap();
             println!("{} - {}", btcusdt, btcusdt_close);
 
             if btcusdt_close as i32 == 7000 {
@@ -194,12 +212,13 @@ fn last_price_for_one_symbol() {
 }
 
 fn multiple_streams() {
-    let endpoints =
-        ["ETHBTC", "BNBETH"].map(|symbol| format!("{}@depth@100ms", symbol.to_lowercase()));
+    let endpoints = ["ETHBTC", "BNBETH"]
+        .map(|symbol| format!("{}@depth@100ms", symbol.to_lowercase()));
 
     let keep_running = AtomicBool::new(true);
     let mut web_socket = WebSockets::new(|event: WebsocketEvent| {
-        if let WebsocketEvent::DepthOrderBook(depth_order_book) = event {
+        if let WebsocketEvent::DepthOrderBook(depth_order_book) = event
+        {
             println!("{:?}", depth_order_book);
         }
 

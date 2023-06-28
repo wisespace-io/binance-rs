@@ -1,20 +1,22 @@
-use crate::errors::Result;
 use crate::config::Config;
-use crate::model::{
-    AccountUpdateEvent, AggrTradesEvent, BookTickerEvent, ContinuousKlineEvent, DayTickerEvent,
-    DepthOrderBookEvent, IndexKlineEvent, IndexPriceEvent, KlineEvent, LiquidationEvent,
-    MarkPriceEvent, MiniTickerEvent, OrderBook, TradeEvent, UserDataStreamExpiredEvent,
-};
+use crate::errors::Result;
 use crate::futures::model;
+use crate::model::{
+    AccountUpdateEvent, AggrTradesEvent, BookTickerEvent,
+    ContinuousKlineEvent, DayTickerEvent, DepthOrderBookEvent,
+    IndexKlineEvent, IndexPriceEvent, KlineEvent, LiquidationEvent,
+    MarkPriceEvent, MiniTickerEvent, OrderBook, TradeEvent,
+    UserDataStreamExpiredEvent,
+};
 use error_chain::bail;
-use url::Url;
 use serde::{Deserialize, Serialize};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::net::TcpStream;
-use tungstenite::{connect, Message};
+use std::sync::atomic::{AtomicBool, Ordering};
+use tungstenite::handshake::client::Response;
 use tungstenite::protocol::WebSocket;
 use tungstenite::stream::MaybeTlsStream;
-use tungstenite::handshake::client::Response;
+use tungstenite::{connect, Message};
+use url::Url;
 #[allow(clippy::all)]
 enum FuturesWebsocketAPI {
     Default,
@@ -29,7 +31,11 @@ pub enum FuturesMarket {
 }
 
 impl FuturesWebsocketAPI {
-    fn params(self, market: &FuturesMarket, subscription: &str) -> String {
+    fn params(
+        self,
+        market: &FuturesMarket,
+        subscription: &str,
+    ) -> String {
         let baseurl = match market {
             FuturesMarket::USDM => "wss://fstream.binance.com",
             FuturesMarket::COINM => "wss://dstream.binance.com",
@@ -73,7 +79,8 @@ pub enum FuturesWebsocketEvent {
 }
 
 pub struct FuturesWebSockets<'a> {
-    pub socket: Option<(WebSocket<MaybeTlsStream<TcpStream>>, Response)>,
+    pub socket:
+        Option<(WebSocket<MaybeTlsStream<TcpStream>>, Response)>,
     handler: Box<dyn FnMut(FuturesWebsocketEvent) -> Result<()> + 'a>,
 }
 
@@ -112,22 +119,37 @@ impl<'a> FuturesWebSockets<'a> {
         }
     }
 
-    pub fn connect(&mut self, market: &FuturesMarket, subscription: &'a str) -> Result<()> {
-        self.connect_wss(&FuturesWebsocketAPI::Default.params(market, subscription))
+    pub fn connect(
+        &mut self,
+        market: &FuturesMarket,
+        subscription: &'a str,
+    ) -> Result<()> {
+        self.connect_wss(
+            &FuturesWebsocketAPI::Default.params(market, subscription),
+        )
     }
 
     pub fn connect_with_config(
-        &mut self, market: &FuturesMarket, subscription: &'a str, config: &'a Config,
+        &mut self,
+        market: &FuturesMarket,
+        subscription: &'a str,
+        config: &'a Config,
     ) -> Result<()> {
         self.connect_wss(
-            &FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(market, subscription),
+            &FuturesWebsocketAPI::Custom(config.ws_endpoint.clone())
+                .params(market, subscription),
         )
     }
 
     pub fn connect_multiple_streams(
-        &mut self, market: &FuturesMarket, endpoints: &[String],
+        &mut self,
+        market: &FuturesMarket,
+        endpoints: &[String],
     ) -> Result<()> {
-        self.connect_wss(&FuturesWebsocketAPI::MultiStream.params(market, &endpoints.join("/")))
+        self.connect_wss(
+            &FuturesWebsocketAPI::MultiStream
+                .params(market, &endpoints.join("/")),
+        )
     }
 
     fn connect_wss(&mut self, wss: &str) -> Result<()> {
@@ -161,26 +183,64 @@ impl<'a> FuturesWebSockets<'a> {
             return Ok(());
         }
 
-        if let Ok(events) = serde_json::from_value::<FuturesEvents>(value) {
+        if let Ok(events) =
+            serde_json::from_value::<FuturesEvents>(value)
+        {
             let action = match events {
-                FuturesEvents::Vec(v) => FuturesWebsocketEvent::DayTickerAll(v),
-                FuturesEvents::DayTickerEvent(v) => FuturesWebsocketEvent::DayTicker(v),
-                FuturesEvents::BookTickerEvent(v) => FuturesWebsocketEvent::BookTicker(v),
-                FuturesEvents::MiniTickerEvent(v) => FuturesWebsocketEvent::MiniTicker(v),
-                FuturesEvents::VecMiniTickerEvent(v) => FuturesWebsocketEvent::MiniTickerAll(v),
-                FuturesEvents::AccountUpdateEvent(v) => FuturesWebsocketEvent::AccountUpdate(v),
-                FuturesEvents::OrderTradeEvent(v) => FuturesWebsocketEvent::OrderTrade(v),
-                FuturesEvents::IndexPriceEvent(v) => FuturesWebsocketEvent::IndexPrice(v),
-                FuturesEvents::MarkPriceEvent(v) => FuturesWebsocketEvent::MarkPrice(v),
-                FuturesEvents::VecMarkPriceEvent(v) => FuturesWebsocketEvent::MarkPriceAll(v),
-                FuturesEvents::TradeEvent(v) => FuturesWebsocketEvent::Trade(v),
-                FuturesEvents::ContinuousKlineEvent(v) => FuturesWebsocketEvent::ContinuousKline(v),
-                FuturesEvents::IndexKlineEvent(v) => FuturesWebsocketEvent::IndexKline(v),
-                FuturesEvents::LiquidationEvent(v) => FuturesWebsocketEvent::Liquidation(v),
-                FuturesEvents::KlineEvent(v) => FuturesWebsocketEvent::Kline(v),
-                FuturesEvents::OrderBook(v) => FuturesWebsocketEvent::OrderBook(v),
-                FuturesEvents::DepthOrderBookEvent(v) => FuturesWebsocketEvent::DepthOrderBook(v),
-                FuturesEvents::AggrTradesEvent(v) => FuturesWebsocketEvent::AggrTrades(v),
+                FuturesEvents::Vec(v) => {
+                    FuturesWebsocketEvent::DayTickerAll(v)
+                }
+                FuturesEvents::DayTickerEvent(v) => {
+                    FuturesWebsocketEvent::DayTicker(v)
+                }
+                FuturesEvents::BookTickerEvent(v) => {
+                    FuturesWebsocketEvent::BookTicker(v)
+                }
+                FuturesEvents::MiniTickerEvent(v) => {
+                    FuturesWebsocketEvent::MiniTicker(v)
+                }
+                FuturesEvents::VecMiniTickerEvent(v) => {
+                    FuturesWebsocketEvent::MiniTickerAll(v)
+                }
+                FuturesEvents::AccountUpdateEvent(v) => {
+                    FuturesWebsocketEvent::AccountUpdate(v)
+                }
+                FuturesEvents::OrderTradeEvent(v) => {
+                    FuturesWebsocketEvent::OrderTrade(v)
+                }
+                FuturesEvents::IndexPriceEvent(v) => {
+                    FuturesWebsocketEvent::IndexPrice(v)
+                }
+                FuturesEvents::MarkPriceEvent(v) => {
+                    FuturesWebsocketEvent::MarkPrice(v)
+                }
+                FuturesEvents::VecMarkPriceEvent(v) => {
+                    FuturesWebsocketEvent::MarkPriceAll(v)
+                }
+                FuturesEvents::TradeEvent(v) => {
+                    FuturesWebsocketEvent::Trade(v)
+                }
+                FuturesEvents::ContinuousKlineEvent(v) => {
+                    FuturesWebsocketEvent::ContinuousKline(v)
+                }
+                FuturesEvents::IndexKlineEvent(v) => {
+                    FuturesWebsocketEvent::IndexKline(v)
+                }
+                FuturesEvents::LiquidationEvent(v) => {
+                    FuturesWebsocketEvent::Liquidation(v)
+                }
+                FuturesEvents::KlineEvent(v) => {
+                    FuturesWebsocketEvent::Kline(v)
+                }
+                FuturesEvents::OrderBook(v) => {
+                    FuturesWebsocketEvent::OrderBook(v)
+                }
+                FuturesEvents::DepthOrderBookEvent(v) => {
+                    FuturesWebsocketEvent::DepthOrderBook(v)
+                }
+                FuturesEvents::AggrTradesEvent(v) => {
+                    FuturesWebsocketEvent::AggrTrades(v)
+                }
                 FuturesEvents::UserDataStreamExpiredEvent(v) => {
                     FuturesWebsocketEvent::UserDataStreamExpiredEvent(v)
                 }
@@ -197,14 +257,24 @@ impl<'a> FuturesWebSockets<'a> {
                 match message {
                     Message::Text(msg) => {
                         if let Err(e) = self.handle_msg(&msg) {
-                            bail!(format!("Error on handling stream message: {}", e));
+                            bail!(format!(
+                                "Error on handling stream message: {}",
+                                e
+                            ));
                         }
                     }
                     Message::Ping(_) => {
-                        socket.0.write_message(Message::Pong(vec![])).unwrap();
+                        socket
+                            .0
+                            .write_message(Message::Pong(vec![]))
+                            .unwrap();
                     }
-                    Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
+                    Message::Pong(_)
+                    | Message::Binary(_)
+                    | Message::Frame(_) => (),
+                    Message::Close(e) => {
+                        bail!(format!("Disconnected {:?}", e))
+                    }
                 }
             }
         }

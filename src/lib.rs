@@ -1,3 +1,5 @@
+//! Api in rust that use the binance api
+
 #![deny(
     unstable_features,
     unused_must_use,

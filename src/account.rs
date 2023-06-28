@@ -1,15 +1,15 @@
 use error_chain::bail;
 
-use crate::util::build_signed_request;
-use crate::model::{
-    AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction,
-};
+use crate::api::{Convert, Sapi, Spot, API};
 use crate::client::Client;
 use crate::errors::Result;
+use crate::model::{
+    AccountInformation, AccountSnapshot, Balance, Empty, Order, OrderCanceled, Quote,
+    QuoteResponse, TradeHistory, Transaction,
+};
+use crate::util::build_signed_request;
 use std::collections::BTreeMap;
 use std::fmt::Display;
-use crate::api::API;
-use crate::api::Spot;
 
 #[derive(Clone)]
 pub struct Account {
@@ -36,6 +36,42 @@ struct OrderQuoteQuantityRequest {
     pub order_type: OrderType,
     pub time_in_force: TimeInForce,
     pub new_client_order_id: Option<String>,
+}
+pub enum WalletType {
+    SPOT,
+    FUNDING,
+}
+
+pub enum ValidTime {
+    TenSeconds,
+    ThirtySeconds,
+    OneMinutes,
+    TwoMinutes,
+}
+
+pub enum QtyType<T: Into<f64>> {
+    ///* "From" When specified, it is the amount you will be debited after the conversion
+    From(T),
+    ///* "To" When specified, it is the amount you will be credited after the conversion
+    To(T),
+}
+
+struct OrderQuoteRequest<T: Into<f64>> {
+    pub from_asset: String,
+    pub to_asset: String,
+    pub from_or_to_amount: QtyType<T>,
+    pub wallet_type: Option<WalletType>,
+    // default 10s
+    pub valid_time: Option<ValidTime>,
+}
+
+struct AccountSnapshotRequest {
+    // "SPOT", "MARGIN", "FUTURES"
+    pub type_: String,
+    pub start_time: Option<u64>,
+    pub end_time: Option<u64>,
+    // min 7, max 30, default 7
+    pub limit: Option<u16>,
 }
 
 pub enum OrderType {
@@ -764,5 +800,187 @@ impl Account {
         }
 
         order_parameters
+    }
+
+    fn converter_order_to_btree_map<T: Into<f64>>(
+        &self, order: OrderQuoteRequest<T>,
+    ) -> BTreeMap<String, String> {
+        let mut order_parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        order_parameters.insert("fromAsset".into(), order.from_asset.to_string());
+        order_parameters.insert("toAsset".into(), order.to_asset.to_string());
+
+        match order.from_or_to_amount {
+            QtyType::From(v) => {
+                let qty: f64 = v.into();
+                order_parameters.insert("fromAmount".into(), qty.to_string());
+            }
+            QtyType::To(v) => {
+                let qty: f64 = v.into();
+                order_parameters.insert("toAmount".into(), qty.to_string());
+            }
+        };
+
+        if let Some(wallet_type) = order.wallet_type {
+            match wallet_type {
+                WalletType::SPOT => {
+                    order_parameters.insert("walletType".into(), "SPOT".to_string());
+                }
+                WalletType::FUNDING => {
+                    order_parameters.insert("walletType".into(), "FUNDING".to_string());
+                }
+            }
+        }
+
+        if let Some(time) = order.valid_time {
+            match time {
+                ValidTime::TenSeconds => {
+                    order_parameters.insert("validTime".into(), "10s".to_string());
+                }
+                ValidTime::ThirtySeconds => {
+                    order_parameters.insert("validTime".into(), "30s".to_string());
+                }
+                ValidTime::OneMinutes => {
+                    order_parameters.insert("validTime".into(), "1m".to_string());
+                }
+                ValidTime::TwoMinutes => {
+                    order_parameters.insert("validTime".into(), "2m".to_string());
+                }
+            }
+        }
+
+        order_parameters
+    }
+
+    // build the request to convert
+    fn send_quote_request<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>, wallet_type: Option<WalletType>,
+        valid_time: Option<ValidTime>,
+    ) -> Result<Quote>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let params = OrderQuoteRequest {
+            from_asset: symbol_from.into(),
+            to_asset: symbol_to.into(),
+            from_or_to_amount: qty,
+            wallet_type,
+            valid_time,
+        };
+
+        let order = self.converter_order_to_btree_map(params);
+        let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::Convert(Convert::QuoteRequest), request)
+    }
+
+    // method que aceita a negociação do convert
+    fn accept_quote(&self, quote: Result<Quote>) -> Result<QuoteResponse> {
+        let quote = quote?;
+
+        //let quote = quote?;
+        let mut params: BTreeMap<String, String> = BTreeMap::new();
+
+        if let Some(quote_id) = quote.quote_id {
+            params.insert("quoteId".into(), quote_id);
+        } else {
+            bail!("Not enough funds")
+        }
+
+        let request: String = build_signed_request(params, self.recv_window)?;
+        self.client
+            .post_signed(API::Convert(Convert::AcceptQuote), request)
+    }
+
+    /// # Example
+    /// Convert a currency to another.
+    ///
+    ///```no_run
+    /// use binance::api::Binance;
+    /// use binance::account::*;
+    ///
+    /// fn main() {
+    /// let api_key = Some("api_key".into());
+    /// let secret_key = Some("secret_key".into());
+    /// 
+    /// let account: Account = Binance::new(api_key, secret_key);
+    ///
+    /// // QtyType::From converts "BTC" to "USDT", amount: 0.0001 BTC
+    /// let response = account.convert("BTC", "USDT", QtyType::From(0.0001)).unwrap();
+    /// // QtyType::To converts "BTC" to "USDT", amount: 2.0 USDT
+    /// let response = account.convert("BTC", "USDT", QtyType::To(2.0)).unwrap();
+    /// }
+    ///```
+    pub fn convert<S, F>(
+        &self, symbol_from: S, symbol_to: S, qty: QtyType<F>,
+    ) -> Result<QuoteResponse>
+    where
+        S: Into<String>,
+        F: Into<f64>,
+    {
+        let quote = self.send_quote_request(
+            symbol_from,
+            symbol_to,
+            qty,
+            None,
+            Some(ValidTime::TenSeconds),
+        );
+
+        self.accept_quote(quote)
+    }
+
+    fn daily_account_snapshot_to_btree_map(
+        &self, params: AccountSnapshotRequest,
+    ) -> BTreeMap<String, String> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+
+        parameters.insert("type".into(), params.type_);
+
+        if let Some(start_time) = params.start_time {
+            parameters.insert("startTime".into(), start_time.to_string());
+        }
+
+        if let Some(end_time) = params.end_time {
+            parameters.insert("endTime".into(), end_time.to_string());
+        }
+
+        if let Some(limit) = params.limit {
+            parameters.insert("limit".into(), limit.to_string());
+        }
+
+        parameters
+    }
+
+    /// # Example
+    /// Get the daily account snapshot.
+    ///
+    ///```no_run
+    /// use binance::api::Binance;
+    /// use binance::account::*;
+    ///
+    /// fn main() {
+    /// let api_key = Some("api_key".into());
+    /// let secret_key = Some("secret_key".into());
+    /// let account: Account = Binance::new(api_key, secret_key);
+    /// let answer = account.daily_account_snapshot().unwrap();
+    /// }
+    ///```
+    pub fn daily_account_snapshot(&self) -> Result<AccountSnapshot> {
+        let params = AccountSnapshotRequest {
+            type_: "SPOT".to_string(),
+            start_time: None,
+            end_time: None,
+            limit: None,
+        };
+        let btree_params = self.daily_account_snapshot_to_btree_map(params);
+
+        // this gets the timestamp and recv_windows to the btreemap
+        let request = build_signed_request(btree_params, self.recv_window)?;
+
+        eprintln!("{:#?}", request);
+
+        self.client
+            .get_signed(API::Savings(Sapi::AccountSnapshot), Some(request))
     }
 }

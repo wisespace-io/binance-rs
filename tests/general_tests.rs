@@ -6,18 +6,23 @@ use binance::model::*;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito::mock;
     use float_cmp::*;
+    use mockito::mock;
 
     #[test]
     fn ping() {
         let mock_ping = mock("GET", "/api/v3/ping")
-            .with_header("content-type", "application/json;charset=UTF-8")
+            .with_header(
+                "content-type",
+                "application/json;charset=UTF-8",
+            )
             .with_body("{}")
             .create();
 
-        let config = Config::default().set_rest_api_endpoint(mockito::server_url());
-        let general: General = Binance::new_with_config(None, None, &config);
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url());
+        let general: General =
+            Binance::new_with_config(None, None, &config);
 
         let pong = general.ping().unwrap();
         mock_ping.assert();
@@ -28,12 +33,17 @@ mod tests {
     #[test]
     fn get_server_time() {
         let mock_server_time = mock("GET", "/api/v3/time")
-            .with_header("content-type", "application/json;charset=UTF-8")
+            .with_header(
+                "content-type",
+                "application/json;charset=UTF-8",
+            )
             .with_body_from_file("tests/mocks/general/server_time.json")
             .create();
 
-        let config = Config::default().set_rest_api_endpoint(mockito::server_url());
-        let general: General = Binance::new_with_config(None, None, &config);
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url());
+        let general: General =
+            Binance::new_with_config(None, None, &config);
 
         let server_time = general.get_server_time().unwrap();
         mock_server_time.assert();
@@ -44,12 +54,19 @@ mod tests {
     #[test]
     fn exchange_info() {
         let mock_exchange_info = mock("GET", "/api/v3/exchangeInfo")
-            .with_header("content-type", "application/json;charset=UTF-8")
-            .with_body_from_file("tests/mocks/general/exchange_info.json")
+            .with_header(
+                "content-type",
+                "application/json;charset=UTF-8",
+            )
+            .with_body_from_file(
+                "tests/mocks/general/exchange_info.json",
+            )
             .create();
 
-        let config = Config::default().set_rest_api_endpoint(mockito::server_url());
-        let general: General = Binance::new_with_config(None, None, &config);
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url());
+        let general: General =
+            Binance::new_with_config(None, None, &config);
 
         let exchange_info = general.exchange_info().unwrap();
         mock_exchange_info.assert();
@@ -60,12 +77,19 @@ mod tests {
     #[test]
     fn get_symbol_info() {
         let mock_exchange_info = mock("GET", "/api/v3/exchangeInfo")
-            .with_header("content-type", "application/json;charset=UTF-8")
-            .with_body_from_file("tests/mocks/general/exchange_info.json")
+            .with_header(
+                "content-type",
+                "application/json;charset=UTF-8",
+            )
+            .with_body_from_file(
+                "tests/mocks/general/exchange_info.json",
+            )
             .create();
 
-        let config = Config::default().set_rest_api_endpoint(mockito::server_url());
-        let general: General = Binance::new_with_config(None, None, &config);
+        let config = Config::default()
+            .set_rest_api_endpoint(mockito::server_url());
+        let general: General =
+            Binance::new_with_config(None, None, &config);
 
         let symbol = general.get_symbol_info("BNBBTC").unwrap();
         mock_exchange_info.assert();
@@ -108,7 +132,12 @@ mod tests {
                 } => {
                     assert_eq!(multiplier_up, "5");
                     assert_eq!(multiplier_down, "0.2");
-                    assert!(approx_eq!(f64, avg_price_mins.unwrap(), 5.0, ulps = 2));
+                    assert!(approx_eq!(
+                        f64,
+                        avg_price_mins.unwrap(),
+                        5.0,
+                        ulps = 2
+                    ));
                 }
                 Filters::LotSize {
                     min_qty,
@@ -128,7 +157,12 @@ mod tests {
                     assert!(notional.is_none());
                     assert_eq!(min_notional.unwrap(), "0.00010000");
                     assert!(apply_to_market.unwrap());
-                    assert!(approx_eq!(f64, avg_price_mins.unwrap(), 5.0, ulps = 2));
+                    assert!(approx_eq!(
+                        f64,
+                        avg_price_mins.unwrap(),
+                        5.0,
+                        ulps = 2
+                    ));
                 }
                 Filters::IcebergParts { limit } => {
                     assert_eq!(limit.unwrap(), 10);

@@ -1,7 +1,7 @@
+use crate::errors::{Error, ErrorKind, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_value, Value};
 use std::convert::TryFrom;
-use crate::errors::{Error, ErrorKind, Result};
 
 #[derive(Deserialize, Clone)]
 pub struct Empty {}
@@ -197,6 +197,23 @@ pub struct TransactionId {
     pub tran_id: u64,
 }
 
+/* {
+  "symbol": "BTCUSDT",
+  "orderId": 28,
+  "orderListId": -1, //Unless OCO, value will be -1
+  "clientOrderId": "6gCrw2kRUAF9CvJDGP16IP",
+  "transactTime": 1507725176595,
+  "price": "0.00000000",
+  "origQty": "10.00000000",
+  "executedQty": "10.00000000",
+  "cummulativeQuoteQty": "10.00000000",
+  "status": "FILLED",
+  "timeInForce": "GTC",
+  "type": "MARKET",
+  "side": "SELL",
+  "workingTime": 1507725176595,
+  "selfTradePreventionMode": "NONE"
+} */
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
@@ -965,7 +982,11 @@ pub struct KlineSummary {
     pub taker_buy_quote_asset_volume: String,
 }
 
-fn get_value(row: &[Value], index: usize, name: &'static str) -> Result<Value> {
+fn get_value(
+    row: &[Value],
+    index: usize,
+    name: &'static str,
+) -> Result<Value> {
     Ok(row
         .get(index)
         .ok_or_else(|| ErrorKind::KlineValueMissingError(index, name))?
@@ -984,8 +1005,16 @@ impl TryFrom<&Vec<Value>> for KlineSummary {
             close: from_value(get_value(row, 4, "close")?)?,
             volume: from_value(get_value(row, 5, "volume")?)?,
             close_time: from_value(get_value(row, 6, "close_time")?)?,
-            quote_asset_volume: from_value(get_value(row, 7, "quote_asset_volume")?)?,
-            number_of_trades: from_value(get_value(row, 8, "number_of_trades")?)?,
+            quote_asset_volume: from_value(get_value(
+                row,
+                7,
+                "quote_asset_volume",
+            )?)?,
+            number_of_trades: from_value(get_value(
+                row,
+                8,
+                "number_of_trades",
+            )?)?,
             taker_buy_base_asset_volume: from_value(get_value(
                 row,
                 9,
@@ -1276,9 +1305,12 @@ pub struct DepositAddress {
 pub(crate) mod string_or_float {
     use std::fmt;
 
-    use serde::{de, Serializer, Deserialize, Deserializer};
+    use serde::{de, Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    pub fn serialize<T, S>(
+        value: &T,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
     where
         T: fmt::Display,
         S: Serializer,
@@ -1313,20 +1345,27 @@ pub(crate) mod string_or_float {
 pub(crate) mod string_or_float_opt {
     use std::fmt;
 
-    use serde::{Serializer, Deserialize, Deserializer};
+    use serde::{Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
+    pub fn serialize<T, S>(
+        value: &Option<T>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
     where
         T: fmt::Display,
         S: Serializer,
     {
         match value {
-            Some(v) => crate::model::string_or_float::serialize(v, serializer),
+            Some(v) => {
+                crate::model::string_or_float::serialize(v, serializer)
+            }
             None => serializer.serialize_none(),
         }
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<f64>, D::Error>
+    pub fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<Option<f64>, D::Error>
     where
         D: Deserializer<'de>,
     {
@@ -1346,9 +1385,12 @@ pub(crate) mod string_or_float_opt {
 pub(crate) mod string_or_bool {
     use std::fmt;
 
-    use serde::{de, Serializer, Deserialize, Deserializer};
+    use serde::{de, Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    pub fn serialize<T, S>(
+        value: &T,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
     where
         T: fmt::Display,
         S: Serializer,
@@ -1356,7 +1398,9 @@ pub(crate) mod string_or_bool {
         serializer.collect_str(value)
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
+    pub fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<bool, D::Error>
     where
         D: Deserializer<'de>,
     {
@@ -1368,7 +1412,9 @@ pub(crate) mod string_or_bool {
         }
 
         match StringOrFloat::deserialize(deserializer)? {
-            StringOrFloat::String(s) => s.parse().map_err(de::Error::custom),
+            StringOrFloat::String(s) => {
+                s.parse().map_err(de::Error::custom)
+            }
             StringOrFloat::Bool(i) => Ok(i),
         }
     }
@@ -1437,4 +1483,66 @@ fn test_account_update_event() {
     let v: AccountUpdateEvent = serde_json::from_str(json).unwrap();
     assert_eq!(format!("{:?}", v), res);
     //let event =  from_value::<AccountUpdateEvent>(json).unwrap();
+}
+
+/* {
+   "quoteId":"12415572564",
+   "ratio":"38163.7",
+   "inverseRatio":"0.0000262",
+   "validTimestamp":1623319461670,
+   "toAmount":"3816.37",
+   "fromAmount":"0.1"
+}  */
+// Quote from the convert api
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Quote {
+    pub quote_id: Option<String>,
+    #[serde(with = "string_or_float")]
+    pub ratio: f64,
+    #[serde(with = "string_or_float")]
+    pub inverse_ratio: f64,
+    pub valid_timestamp: u64,
+    #[serde(with = "string_or_float")]
+    pub to_amount: f64,
+    #[serde(with = "string_or_float")]
+    pub from_amount: f64,
+}
+
+/* {
+  "orderId":"933256278426274426",
+  "createTime":1623381330472,
+  "orderStatus":"PROCESS" //PROCESS/ACCEPT_SUCCESS/SUCCESS/FAIL
+}   */
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct QuoteResponse {
+    pub order_id: String,
+    pub create_time: u64,
+    pub order_status: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountSnapshot {
+    pub code: u16,
+    // error message
+    pub msg: String,
+    pub snapshot_vos: Vec<SnapshotVo>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotVo {
+    pub data: Data,
+    #[serde(rename = "type")]
+    pub account_type: String,
+    pub update_time: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Data {
+    pub balances: Vec<Balance>,
+    pub total_asset_of_btc: String,
 }

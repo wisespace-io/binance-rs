@@ -1,8 +1,8 @@
 use binance::api::*;
+use binance::errors::ErrorKind as BinanceLibErrorKind;
 use binance::futures::general::*;
 use binance::futures::market::*;
 use binance::futures::model::*;
-use binance::errors::ErrorKind as BinanceLibErrorKind;
 
 fn main() {
     general();
@@ -47,22 +47,30 @@ fn market_data() {
     let market: FuturesMarket = Binance::new(None, None);
 
     match market.get_depth("btcusdt") {
-        Ok(answer) => println!("Depth update ID: {:?}", answer.last_update_id),
+        Ok(answer) => {
+            println!("Depth update ID: {:?}", answer.last_update_id)
+        }
         Err(e) => println!("Error: {}", e),
     }
 
     match market.get_trades("btcusdt") {
-        Ok(Trades::AllTrades(answer)) => println!("First trade: {:?}", answer[0]),
+        Ok(Trades::AllTrades(answer)) => {
+            println!("First trade: {:?}", answer[0])
+        }
         Err(e) => println!("Error: {}", e),
     }
 
     match market.get_agg_trades("btcusdt", None, None, None, None) {
-        Ok(AggTrades::AllAggTrades(answer)) => println!("First aggregated trade: {:?}", answer[0]),
+        Ok(AggTrades::AllAggTrades(answer)) => {
+            println!("First aggregated trade: {:?}", answer[0])
+        }
         Err(e) => println!("Error: {}", e),
     }
 
     match market.get_klines("btcusdt", "5m", 10, None, None) {
-        Ok(KlineSummaries::AllKlineSummaries(answer)) => println!("First kline: {:?}", answer[0]),
+        Ok(KlineSummaries::AllKlineSummaries(answer)) => {
+            println!("First kline: {:?}", answer[0])
+        }
         Err(e) => println!("Error: {}", e),
     }
 
@@ -77,7 +85,9 @@ fn market_data() {
     }
 
     match market.get_all_book_tickers() {
-        Ok(BookTickers::AllBookTickers(answer)) => println!("First book ticker: {:?}", answer[0]),
+        Ok(BookTickers::AllBookTickers(answer)) => {
+            println!("First book ticker: {:?}", answer[0])
+        }
         Err(e) => println!("Error: {}", e),
     }
 
@@ -87,7 +97,9 @@ fn market_data() {
     }
 
     match market.get_mark_prices() {
-        Ok(MarkPrices::AllMarkPrices(answer)) => println!("First mark Prices: {:?}", answer[0]),
+        Ok(MarkPrices::AllMarkPrices(answer)) => {
+            println!("First mark Prices: {:?}", answer[0])
+        }
         Err(e) => println!("Error: {}", e),
     }
 

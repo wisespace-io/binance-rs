@@ -20,17 +20,18 @@
 - [ ] `Taker Buy/Sell Volume (MARKET_DATA)`
 */
 
-use crate::util::{build_request, build_signed_request};
-use crate::futures::model::{
-    AggTrades, BookTickers, KlineSummaries, KlineSummary, LiquidationOrders, MarkPrices,
-    OpenInterest, OpenInterestHist, OrderBook, PriceStats, SymbolPrice, Tickers, Trades,
-};
+use crate::api::Futures;
+use crate::api::API;
 use crate::client::Client;
 use crate::errors::Result;
-use std::collections::BTreeMap;
+use crate::futures::model::{
+    AggTrades, BookTickers, KlineSummaries, KlineSummary,
+    LiquidationOrders, MarkPrices, OpenInterest, OpenInterestHist,
+    OrderBook, PriceStats, SymbolPrice, Tickers, Trades,
+};
+use crate::util::{build_request, build_signed_request};
 use serde_json::Value;
-use crate::api::API;
-use crate::api::Futures;
+use std::collections::BTreeMap;
 use std::convert::TryInto;
 
 // TODO
@@ -60,7 +61,11 @@ impl FuturesMarket {
 
     // Order book at a custom depth. Currently supported values
     // are 5, 10, 20, 50, 100, 500, 1000
-    pub fn get_custom_depth<S>(&self, symbol: S, depth: u64) -> Result<OrderBook>
+    pub fn get_custom_depth<S>(
+        &self,
+        symbol: S,
+        depth: u64,
+    ) -> Result<OrderBook>
     where
         S: Into<String>,
     {
@@ -84,7 +89,10 @@ impl FuturesMarket {
 
     // TODO This may be incomplete, as it hasn't been tested
     pub fn get_historical_trades<S1, S2, S3>(
-        &self, symbol: S1, from_id: S2, limit: S3,
+        &self,
+        symbol: S1,
+        from_id: S2,
+        limit: S3,
     ) -> Result<Trades>
     where
         S1: Into<String>,
@@ -103,14 +111,22 @@ impl FuturesMarket {
             parameters.insert("fromId".into(), format!("{}", fi));
         }
 
-        let request = build_signed_request(parameters, self.recv_window)?;
+        let request =
+            build_signed_request(parameters, self.recv_window)?;
 
-        self.client
-            .get_signed(API::Futures(Futures::HistoricalTrades), Some(request))
+        self.client.get_signed(
+            API::Futures(Futures::HistoricalTrades),
+            Some(request),
+        )
     }
 
     pub fn get_agg_trades<S1, S2, S3, S4, S5>(
-        &self, symbol: S1, from_id: S2, start_time: S3, end_time: S4, limit: S5,
+        &self,
+        symbol: S1,
+        from_id: S2,
+        start_time: S3,
+        end_time: S4,
+        limit: S5,
     ) -> Result<AggTrades>
     where
         S1: Into<String>,
@@ -146,7 +162,12 @@ impl FuturesMarket {
     // Returns up to 'limit' klines for given symbol and interval ("1m", "5m", ...)
     // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
     pub fn get_klines<S1, S2, S3, S4, S5>(
-        &self, symbol: S1, interval: S2, limit: S3, start_time: S4, end_time: S5,
+        &self,
+        symbol: S1,
+        interval: S2,
+        limit: S3,
+        start_time: S4,
+        end_time: S5,
     ) -> Result<KlineSummaries>
     where
         S1: Into<String>,
@@ -187,7 +208,10 @@ impl FuturesMarket {
     }
 
     // 24hr ticker price change statistics
-    pub fn get_24h_price_stats<S>(&self, symbol: S) -> Result<PriceStats>
+    pub fn get_24h_price_stats<S>(
+        &self,
+        symbol: S,
+    ) -> Result<PriceStats>
     where
         S: Into<String>,
     {
@@ -246,7 +270,9 @@ impl FuturesMarket {
         self.client.get(API::Futures(Futures::PremiumIndex), None)
     }
 
-    pub fn get_all_liquidation_orders(&self) -> Result<LiquidationOrders> {
+    pub fn get_all_liquidation_orders(
+        &self,
+    ) -> Result<LiquidationOrders> {
         self.client.get(API::Futures(Futures::AllForceOrders), None)
     }
 
@@ -262,7 +288,12 @@ impl FuturesMarket {
     }
 
     pub fn open_interest_statistics<S1, S2, S3, S4, S5>(
-        &self, symbol: S1, period: S2, limit: S3, start_time: S4, end_time: S5,
+        &self,
+        symbol: S1,
+        period: S2,
+        limit: S3,
+        start_time: S4,
+        end_time: S5,
     ) -> Result<Vec<OpenInterestHist>>
     where
         S1: Into<String>,

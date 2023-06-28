@@ -10,14 +10,23 @@ mod tests {
 
     #[test]
     fn open_interest_statistics() {
-        let mock_open_interest_statistics = mock("GET", "/futures/data/openInterestHist")
-            .with_header("content-type", "application/json;charset=UTF-8")
-            .match_query(Matcher::Regex("limit=10&period=5m&symbol=BTCUSDT".into()))
-            .with_body_from_file("tests/mocks/futures/market/open_interest_statistics.json")
-            .create();
+        let mock_open_interest_statistics = mock(
+            "GET",
+            "/futures/data/openInterestHist",
+        )
+        .with_header("content-type", "application/json;charset=UTF-8")
+        .match_query(Matcher::Regex(
+            "limit=10&period=5m&symbol=BTCUSDT".into(),
+        ))
+        .with_body_from_file(
+            "tests/mocks/futures/market/open_interest_statistics.json",
+        )
+        .create();
 
-        let config = Config::default().set_futures_rest_api_endpoint(mockito::server_url());
-        let market: FuturesMarket = Binance::new_with_config(None, None, &config);
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(mockito::server_url());
+        let market: FuturesMarket =
+            Binance::new_with_config(None, None, &config);
 
         let open_interest_hists = market
             .open_interest_statistics("BTCUSDT", "5m", 10, None, None)
