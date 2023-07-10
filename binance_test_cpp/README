@@ -1,0 +1,6 @@
+-> Rust to CPP
+
+$ g++ -shared -fPIC libcallcpp.cpp -o libcallcpp.so
+$ export LD_LIBRARY_PATH=/path/to/mylib:$LD_LIBRARY_PATH
+$ rustc ./websockets.rs
+$ ./websockets
