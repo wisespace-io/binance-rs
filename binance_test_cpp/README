@@ -1,6 +1,9 @@
--> Rust to CPP
+#
+# Rust FFI
+#
 
-$ g++ -shared -fPIC libcallcpp.cpp -o libcallcpp.so
-$ export LD_LIBRARY_PATH=/path/to/mylib:$LD_LIBRARY_PATH
-$ rustc ./websockets.rs
-$ ./websockets
+# binance-rs
+$ cargo build && cp -fp  target/debug/libbinance.so ./binance_test_cpp/
+
+# binanace_test_cpp
+$ make && ./main

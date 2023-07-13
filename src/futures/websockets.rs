@@ -15,8 +15,6 @@ use tungstenite::{connect, Message};
 use tungstenite::protocol::WebSocket;
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::handshake::client::Response;
-use std::ffi::CStr;
-use std::os::raw::c_char;
 
 #[allow(clippy::all)]
 enum FuturesWebsocketAPI {
@@ -217,15 +215,3 @@ impl<'a> FuturesWebSockets<'a> {
 
 }
 
-#[no_mangle]
-pub extern "C"  
-
-fn callApiEndpointFromCpp(s: *const c_char) -> i32 {
-
-    unsafe {
-        let c_str = CStr::from_ptr(s);
-        let rust_str = c_str.to_str().unwrap();
-        println!("Received String: {}", rust_str);
-    }
-    42
-}
