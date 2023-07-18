@@ -44,6 +44,17 @@ pub enum OrderType {
     StopLossLimit,
 }
 
+impl OrderType {
+    pub fn from_int(value: i32) -> Option<Self> {
+        match value {
+            1 => Some(OrderType::Limit),
+            2 => Some(OrderType::Market),
+            3 => Some(OrderType::StopLossLimit),
+            _ => None,
+        }
+    }
+}
+
 impl Display for OrderType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -57,6 +68,16 @@ impl Display for OrderType {
 pub enum OrderSide {
     Buy,
     Sell,
+}
+
+impl OrderSide {
+    pub fn from_int(value: i32) -> Option<Self> {
+        match value {
+            1 => Some(OrderSide::Buy),
+            2 => Some(OrderSide::Sell),
+            _ => None,
+        }
+    }
 }
 
 impl Display for OrderSide {
@@ -73,6 +94,17 @@ pub enum TimeInForce {
     GTC,
     IOC,
     FOK,
+}
+
+impl TimeInForce {
+    pub fn from_int(value: i32) -> Option<Self> {
+        match value {
+            1 => Some(TimeInForce::GTC),
+            2 => Some(TimeInForce::IOC),
+            3 => Some(TimeInForce::FOK),
+            _ => None,
+        }
+    }
 }
 
 impl Display for TimeInForce {
@@ -690,6 +722,10 @@ impl Account {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .delete_signed(API::Spot(Spot::Order), Some(request))
+    }
+
+    pub fn cancel_order_with_client_id_rs<S>() {
+        
     }
     /// Place a test cancel order
     ///
