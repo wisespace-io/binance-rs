@@ -13,7 +13,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             rest_api_endpoint: "https://api.binance.com".into(),
-            ws_endpoint: "wss://stream.binance.com:9443/ws".into(),
+            ws_endpoint: "wss://stream.binance.com/ws".into(),
 
             futures_rest_api_endpoint: "https://fapi.binance.com".into(),
             futures_ws_endpoint: "wss://fstream.binance.com/ws".into(),
