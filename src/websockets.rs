@@ -2,7 +2,7 @@ use crate::errors::Result;
 use crate::config::Config;
 use crate::model::{
     AccountUpdateEvent, AggrTradesEvent, BalanceUpdateEvent, BookTickerEvent, DayTickerEvent,
-    DepthOrderBookEvent, KlineEvent, OrderBook, OrderTradeEvent, TradeEvent,
+    WindowTickerEvent, DepthOrderBookEvent, KlineEvent, OrderBook, OrderTradeEvent, TradeEvent,
 };
 use error_chain::bail;
 use url::Url;
@@ -46,6 +46,8 @@ pub enum WebsocketEvent {
     OrderBook(OrderBook),
     DayTicker(DayTickerEvent),
     DayTickerAll(Vec<DayTickerEvent>),
+    WindowTicker(WindowTickerEvent),
+    WindowTickerAll(Vec<WindowTickerEvent>),
     Kline(KlineEvent),
     DepthOrderBook(DepthOrderBookEvent),
     BookTicker(BookTickerEvent),
@@ -59,9 +61,11 @@ pub struct WebSockets<'a> {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 enum Events {
-    Vec(Vec<DayTickerEvent>),
+    DayTickerEventAll(Vec<DayTickerEvent>),
+    WindowTickerEventAll(Vec<WindowTickerEvent>),
     BalanceUpdateEvent(BalanceUpdateEvent),
     DayTickerEvent(DayTickerEvent),
+    WindowTickerEvent(WindowTickerEvent),
     BookTickerEvent(BookTickerEvent),
     AccountUpdateEvent(AccountUpdateEvent),
     OrderTradeEvent(OrderTradeEvent),
@@ -128,7 +132,8 @@ impl<'a> WebSockets<'a> {
 
         if let Ok(events) = serde_json::from_value::<Events>(value) {
             let action = match events {
-                Events::Vec(v) => WebsocketEvent::DayTickerAll(v),
+                Events::DayTickerEventAll(v) => WebsocketEvent::DayTickerAll(v),
+                Events::WindowTickerEventAll(v) => WebsocketEvent::WindowTickerAll(v),
                 Events::BookTickerEvent(v) => WebsocketEvent::BookTicker(v),
                 Events::BalanceUpdateEvent(v) => WebsocketEvent::BalanceUpdate(v),
                 Events::AccountUpdateEvent(v) => WebsocketEvent::AccountUpdate(v),
@@ -136,6 +141,7 @@ impl<'a> WebSockets<'a> {
                 Events::AggrTradesEvent(v) => WebsocketEvent::AggrTrades(v),
                 Events::TradeEvent(v) => WebsocketEvent::Trade(v),
                 Events::DayTickerEvent(v) => WebsocketEvent::DayTicker(v),
+                Events::WindowTickerEvent(v) => WebsocketEvent::WindowTicker(v),
                 Events::KlineEvent(v) => WebsocketEvent::Kline(v),
                 Events::OrderBook(v) => WebsocketEvent::OrderBook(v),
                 Events::DepthOrderBookEvent(v) => WebsocketEvent::DepthOrderBook(v),
