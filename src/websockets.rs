@@ -122,7 +122,7 @@ impl<'a> WebSockets<'a> {
         self.handle_msg(msg)
     }
 
-    fn handle_msg(&mut self, msg: &str) -> Result<()> {
+    pub fn handle_msg(&mut self, msg: &str) -> Result<()> {
         let value: serde_json::Value = serde_json::from_str(msg)?;
 
         if let Some(data) = value.get("data") {
