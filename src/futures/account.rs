@@ -1,6 +1,5 @@
 use std::collections::BTreeMap;
 use std::fmt::Display;
-
 use crate::util::build_signed_request;
 use crate::errors::Result;
 use crate::client::Client;
@@ -417,6 +416,34 @@ impl FuturesAccount {
         };
         let order = self.build_order(order);
         let request = build_signed_request(order, self.recv_window)?;
+        self.client
+            .post_signed(API::Futures(Futures::Order), request)
+    }
+
+    // Custom order for for professional traders
+    pub fn custom_batch_orders(&self, _order_count: u64, order_requests: Vec<CustomOrderRequest>) -> Result<Transaction> {
+        let request = String::from("");
+        for order_request in order_requests {
+            let order = OrderRequest {
+                symbol: order_request.symbol,
+                side: order_request.side,
+                position_side: order_request.position_side,
+                order_type: order_request.order_type,
+                time_in_force: order_request.time_in_force,
+                qty: order_request.qty,
+                reduce_only: order_request.reduce_only,
+                price: order_request.price,
+                stop_price: order_request.stop_price,
+                close_position: order_request.close_position,
+                activation_price: order_request.activation_price,
+                callback_rate: order_request.callback_rate,
+                working_type: order_request.working_type,
+                price_protect: order_request.price_protect,
+            };
+            let _order = self.build_order(order);
+            // TODO : make a request string for batch orders api
+            // let request = build_signed_request(order, self.recv_window)?;
+        }
         self.client
             .post_signed(API::Futures(Futures::Order), request)
     }

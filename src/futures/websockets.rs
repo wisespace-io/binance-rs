@@ -15,6 +15,7 @@ use tungstenite::{connect, Message};
 use tungstenite::protocol::WebSocket;
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::handshake::client::Response;
+
 #[allow(clippy::all)]
 enum FuturesWebsocketAPI {
     Default,
@@ -210,4 +211,7 @@ impl<'a> FuturesWebSockets<'a> {
         }
         bail!("running loop closed");
     }
+
+
 }
+
