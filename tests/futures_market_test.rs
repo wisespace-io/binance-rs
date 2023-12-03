@@ -6,17 +6,18 @@ use binance::futures::model::OpenInterestHist;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito::{mock, Matcher};
+    use mockito::{Server, Matcher};
 
     #[test]
     fn open_interest_statistics() {
-        let mock_open_interest_statistics = mock("GET", "/futures/data/openInterestHist")
+        let mut server = Server::new();
+        let mock_open_interest_statistics = server.mock("GET", "/futures/data/openInterestHist")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("limit=10&period=5m&symbol=BTCUSDT".into()))
             .with_body_from_file("tests/mocks/futures/market/open_interest_statistics.json")
             .create();
 
-        let config = Config::default().set_futures_rest_api_endpoint(mockito::server_url());
+        let config = Config::default().set_futures_rest_api_endpoint(server.url());
         let market: FuturesMarket = Binance::new_with_config(None, None, &config);
 
         let open_interest_hists = market
