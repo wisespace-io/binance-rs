@@ -856,6 +856,61 @@ pub struct DayTickerEvent {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct WindowTickerEvent {
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "p")]
+    pub price_change: String,
+
+    #[serde(rename = "P")]
+    pub price_change_percent: String,
+
+    #[serde(rename = "o")]
+    pub open: String,
+
+    #[serde(rename = "h")]
+    pub high: String,
+
+    #[serde(rename = "l")]
+    pub low: String,
+
+    #[serde(rename = "c")]
+    pub current_close: String,
+
+    #[serde(rename = "w")]
+    pub average_price: String,
+
+    #[serde(rename = "v")]
+    pub volume: String,
+
+    #[serde(rename = "q")]
+    pub quote_volume: String,
+
+    #[serde(rename = "O")]
+    pub open_time: u64,
+
+    #[serde(rename = "C")]
+    pub close_time: u64,
+
+    #[serde(rename = "F")]
+    pub first_trade_id: i64,
+
+    #[serde(rename = "L")]
+    pub last_trade_id: i64,
+
+    #[serde(rename = "n")]
+    pub num_trades: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct MiniTickerEvent {
     #[serde(rename = "e")]
     pub event_type: String,
