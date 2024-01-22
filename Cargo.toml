@@ -18,7 +18,7 @@ travis-ci = { repository = "wisespace-io/binance-rs" }
 [lib]
 name = "binance"
 path = "src/lib.rs"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 hex = "0.4"
