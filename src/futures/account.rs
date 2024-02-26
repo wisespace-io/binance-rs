@@ -421,7 +421,9 @@ impl FuturesAccount {
     }
 
     // Custom order for for professional traders
-    pub fn custom_batch_orders(&self, _order_count: u64, order_requests: Vec<CustomOrderRequest>) -> Result<Transaction> {
+    pub fn custom_batch_orders(
+        &self, _order_count: u64, order_requests: Vec<CustomOrderRequest>,
+    ) -> Result<Transaction> {
         let request = String::from("");
         for order_request in order_requests {
             let order = OrderRequest {
@@ -593,6 +595,21 @@ impl FuturesAccount {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .post_signed(API::Futures(Futures::ChangeInitialLeverage), request)
+    }
+
+    pub fn change_margin_type<S>(&self, symbol: S, isolated: bool) -> Result<()>
+    where
+        S: Into<String>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        let margin_type = if isolated { "ISOLATED" } else { "CROSSED" };
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("marginType".into(), margin_type.into());
+
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .post_signed::<Empty>(API::Futures(Futures::ChangeMarginType), request)
+            .map(|_| ())
     }
 
     pub fn change_position_mode(&self, dual_side_position: bool) -> Result<()> {
