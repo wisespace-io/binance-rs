@@ -42,6 +42,27 @@ mod tests {
     }
 
     #[test]
+    fn change_margin_type() {
+        let mut server = Server::new();
+        let mock = server.mock("POST", "/fapi/v1/marginType")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex(
+                "marginType=ISOLATED&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+&signature=.*".into(),
+            ))
+            .with_body_from_file("tests/mocks/futures/account/change_margin_type.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(server.url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        account.change_margin_type("BTCUSDT", true).unwrap();
+
+        mock.assert();
+    }
+
+    #[test]
     fn cancel_all_open_orders() {
         let mut server = Server::new();
         let mock = server
