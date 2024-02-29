@@ -744,7 +744,7 @@ impl Account {
     }
 
     // Trade history
-    pub fn trade_history<S>(&self, symbol: S) -> Result<Vec<TradeHistory>>
+    pub fn trade_history_all<S>(&self, symbol: S) -> Result<Vec<TradeHistory>>
     where
         S: Into<String>,
     {
@@ -754,6 +754,25 @@ impl Account {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::MyTrades), Some(request))
+    }
+
+    pub fn trade_history<S>(
+        &self,
+        symbol: S,
+        start_time: u64,
+        end_time: u64
+    ) -> Result<Vec<TradeHistory>>
+        where
+            S: Into<String>,
+    {
+        let all_trades = self.trade_history_all(symbol)?;
+        let filtered_trades: Vec<TradeHistory> = all_trades
+            .into_iter()
+            .filter(|trade| {
+                trade.time >= start_time && trade.time <= end_time
+            })
+            .collect();
+        Ok(filtered_trades)
     }
 
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
