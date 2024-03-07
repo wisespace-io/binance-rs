@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{from_value, Value};
-use std::convert::TryFrom;
 use crate::errors::{Error, ErrorKind, Result};
 
 #[derive(Deserialize, Clone)]

@@ -31,7 +31,6 @@ use std::collections::BTreeMap;
 use serde_json::Value;
 use crate::api::API;
 use crate::api::Futures;
-use std::convert::TryInto;
 
 // TODO
 // Make enums for Strings

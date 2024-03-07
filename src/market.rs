@@ -9,7 +9,6 @@ use std::collections::BTreeMap;
 use serde_json::Value;
 use crate::api::API;
 use crate::api::Spot;
-use std::convert::TryInto;
 
 #[derive(Clone)]
 pub struct Market {
