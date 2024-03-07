@@ -612,7 +612,9 @@ impl FuturesAccount {
             .map(|_| ())
     }
 
-    pub fn change_position_margin<S>(&self, symbol: S, amount: f64, is_adding_margin: bool) -> Result<()>
+    pub fn change_position_margin<S>(
+        &self, symbol: S, amount: f64, is_adding_margin: bool,
+    ) -> Result<()>
     where
         S: Into<String>,
     {
