@@ -13,7 +13,8 @@ mod tests {
     #[test]
     fn change_initial_leverage() {
         let mut server = Server::new();
-        let mock_change_leverage = server.mock("POST", "/fapi/v1/leverage")
+        let mock_change_leverage = server
+            .mock("POST", "/fapi/v1/leverage")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "leverage=2&recvWindow=1234&symbol=LTCUSDT&timestamp=\\d+&signature=.*".into(),
@@ -43,7 +44,8 @@ mod tests {
     #[test]
     fn cancel_all_open_orders() {
         let mut server = Server::new();
-        let mock = server.mock("DELETE", "/fapi/v1/allOpenOrders")
+        let mock = server
+            .mock("DELETE", "/fapi/v1/allOpenOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+&signature=.*".into(),
@@ -64,7 +66,8 @@ mod tests {
     #[test]
     fn change_position_mode() {
         let mut server = Server::new();
-        let mock = server.mock("POST", "/fapi/v1/positionSide/dual")
+        let mock = server
+            .mock("POST", "/fapi/v1/positionSide/dual")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "dualSidePosition=true&recvWindow=1234&timestamp=\\d+&signature=.*".into(),
@@ -176,7 +179,8 @@ mod tests {
     #[test]
     fn get_income() {
         let mut server = Server::new();
-        let mock = server.mock("GET", "/fapi/v1/income")
+        let mock = server
+            .mock("GET", "/fapi/v1/income")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "endTime=12345678910&incomeType=TRANSFER&limit=10\

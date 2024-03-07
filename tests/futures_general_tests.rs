@@ -10,7 +10,8 @@ mod tests {
     #[test]
     fn ping() {
         let mut server = Server::new();
-        let mock_ping = server.mock("GET", "/fapi/v1/ping")
+        let mock_ping = server
+            .mock("GET", "/fapi/v1/ping")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body("{}")
             .create();

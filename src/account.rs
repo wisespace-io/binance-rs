@@ -724,9 +724,7 @@ impl Account {
             .delete_signed(API::Spot(Spot::Order), Some(request))
     }
 
-    pub fn cancel_order_with_client_id_rs<S>() {
-        
-    }
+    pub fn cancel_order_with_client_id_rs<S>() {}
     /// Place a test cancel order
     ///
     /// This order is sandboxed: it is validated, but not sent to the matching engine.

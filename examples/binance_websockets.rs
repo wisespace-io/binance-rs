@@ -5,8 +5,6 @@ use binance::userstream::*;
 use binance::websockets::*;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-
-
 fn main() {
     //user_stream();
     //user_stream_websocket();
@@ -15,8 +13,6 @@ fn main() {
     //all_trades_websocket();
     //last_price_for_one_symbol();
     // multiple_streams();
-
-
 }
 
 fn user_stream() {

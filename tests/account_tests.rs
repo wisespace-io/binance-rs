@@ -12,7 +12,8 @@ mod tests {
     #[test]
     fn get_account() {
         let mut server = Server::new();
-        let mock_get_account = server.mock("GET", "/api/v3/account")
+        let mock_get_account = server
+            .mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
@@ -53,7 +54,8 @@ mod tests {
     #[test]
     fn get_balance() {
         let mut server = Server::new();
-        let mock_get_account = server.mock("GET", "/api/v3/account")
+        let mock_get_account = server
+            .mock("GET", "/api/v3/account")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
@@ -78,7 +80,8 @@ mod tests {
     #[test]
     fn get_open_orders() {
         let mut server = Server::new();
-        let mock_open_orders = server.mock("GET", "/api/v3/openOrders")
+        let mock_open_orders = server
+            .mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
@@ -121,7 +124,8 @@ mod tests {
     #[test]
     fn get_all_open_orders() {
         let mut server = Server::new();
-        let mock_open_orders = server.mock("GET", "/api/v3/openOrders")
+        let mock_open_orders = server
+            .mock("GET", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("recvWindow=1234&timestamp=\\d+".into()))
             .with_body_from_file("tests/mocks/account/get_open_orders.json")
@@ -162,7 +166,8 @@ mod tests {
     #[test]
     fn cancel_all_open_orders() {
         let mut server = Server::new();
-        let mock_cancel_all_open_orders = server.mock("DELETE", "/api/v3/openOrders")
+        let mock_cancel_all_open_orders = server
+            .mock("DELETE", "/api/v3/openOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
@@ -209,7 +214,8 @@ mod tests {
     #[test]
     fn order_status() {
         let mut server = Server::new();
-        let mock_order_status = server.mock("GET", "/api/v3/order")
+        let mock_order_status = server
+            .mock("GET", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "orderId=1&recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
@@ -249,7 +255,8 @@ mod tests {
     #[test]
     fn test_order_status() {
         let mut server = Server::new();
-        let mock_test_order_status = server.mock("GET", "/api/v3/order/test")
+        let mock_test_order_status = server
+            .mock("GET", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "orderId=1&recvWindow=1234&symbol=LTCBTC&timestamp=\\d+".into(),
@@ -384,7 +391,8 @@ mod tests {
     #[test]
     fn market_buy() {
         let mut server = Server::new();
-        let mock_market_buy = server.mock("POST", "/api/v3/order")
+        let mock_market_buy = server
+            .mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
@@ -425,7 +433,8 @@ mod tests {
     #[test]
     fn test_market_buy() {
         let mut server = Server::new();
-        let mock_test_market_buy = server.mock("POST", "/api/v3/order/test")
+        let mock_test_market_buy = server
+            .mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "quantity=1&recvWindow=1234&side=BUY&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
@@ -492,7 +501,8 @@ mod tests {
     #[test]
     fn market_sell() {
         let mut server = Server::new();
-        let mock_market_sell = server.mock("POST", "/api/v3/order")
+        let mock_market_sell = server
+            .mock("POST", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
@@ -533,7 +543,8 @@ mod tests {
     #[test]
     fn test_market_sell() {
         let mut server = Server::new();
-        let mock_test_market_sell = server.mock("POST", "/api/v3/order/test")
+        let mock_test_market_sell = server
+            .mock("POST", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "quantity=1&recvWindow=1234&side=SELL&symbol=LTCBTC&timestamp=\\d+&type=MARKET"
@@ -804,7 +815,8 @@ mod tests {
     #[test]
     fn cancel_order() {
         let mut server = Server::new();
-        let mock_cancel_order = server.mock("DELETE", "/api/v3/order")
+        let mock_cancel_order = server
+            .mock("DELETE", "/api/v3/order")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "orderId=1&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
@@ -830,7 +842,8 @@ mod tests {
     #[test]
     fn test_cancel_order() {
         let mut server = Server::new();
-        let mock_test_cancel_order = server.mock("DELETE", "/api/v3/order/test")
+        let mock_test_cancel_order = server
+            .mock("DELETE", "/api/v3/order/test")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "orderId=1&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),
@@ -851,7 +864,8 @@ mod tests {
     #[test]
     fn trade_history() {
         let mut server = Server::new();
-        let mock_trade_history = server.mock("GET", "/api/v3/myTrades")
+        let mock_trade_history = server
+            .mock("GET", "/api/v3/myTrades")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+".into(),

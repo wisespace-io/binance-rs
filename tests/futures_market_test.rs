@@ -11,7 +11,8 @@ mod tests {
     #[test]
     fn open_interest_statistics() {
         let mut server = Server::new();
-        let mock_open_interest_statistics = server.mock("GET", "/futures/data/openInterestHist")
+        let mock_open_interest_statistics = server
+            .mock("GET", "/futures/data/openInterestHist")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex("limit=10&period=5m&symbol=BTCUSDT".into()))
             .with_body_from_file("tests/mocks/futures/market/open_interest_statistics.json")

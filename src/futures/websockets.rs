@@ -211,7 +211,4 @@ impl<'a> FuturesWebSockets<'a> {
         }
         bail!("running loop closed");
     }
-
-
 }
-
