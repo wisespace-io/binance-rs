@@ -16,7 +16,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2022-10-15
+          toolchain: nightly
           override: true
           components: clippy
       - run: cargo clippy --all-targets
@@ -26,17 +26,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [msrv, stable, nightly, macos, windows]
+        build: [msrv, stable, macos, windows]
         include:
           - build: msrv
             os: ubuntu-latest
-            rust: 1.56.1
+            rust: 1.76.0
           - build: stable
             os: ubuntu-latest
             rust: stable
-          - build: nightly
-            os: ubuntu-latest
-            rust: nightly
           - build: macos
             os: macos-latest
             rust: stable

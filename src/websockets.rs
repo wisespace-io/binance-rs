@@ -26,10 +26,9 @@ impl WebsocketAPI {
     fn params(self, subscription: &str) -> String {
         match self {
             WebsocketAPI::Default => format!("wss://stream.binance.com/ws/{}", subscription),
-            WebsocketAPI::MultiStream => format!(
-                "wss://stream.binance.com/stream?streams={}",
-                subscription
-            ),
+            WebsocketAPI::MultiStream => {
+                format!("wss://stream.binance.com/stream?streams={}", subscription)
+            }
             WebsocketAPI::Custom(url) => format!("{}/{}", url, subscription),
         }
     }
@@ -161,8 +160,8 @@ impl<'a> WebSockets<'a> {
                             bail!(format!("Error on handling stream message: {}", e));
                         }
                     }
-                    Message::Ping(_) => {
-                        socket.0.write_message(Message::Pong(vec![])).unwrap();
+                    Message::Ping(payload) => {
+                        socket.0.write_message(Message::Pong(payload)).unwrap();
                     }
                     Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
                     Message::Close(e) => bail!(format!("Disconnected {:?}", e)),

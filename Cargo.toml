@@ -2,8 +2,8 @@
 name = "binance"
 version = "0.20.2"
 license = "MIT OR Apache-2.0"
-authors = ["Flavio Oliveira <flavio@wisespace.io>"]
-edition = "2018"
+authors = ["Flavio Oliveira <ollivera-dev@protonmail.com>"]
+edition = "2021"
 
 description = "Rust Library for the Binance API"
 keywords = ["cryptocurrency", "trading", "binance"]
@@ -29,6 +29,7 @@ error-chain = { version = "0.12.4", default-features = false }
 reqwest = { version = "0.11.24", features = ["blocking", "json"] }
 tungstenite = { version = "0.21.0", features = ["native-tls"] }
 url = "2.5.0"
+clap = "4.5.2"
 
 [features]
 vendored-tls = [

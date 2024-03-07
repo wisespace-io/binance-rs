@@ -12,7 +12,8 @@ mod tests {
     #[test]
     fn ping() {
         let mut server = Server::new();
-        let mock_ping = server.mock("GET", "/api/v3/ping")
+        let mock_ping = server
+            .mock("GET", "/api/v3/ping")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body("{}")
             .create();
@@ -29,7 +30,8 @@ mod tests {
     #[test]
     fn get_server_time() {
         let mut server = Server::new();
-        let mock_server_time = server.mock("GET", "/api/v3/time")
+        let mock_server_time = server
+            .mock("GET", "/api/v3/time")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body_from_file("tests/mocks/general/server_time.json")
             .create();
@@ -46,7 +48,8 @@ mod tests {
     #[test]
     fn exchange_info() {
         let mut server = Server::new();
-        let mock_exchange_info = server.mock("GET", "/api/v3/exchangeInfo")
+        let mock_exchange_info = server
+            .mock("GET", "/api/v3/exchangeInfo")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body_from_file("tests/mocks/general/exchange_info.json")
             .create();
@@ -63,7 +66,8 @@ mod tests {
     #[test]
     fn get_symbol_info() {
         let mut server = Server::new();
-        let mock_exchange_info = server.mock("GET", "/api/v3/exchangeInfo")
+        let mock_exchange_info = server
+            .mock("GET", "/api/v3/exchangeInfo")
             .with_header("content-type", "application/json;charset=UTF-8")
             .with_body_from_file("tests/mocks/general/exchange_info.json")
             .create();

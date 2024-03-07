@@ -13,7 +13,8 @@ mod tests {
     #[test]
     fn change_initial_leverage() {
         let mut server = Server::new();
-        let mock_change_leverage = server.mock("POST", "/fapi/v1/leverage")
+        let mock_change_leverage = server
+            .mock("POST", "/fapi/v1/leverage")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "leverage=2&recvWindow=1234&symbol=LTCUSDT&timestamp=\\d+&signature=.*".into(),
@@ -41,9 +42,58 @@ mod tests {
     }
 
     #[test]
+    fn change_margin_type() {
+        let mut server = Server::new();
+        let mock = server
+            .mock("POST", "/fapi/v1/marginType")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex(
+                "marginType=ISOLATED&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+&signature=.*"
+                    .into(),
+            ))
+            .with_body_from_file("tests/mocks/futures/account/change_margin_type.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(server.url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        account.change_margin_type("BTCUSDT", true).unwrap();
+
+        mock.assert();
+    }
+
+    #[test]
+    fn change_position_margin() {
+        let mut server = Server::new();
+        let mock = server
+            .mock("POST", "/fapi/v1/positionMargin")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex(
+                "amount=100&recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+&type=1&signature=.*"
+                    .into(),
+            ))
+            .with_body_from_file("tests/mocks/futures/account/change_position_margin.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(server.url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        account
+            .change_position_margin("BTCUSDT", 100., true)
+            .unwrap();
+
+        mock.assert();
+    }
+
+    #[test]
     fn cancel_all_open_orders() {
         let mut server = Server::new();
-        let mock = server.mock("DELETE", "/fapi/v1/allOpenOrders")
+        let mock = server
+            .mock("DELETE", "/fapi/v1/allOpenOrders")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "recvWindow=1234&symbol=BTCUSDT&timestamp=\\d+&signature=.*".into(),
@@ -64,7 +114,8 @@ mod tests {
     #[test]
     fn change_position_mode() {
         let mut server = Server::new();
-        let mock = server.mock("POST", "/fapi/v1/positionSide/dual")
+        let mock = server
+            .mock("POST", "/fapi/v1/positionSide/dual")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "dualSidePosition=true&recvWindow=1234&timestamp=\\d+&signature=.*".into(),
@@ -176,7 +227,8 @@ mod tests {
     #[test]
     fn get_income() {
         let mut server = Server::new();
-        let mock = server.mock("GET", "/fapi/v1/income")
+        let mock = server
+            .mock("GET", "/fapi/v1/income")
             .with_header("content-type", "application/json;charset=UTF-8")
             .match_query(Matcher::Regex(
                 "endTime=12345678910&incomeType=TRANSFER&limit=10\

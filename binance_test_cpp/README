@@ -1,9 +1,0 @@
-#
-# Rust FFI
-#
-
-# binance-rs
-$ cargo build && cp -fp  target/debug/libbinance.so ./binance_test_cpp/
-
-# binanace_test_cpp
-$ make && ./main

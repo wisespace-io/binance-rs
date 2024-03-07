@@ -15,7 +15,8 @@ pub struct FuturesGeneral {
 impl FuturesGeneral {
     // Test connectivity
     pub fn ping(&self) -> Result<String> {
-        self.client.get::<Empty>(API::Futures(Futures::Ping), None)?;
+        self.client
+            .get::<Empty>(API::Futures(Futures::Ping), None)?;
         Ok("pong".into())
     }
 
