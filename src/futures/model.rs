@@ -625,3 +625,26 @@ pub struct Income {
     pub tran_id: u64,
     pub trade_id: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LeverageBrackets {
+    pub symbol: String,
+    pub notional_coef: Option<f64>,
+    pub brackets: Vec<Bracket>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Bracket {
+    pub bracket: i32,
+    pub initial_leverage: u8,
+    #[serde(with = "string_or_float")]
+    pub notional_cap: f64,
+    #[serde(with = "string_or_float")]
+    pub notional_floor: f64,
+    #[serde(with = "string_or_float")]
+    pub maint_margin_ratio: f64,
+    #[serde(with = "string_or_float")]
+    pub cum: f64,
+}

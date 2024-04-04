@@ -254,4 +254,26 @@ mod tests {
 
         mock.assert();
     }
+
+    #[test]
+    fn get_leverage_brackets() {
+        let mut server = Server::new();
+        let mock = server
+            .mock("GET", "/fapi/v1/leverageBracket")
+            .with_header("content-type", "application/json;charset=UTF-8")
+            .match_query(Matcher::Regex(
+                "recvWindow=1234&timestamp=\\d+&signature=.*".into(),
+            ))
+            .with_body_from_file("tests/mocks/futures/account/leverage_brackets.json")
+            .create();
+
+        let config = Config::default()
+            .set_futures_rest_api_endpoint(server.url())
+            .set_recv_window(1234);
+        let account: FuturesAccount = Binance::new_with_config(None, None, &config);
+        let _ = env_logger::try_init();
+        account.leverage_brackets(None).unwrap();
+
+        mock.assert();
+    }
 }

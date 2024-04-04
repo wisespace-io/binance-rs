@@ -424,7 +424,7 @@ impl FuturesAccount {
     pub fn custom_batch_orders(
         &self, _order_count: u64, order_requests: Vec<CustomOrderRequest>,
     ) -> Result<Transaction> {
-        let request = String::from("");
+        let request = String::new();
         for order_request in order_requests {
             let order = OrderRequest {
                 symbol: order_request.symbol,
@@ -688,5 +688,20 @@ impl FuturesAccount {
         println!("{}", request);
         self.client
             .get_signed(API::Futures(Futures::Income), Some(request))
+    }
+
+    pub fn leverage_brackets<S>(
+        &self, symbol: S,
+    ) -> Result<Vec<crate::futures::model::LeverageBrackets>>
+    where
+        S: Into<Option<String>>,
+    {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        if let Some(symbol) = symbol.into() {
+            parameters.insert("symbol".into(), symbol);
+        }
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::Futures(Futures::LeverageBracket), Some(request))
     }
 }
