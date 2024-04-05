@@ -197,7 +197,7 @@ mod tests {
             .set_recv_window(1234);
         let account: FuturesAccount = Binance::new_with_config(None, None, &config);
         let _ = env_logger::try_init();
-        let custom_order = CustomOrderRequest {
+        let custom_order = OrderRequest {
             symbol: "SRMUSDT".into(),
             side: OrderSide::Sell,
             position_side: None,

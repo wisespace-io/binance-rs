@@ -17,14 +17,13 @@ pub fn build_request(parameters: BTreeMap<String, String>) -> String {
 pub fn build_list_of_json(parameters: Vec<BTreeMap<String, String>>) -> String {
     let mut request = String::new();
     for param in parameters {
-        let mut request_inner = String::new();
+        let mut inner = String::new();
         for (key, value) in param {
-            let param = format!("\"{}\":\"{}\",", key, value);
-            request_inner.push_str(param.as_ref());
+            inner.push_str(&format!("\"{}\":\"{}\",", key, value));
         }
-        request_inner.pop();
-        let param = format!("{{{}}},", request_inner);
-        request.push_str(param.as_ref());
+        inner.pop();
+        inner = format!("{{{}}},", inner);
+        request.push_str(&inner);
     }
     request.pop();
     request = format!("[{}]", request);

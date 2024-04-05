@@ -112,7 +112,7 @@ impl Display for TimeInForce {
     }
 }
 
-struct OrderRequest {
+pub struct OrderRequest {
     pub symbol: String,
     pub side: OrderSide,
     pub position_side: Option<PositionSide>,
@@ -129,21 +129,119 @@ struct OrderRequest {
     pub price_protect: Option<f64>,
 }
 
-pub struct CustomOrderRequest {
-    pub symbol: String,
-    pub side: OrderSide,
-    pub position_side: Option<PositionSide>,
-    pub order_type: OrderType,
-    pub time_in_force: Option<TimeInForce>,
-    pub qty: Option<f64>,
-    pub reduce_only: Option<bool>,
-    pub price: Option<f64>,
-    pub stop_price: Option<f64>,
-    pub close_position: Option<bool>,
-    pub activation_price: Option<f64>,
-    pub callback_rate: Option<f64>,
-    pub working_type: Option<WorkingType>,
-    pub price_protect: Option<f64>,
+impl OrderRequest {
+    pub fn limit_buy(
+        symbol: impl Into<String>, qty: impl Into<f64>, price: f64, time_in_force: TimeInForce,
+    ) -> Self {
+        Self {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::Limit,
+            time_in_force: Some(time_in_force),
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: Some(price),
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        }
+    }
+    pub fn limit_sell(
+        symbol: impl Into<String>, qty: impl Into<f64>, price: f64, time_in_force: TimeInForce,
+    ) -> Self {
+        Self {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::Limit,
+            time_in_force: Some(time_in_force),
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: Some(price),
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        }
+    }
+    pub fn market_buy(symbol: impl Into<String>, qty: impl Into<f64>) -> Self {
+        Self {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::Market,
+            time_in_force: None,
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: None,
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        }
+    }
+    pub fn market_sell(symbol: impl Into<String>, qty: impl Into<f64>) -> Self {
+        Self {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::Market,
+            time_in_force: None,
+            qty: Some(qty.into()),
+            reduce_only: None,
+            price: None,
+            stop_price: None,
+            close_position: None,
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        }
+    }
+    pub fn stop_market_close_buy(symbol: impl Into<String>, stop_price: impl Into<f64>) -> Self {
+        Self {
+            symbol: symbol.into(),
+            side: OrderSide::Buy,
+            position_side: None,
+            order_type: OrderType::StopMarket,
+            time_in_force: None,
+            qty: None,
+            reduce_only: None,
+            price: None,
+            stop_price: Some(stop_price.into()),
+            close_position: Some(true),
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        }
+    }
+    pub fn stop_market_close_sell(symbol: impl Into<String>, stop_price: impl Into<f64>) -> Self {
+        Self {
+            symbol: symbol.into(),
+            side: OrderSide::Sell,
+            position_side: None,
+            order_type: OrderType::StopMarket,
+            time_in_force: None,
+            qty: None,
+            reduce_only: None,
+            price: None,
+            stop_price: Some(stop_price.into()),
+            close_position: Some(true),
+            activation_price: None,
+            callback_rate: None,
+            working_type: None,
+            price_protect: None,
+        }
+    }
 }
 
 pub struct IncomeRequest {
@@ -208,22 +306,7 @@ impl FuturesAccount {
         &self, symbol: impl Into<String>, qty: impl Into<f64>, price: f64,
         time_in_force: TimeInForce,
     ) -> Result<Transaction> {
-        let buy = OrderRequest {
-            symbol: symbol.into(),
-            side: OrderSide::Buy,
-            position_side: None,
-            order_type: OrderType::Limit,
-            time_in_force: Some(time_in_force),
-            qty: Some(qty.into()),
-            reduce_only: None,
-            price: Some(price),
-            stop_price: None,
-            close_position: None,
-            activation_price: None,
-            callback_rate: None,
-            working_type: None,
-            price_protect: None,
-        };
+        let buy = OrderRequest::limit_buy(symbol, qty, price, time_in_force);
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
@@ -234,22 +317,7 @@ impl FuturesAccount {
         &self, symbol: impl Into<String>, qty: impl Into<f64>, price: f64,
         time_in_force: TimeInForce,
     ) -> Result<Transaction> {
-        let sell = OrderRequest {
-            symbol: symbol.into(),
-            side: OrderSide::Sell,
-            position_side: None,
-            order_type: OrderType::Limit,
-            time_in_force: Some(time_in_force),
-            qty: Some(qty.into()),
-            reduce_only: None,
-            price: Some(price),
-            stop_price: None,
-            close_position: None,
-            activation_price: None,
-            callback_rate: None,
-            working_type: None,
-            price_protect: None,
-        };
+        let sell = OrderRequest::limit_sell(symbol, qty, price, time_in_force);
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
@@ -262,22 +330,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let buy = OrderRequest {
-            symbol: symbol.into(),
-            side: OrderSide::Buy,
-            position_side: None,
-            order_type: OrderType::Market,
-            time_in_force: None,
-            qty: Some(qty.into()),
-            reduce_only: None,
-            price: None,
-            stop_price: None,
-            close_position: None,
-            activation_price: None,
-            callback_rate: None,
-            working_type: None,
-            price_protect: None,
-        };
+        let buy = OrderRequest::market_buy(symbol, qty);
         let order = self.build_order(buy);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
@@ -290,22 +343,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell = OrderRequest {
-            symbol: symbol.into(),
-            side: OrderSide::Sell,
-            position_side: None,
-            order_type: OrderType::Market,
-            time_in_force: None,
-            qty: Some(qty.into()),
-            reduce_only: None,
-            price: None,
-            stop_price: None,
-            close_position: None,
-            activation_price: None,
-            callback_rate: None,
-            working_type: None,
-            price_protect: None,
-        };
+        let sell = OrderRequest::market_sell(symbol, qty);
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
@@ -346,22 +384,7 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell = OrderRequest {
-            symbol: symbol.into(),
-            side: OrderSide::Buy,
-            position_side: None,
-            order_type: OrderType::StopMarket,
-            time_in_force: None,
-            qty: None,
-            reduce_only: None,
-            price: None,
-            stop_price: Some(stop_price.into()),
-            close_position: Some(true),
-            activation_price: None,
-            callback_rate: None,
-            working_type: None,
-            price_protect: None,
-        };
+        let sell = OrderRequest::stop_market_close_buy(symbol, stop_price);
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
@@ -374,78 +397,31 @@ impl FuturesAccount {
         S: Into<String>,
         F: Into<f64>,
     {
-        let sell = OrderRequest {
-            symbol: symbol.into(),
-            side: OrderSide::Sell,
-            position_side: None,
-            order_type: OrderType::StopMarket,
-            time_in_force: None,
-            qty: None,
-            reduce_only: None,
-            price: None,
-            stop_price: Some(stop_price.into()),
-            close_position: Some(true),
-            activation_price: None,
-            callback_rate: None,
-            working_type: None,
-            price_protect: None,
-        };
+        let sell = OrderRequest::stop_market_close_sell(symbol, stop_price);
         let order = self.build_order(sell);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
             .post_signed(API::Futures(Futures::Order), request)
     }
 
-    // Custom order for for professional traders
-    pub fn custom_order(&self, order_request: CustomOrderRequest) -> Result<Transaction> {
-        let order = OrderRequest {
-            symbol: order_request.symbol,
-            side: order_request.side,
-            position_side: order_request.position_side,
-            order_type: order_request.order_type,
-            time_in_force: order_request.time_in_force,
-            qty: order_request.qty,
-            reduce_only: order_request.reduce_only,
-            price: order_request.price,
-            stop_price: order_request.stop_price,
-            close_position: order_request.close_position,
-            activation_price: order_request.activation_price,
-            callback_rate: order_request.callback_rate,
-            working_type: order_request.working_type,
-            price_protect: order_request.price_protect,
-        };
+    // Custom order for professional traders
+    pub fn custom_order(&self, order: OrderRequest) -> Result<Transaction> {
         let order = self.build_order(order);
         let request = build_signed_request(order, self.recv_window)?;
         self.client
             .post_signed(API::Futures(Futures::Order), request)
     }
 
-    // Custom order for for professional traders
+    // Custom batch orders for professional traders
     pub fn custom_batch_orders(
-        &self, order_requests: Vec<CustomOrderRequest>,
+        &self, order_requests: Vec<OrderRequest>,
     ) -> Result<Vec<TransactionOrError>> {
         if order_requests.is_empty() {
             return Ok(Vec::new());
         }
         let mut parameters = BTreeMap::new();
         let mut orders = Vec::new();
-        for order_request in order_requests {
-            let order = OrderRequest {
-                symbol: order_request.symbol,
-                side: order_request.side,
-                position_side: order_request.position_side,
-                order_type: order_request.order_type,
-                time_in_force: order_request.time_in_force,
-                qty: order_request.qty,
-                reduce_only: order_request.reduce_only,
-                price: order_request.price,
-                stop_price: order_request.stop_price,
-                close_position: order_request.close_position,
-                activation_price: order_request.activation_price,
-                callback_rate: order_request.callback_rate,
-                working_type: order_request.working_type,
-                price_protect: order_request.price_protect,
-            };
+        for order in order_requests {
             let order = self.build_order(order);
             orders.push(order);
         }

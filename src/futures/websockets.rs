@@ -199,14 +199,14 @@ impl<'a> FuturesWebSockets<'a> {
                 match message {
                     Message::Text(msg) => {
                         if let Err(e) = self.handle_msg(&msg) {
-                            bail!(format!("Error on handling stream message: {}", e));
+                            bail!("Error on handling stream message: {}", e);
                         }
                     }
                     Message::Ping(payload) => {
                         socket.0.write(Message::Pong(payload)).unwrap();
                     }
                     Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
+                    Message::Close(e) => bail!("Disconnected {:?}", e),
                 }
             }
         }
