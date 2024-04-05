@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::fmt::Display;
-use crate::util::build_signed_request;
+use crate::util::{build_list_of_json, build_signed_request};
 use crate::errors::Result;
 use crate::client::Client;
 use crate::api::{API, Futures};
@@ -9,8 +9,8 @@ use crate::account::OrderSide;
 use crate::futures::model::{Order, TradeHistory};
 
 use super::model::{
-    ChangeLeverageResponse, Transaction, CanceledOrder, PositionRisk, AccountBalance,
-    AccountInformation,
+    AccountBalance, AccountInformation, CanceledOrder, ChangeLeverageResponse, PositionRisk,
+    Transaction, TransactionOrError,
 };
 
 #[derive(Clone)]
@@ -422,9 +422,13 @@ impl FuturesAccount {
 
     // Custom order for for professional traders
     pub fn custom_batch_orders(
-        &self, _order_count: u64, order_requests: Vec<CustomOrderRequest>,
-    ) -> Result<Transaction> {
-        let request = String::new();
+        &self, order_requests: Vec<CustomOrderRequest>,
+    ) -> Result<Vec<TransactionOrError>> {
+        if order_requests.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut parameters = BTreeMap::new();
+        let mut orders = Vec::new();
         for order_request in order_requests {
             let order = OrderRequest {
                 symbol: order_request.symbol,
@@ -442,12 +446,13 @@ impl FuturesAccount {
                 working_type: order_request.working_type,
                 price_protect: order_request.price_protect,
             };
-            let _order = self.build_order(order);
-            // TODO : make a request string for batch orders api
-            // let request = build_signed_request(order, self.recv_window)?;
+            let order = self.build_order(order);
+            orders.push(order);
         }
+        parameters.insert("batchOrders".into(), build_list_of_json(orders));
+        let request = build_signed_request(parameters, self.recv_window)?;
         self.client
-            .post_signed(API::Futures(Futures::Order), request)
+            .post_signed(API::Futures(Futures::BatchOrders), request)
     }
 
     pub fn get_all_orders<S, F, N>(

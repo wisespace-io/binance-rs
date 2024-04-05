@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use crate::model::{string_or_float, string_or_float_opt, string_or_bool};
+use crate::{
+    errors::BinanceContentError,
+    model::{string_or_bool, string_or_float, string_or_float_opt},
+};
 
 pub use crate::model::{
     Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
@@ -280,6 +283,14 @@ pub struct Transaction {
     pub update_time: u64,
     pub working_type: String,
     price_protect: bool,
+}
+
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum TransactionOrError {
+    Transaction(Transaction),
+    Error(BinanceContentError),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
