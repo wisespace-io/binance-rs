@@ -1,4 +1,3 @@
-binop_separator = "Back"
 fn_params_layout = "Compressed"
 newline_style = "Unix"
 reorder_imports = false

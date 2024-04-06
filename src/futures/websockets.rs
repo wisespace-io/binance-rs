@@ -114,12 +114,12 @@ impl<'a> FuturesWebSockets<'a> {
         }
     }
 
-    pub fn connect(&mut self, market: &FuturesMarket, subscription: &'a str) -> Result<()> {
+    pub fn connect(&mut self, market: &FuturesMarket, subscription: &str) -> Result<()> {
         self.connect_wss(&FuturesWebsocketAPI::Default.params(market, subscription))
     }
 
     pub fn connect_with_config(
-        &mut self, market: &FuturesMarket, subscription: &'a str, config: &'a Config,
+        &mut self, market: &FuturesMarket, subscription: &str, config: &Config,
     ) -> Result<()> {
         self.connect_wss(
             &FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(market, subscription),
@@ -139,7 +139,7 @@ impl<'a> FuturesWebSockets<'a> {
                 self.socket = Some(answer);
                 Ok(())
             }
-            Err(e) => bail!(format!("Error during handshake {}", e)),
+            Err(e) => bail!("Error during handshake {}", e),
         }
     }
 

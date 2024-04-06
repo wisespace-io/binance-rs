@@ -174,7 +174,7 @@ impl Client {
                 Err(ErrorKind::BinanceError(error).into())
             }
             s => {
-                bail!(format!("Received response: {:?}", s));
+                bail!("Received response: {:?}", s);
             }
         }
     }
