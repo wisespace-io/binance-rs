@@ -1,6 +1,6 @@
 use crate::util::build_signed_request;
 use crate::model::{
-    AssetDetail, CoinInfo, DepositAddress, SpotFuturesTransferType, TradeFees, TransactionId,
+    AssetDetail, CoinInfo, DepositAddress, SpotFuturesTransferType, TradeFee, TransactionId,
     WithdrawResponse,
 };
 use crate::client::Client;
@@ -34,9 +34,12 @@ impl Savings {
             .get_signed(API::Savings(Sapi::AssetDetail), Some(request))
     }
 
-    // Maker and Taker trade fees for each asset pair
-    pub fn get_trade_fees(&self) -> Result<TradeFees> {
-        let parameters: BTreeMap<String, String> = BTreeMap::new();
+    /// Maker and Taker trade fees for an asset pair
+    pub fn get_trade_fee(&self, symbol: Option<String>) -> Result<Vec<TradeFee>> {
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        if let Some(symbol) = symbol {
+            parameters.insert("symbol".into(), symbol);
+        }
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Savings(Sapi::TradeFee), Some(request))

@@ -1338,16 +1338,10 @@ pub struct WithdrawResponse {
 #[serde(rename_all = "camelCase")]
 pub struct TradeFee {
     pub symbol: String,
-    pub maker: f64,
-    pub taker: f64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct TradeFees {
-    #[serde(rename = "tradeFee")]
-    pub fees: Vec<TradeFee>,
-    pub success: bool,
+    #[serde(with = "string_or_float")]
+    pub maker_commission: f64,
+    #[serde(with = "string_or_float")]
+    pub taker_commission: f64,
 }
 
 pub(crate) mod string_or_float {
