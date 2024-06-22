@@ -107,19 +107,39 @@ pub enum Trades {
     AllTrades(Vec<Trade>),
 }
 
+
+// {'stream': 'wifusdc@trade', 'data': {'e': 'trade', 'E': 1719051857284, 'T': 1719051857284, 's': 'WIFUSDC', 't': 18074627, 'p': '1.7728000', 'q': '34.8', 'X': 'MARKET', 'm': True}}
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Trade {
-    pub id: u64,
-    pub is_buyer_maker: bool,
-    #[serde(with = "string_or_float")]
+    #[serde(rename = "e")]
+    pub event_type: String,
+
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "T")]
+    pub transaction_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "t")]
+    pub transaction_id: i64,
+
+    #[serde(rename = "p")]
     pub price: f64,
-    #[serde(with = "string_or_float")]
-    pub qty: f64,
-    #[serde(with = "string_or_float")]
-    pub quote_qty: f64,
-    pub time: u64,
+
+    #[serde(rename = "q")]
+    pub quantity: f64,
+
+    #[serde(rename = "X")]
+    pub order_type: String,
+
+    #[serde(rename = "m")]
+    pub is_buyer_maker: bool,
 }
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
@@ -611,6 +631,8 @@ pub struct OrderTradeEvent {
     #[serde(rename = "o")]
     pub order: OrderUpdate,
 }
+
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
