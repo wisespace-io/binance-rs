@@ -112,14 +112,8 @@ pub enum Trades {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Trade {
-    #[serde(rename = "e")]
-    pub event_type: String,
-
-    #[serde(rename = "E")]
-    pub event_time: u64,
-
     #[serde(rename = "T")]
-    pub transaction_time: u64,
+    pub time: u64,
 
     #[serde(rename = "s")]
     pub symbol: String,
@@ -127,10 +121,10 @@ pub struct Trade {
     #[serde(rename = "t")]
     pub transaction_id: i64,
 
-    #[serde(rename = "p")]
+    #[serde(rename = "p", with = "string_or_float")]
     pub price: f64,
 
-    #[serde(rename = "q")]
+    #[serde(rename = "q", with = "string_or_float")]
     pub quantity: f64,
 
     #[serde(rename = "X")]
