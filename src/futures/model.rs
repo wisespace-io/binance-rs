@@ -107,8 +107,6 @@ pub enum Trades {
     AllTrades(Vec<Trade>),
 }
 
-
-// {'stream': 'wifusdc@trade', 'data': {'e': 'trade', 'E': 1719051857284, 'T': 1719051857284, 's': 'WIFUSDC', 't': 18074627, 'p': '1.7728000', 'q': '34.8', 'X': 'MARKET', 'm': True}}
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Trade {
