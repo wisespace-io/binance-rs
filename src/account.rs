@@ -1,6 +1,6 @@
 use error_chain::bail;
 
-use crate::util::build_signed_request;
+use crate::util::{build_signed_request, is_start_time_valid};
 use crate::model::{
     AccountInformation, Balance, Empty, Order, OrderCanceled, TradeHistory, Transaction,
 };
@@ -752,6 +752,49 @@ impl Account {
         let request = build_signed_request(parameters, self.recv_window)?;
         self.client
             .get_signed(API::Spot(Spot::MyTrades), Some(request))
+    }
+
+    // Trade history starting from selected date
+    pub fn trade_history_from<S>(&self, symbol: S, start_time: u64) -> Result<Vec<TradeHistory>>
+        where
+            S: Into<String>,
+    {
+        if !is_start_time_valid(&start_time) {
+            return bail!("Start time should be less than the current time");
+        }
+
+        let mut parameters: BTreeMap<String, String> = BTreeMap::new();
+        parameters.insert("symbol".into(), symbol.into());
+        parameters.insert("startTime".into(), start_time.to_string());
+        let request = build_signed_request(parameters, self.recv_window)?;
+        self.client
+            .get_signed(API::Spot(Spot::MyTrades), Some(request))
+    }
+
+    // Trade history starting from selected time to some time
+    pub fn trade_history_from_to<S>(&self, symbol: S, start_time: u64, end_time: u64) -> Result<Vec<TradeHistory>>
+        where
+            S: Into<String>,
+    {
+        if end_time <= start_time {
+            return bail!("End time should be greater than start time");
+        }
+        if !is_start_time_valid(&start_time) {
+            return bail!("Start time should be less than the current time");
+        }
+        self.get_trades(symbol, start_time, end_time)
+    }
+
+    fn get_trades<S>(&self, symbol: S, start_time: u64, end_time: u64) -> Result<Vec<TradeHistory>>
+        where
+            S: Into<String>,
+    {
+        let mut trades = match self.trade_history_from(symbol, start_time) {
+            Ok(trades) => trades,
+            Err(e) => return Err(e),
+        };
+        trades.retain(|trade| trade.time <= end_time);
+        Ok(trades)
     }
 
     fn build_order(&self, order: OrderRequest) -> BTreeMap<String, String> {
