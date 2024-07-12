@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use crate::model::{string_or_float, string_or_float_opt, string_or_bool};
+use crate::{
+    errors::BinanceContentError,
+    model::{string_or_bool, string_or_float, string_or_float_opt},
+};
 
 pub use crate::model::{
     Asks, Bids, BookTickers, Filters, KlineSummaries, KlineSummary, RateLimit, ServerTime,
@@ -280,6 +283,14 @@ pub struct Transaction {
     pub update_time: u64,
     pub working_type: String,
     price_protect: bool,
+}
+
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum TransactionOrError {
+    Transaction(Transaction),
+    Error(BinanceContentError),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -624,4 +635,27 @@ pub struct Income {
     pub time: u64,
     pub tran_id: u64,
     pub trade_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LeverageBrackets {
+    pub symbol: String,
+    pub notional_coef: Option<f64>,
+    pub brackets: Vec<Bracket>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Bracket {
+    pub bracket: i32,
+    pub initial_leverage: u8,
+    #[serde(with = "string_or_float")]
+    pub notional_cap: f64,
+    #[serde(with = "string_or_float")]
+    pub notional_floor: f64,
+    #[serde(with = "string_or_float")]
+    pub maint_margin_ratio: f64,
+    #[serde(with = "string_or_float")]
+    pub cum: f64,
 }

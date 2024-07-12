@@ -14,6 +14,22 @@ pub fn build_request(parameters: BTreeMap<String, String>) -> String {
     request
 }
 
+pub fn build_list_of_json(parameters: Vec<BTreeMap<String, String>>) -> String {
+    let mut request = String::new();
+    for param in parameters {
+        let mut inner = String::new();
+        for (key, value) in param {
+            inner.push_str(&format!("\"{}\":\"{}\",", key, value));
+        }
+        inner.pop();
+        inner = format!("{{{}}},", inner);
+        request.push_str(&inner);
+    }
+    request.pop();
+    request = format!("[{}]", request);
+    url::form_urlencoded::byte_serialize(request.as_bytes()).collect::<String>()
+}
+
 pub fn build_signed_request(
     parameters: BTreeMap<String, String>, recv_window: u64,
 ) -> Result<String> {

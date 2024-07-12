@@ -75,6 +75,7 @@ pub enum Futures {
     AllOrders,
     UserTrades,
     Order,
+    BatchOrders,
     PositionRisk,
     Balance,
     PositionSide,
@@ -93,6 +94,7 @@ pub enum Futures {
     OpenOrders,
     UserDataStream,
     Income,
+    LeverageBracket,
 }
 
 impl From<API> for String {
@@ -152,6 +154,7 @@ impl From<API> for String {
                 Futures::UserTrades => "/fapi/v1/userTrades",
                 Futures::PositionSide => "/fapi/v1/positionSide/dual",
                 Futures::Order => "/fapi/v1/order",
+                Futures::BatchOrders => "/fapi/v1/batchOrders",
                 Futures::PositionRisk => "/fapi/v2/positionRisk",
                 Futures::Balance => "/fapi/v2/balance",
                 Futures::OpenInterest => "/fapi/v1/openInterest",
@@ -169,6 +172,7 @@ impl From<API> for String {
                 Futures::OpenOrders => "/fapi/v1/openOrders",
                 Futures::UserDataStream => "/fapi/v1/listenKey",
                 Futures::Income => "/fapi/v1/income",
+                Futures::LeverageBracket => "/fapi/v1/leverageBracket",
             },
         })
     }

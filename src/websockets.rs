@@ -105,7 +105,7 @@ impl<'a> WebSockets<'a> {
                 self.socket = Some(answer);
                 Ok(())
             }
-            Err(e) => bail!(format!("Error during handshake {}", e)),
+            Err(e) => bail!("Error during handshake {}", e),
         }
     }
 
@@ -153,18 +153,18 @@ impl<'a> WebSockets<'a> {
     pub fn event_loop(&mut self, running: &AtomicBool) -> Result<()> {
         while running.load(Ordering::Relaxed) {
             if let Some(ref mut socket) = self.socket {
-                let message = socket.0.read_message()?;
+                let message = socket.0.read()?;
                 match message {
                     Message::Text(msg) => {
                         if let Err(e) = self.handle_msg(&msg) {
-                            bail!(format!("Error on handling stream message: {}", e));
+                            bail!("Error on handling stream message: {}", e);
                         }
                     }
                     Message::Ping(payload) => {
-                        socket.0.write_message(Message::Pong(payload)).unwrap();
+                        socket.0.write(Message::Pong(payload)).unwrap();
                     }
                     Message::Pong(_) | Message::Binary(_) | Message::Frame(_) => (),
-                    Message::Close(e) => bail!(format!("Disconnected {:?}", e)),
+                    Message::Close(e) => bail!("Disconnected {:?}", e),
                 }
             }
         }
