@@ -121,7 +121,7 @@ impl<'a> FuturesWebSockets<'a> {
         &mut self, market: &FuturesMarket, subscription: &'a str, config: &'a Config,
     ) -> Result<()> {
         self.connect_wss(
-            &FuturesWebsocketAPI::Custom(config.ws_endpoint.clone()).params(market, subscription),
+            &FuturesWebsocketAPI::Custom(config.futures_ws_endpoint.clone()).params(market, subscription),
         )
     }
 
